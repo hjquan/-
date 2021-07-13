@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+        i{font-size: 1.4rem;font-weight: 600;color:#058FFD}
+        .img_h{width: 18px;height: 18px;}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" onclick="toggleState()"><span  id="header_title"></span> <i class="aui-text-default   aui-iconfont aui-icon-down"></i></div>
+            <!-- <a class="aui-pull-right aui-btn">
+
+                <i class="aui-iconfont aui-icon-plus" tapmode onclick="openquelity(2)"></i>
+
+            </a> -->
+        </header>
+
+        <script src="../../../script/api.js"></script>
+
+        <script>
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var offset = $api.offset($api.byId('header'));
+                $api.text($api.byId('header_title'),'在场人员');
+
+                //监听自定义更新状态事件
+                api.addEventListener({
+                    name: 'reaname_update_event'
+                }, function(ret, err){
+                    if( ret ){
+                        console.log($api.jsonToStr(ret));
+                        var data = ret.value.reaname_update;
+                        var txt = data == 0 ? '在场人员' : '离场人员';
+                        $api.text($api.byId('header_title'), txt);
+
+                    }else{
+                    }
+                });
+
+
+                api.openFrame({
+                    name: 'realname_item__frame',
+                    url: './realname_item__frame.html',
+                    rect: {
+                        x: offset.l,
+                        y: offset.h,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {
+                        info:api.pageParam.info,
+                        subcontractor:api.pageParam.subcontractor
+                    },
+                    bounces: false,
+                    bgColor: 'rgba(0,0,0,0)',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+            }
+            //切换人员状态
+            function toggleState(){
+                api.sendEvent({
+                    name: 'reaname_toggleState_event',
+                    extra: {
+                    }
+                });
+
+            }
+            function closeWin() {
+                api.closeWin();
+            }
+        </script>
+</body>
+
+</html>

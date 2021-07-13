@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            /*color: rgba(51, 51, 51, 1);*/
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .left_logo{
+            width:50px;
+            height:50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color:#fff;
+        }
+        .aui-list div.aui-list-item-media{
+            width: auto;
+        }
+        .fixd{
+            width: 100%;
+            position: fixed;
+            top:0px;
+            left:0px;
+            z-index: 1000
+        }
+        .main_box{
+            margin-top: 140px;
+        }
+        .txt_color{display: flex;width: 100%}
+        .txt_color span{
+            flex:1
+        }
+        .txt_color span:last-child{
+            flex:2;
+            margin-left: 5px;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .noData img{
+            width: 50px;
+            height:50px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light" >
+                <a class="aui-pull-left aui-btn" onclick="openWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">操作负责人</div>
+                <!-- <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfont aui-icon-plus"></span>
+                </a> -->
+            </header>
+            <div class="aui-searchbar" id="search">
+                <div class="aui-searchbar-input aui-border-radius" tapmode >
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <form action="">
+                        <input type="search" placeholder="请输入搜索内容" id="search-input" v-model.trim="listIf" @input="changeInput()">
+                    </form>
+                </div>
+                <div class="aui-searchbar-cancel" tapmod>取消</div>
+            </div>
+        </div>
+        <div class="main_box">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list" v-if="selctList.length">
+                        <li class="aui-list-item aui-list-item-middle" v-for="item in selctList" tapmode @click="cilckItemFn(item)"  :class="{'triange_bg':curnetDeils.userId == item.userId}">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-media" v-cloak>
+                                    <!-- <img src="../../../image/projectList.png" class="aui-img-round aui-list-img-sm"> -->
+                                    <div class="left_logo"  v-cloak v-text="item.name.substring(item.name.length-2,item.name.length)">
+
+                                    </div>
+
+                                </div>
+                                <div class="aui-list-item-inner">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-15 txt_color" v-cloak>
+                                            <span  v-cloak class=" aui-ellipsis-1" v-text="item.name"> 阿萨德</span>
+                                            <span v-cloak class=" aui-ellipsis-1" v-text="item.position"> 阿萨德</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="noData" v-else>
+                        <img src="../../../image/noData.png" alt="">
+                        <p>没有相关数据~</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        <script src="../../../script/api.js"></script>
+        <script src="../../../script/sha1.js"></script>
+        <script src="../../../script/common.js"></script>
+        <script src="../../../script/vue.js"></script>
+        <script type="text/javascript">
+
+            apiready = function(){
+                //侵入式导航栏
+                $api.fixStatusBar( $api.dom('header') );
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        curnetDeils:'',//当前展示的操作员
+                        copySelctList: [],
+                        selctList: [],//拉取的列表数据
+                        listIf:'',//过滤条件
+                    },
+                    computed:{
+
+                    },
+                    created:function(){
+                        this.init();
+                        this.curnetDeils = api.pageParam.logpersonlistInfo
+
+                    },
+                    methods: {
+                        init:function(){
+                            ajaxPost(
+                                true,
+                                '加载中',
+                                getProjectUserList,
+                                {
+                                    'projectId':$api.getStorage('enterpriseId')
+                                },
+                                function(ret){
+                                    vm.copySelctList = ret.obj.projectUserList;
+                                    vm.selctList = ret.obj.projectUserList;
+                                }
+
+                            )
+                        },
+                        //筛选
+                        changeInput:function(){
+                            var copyList = $api.strToJson($api.jsonToStr(this.selctList));
+                            this.selctList = $api.strToJson($api.jsonToStr(this.copySelctList));
+                            var filterList = vm.copySelctList.filter(function(item){
+                                var itemName = item.name;
+                                if(itemName.indexOf(vm.listIf) != -1){
+                                    return item
+                                }else{
+                                    return false
+                                }
+                            })
+                            if(this.listIf == ''){
+                                this.selctList = this.copySelctList
+                            }else{
+                                this.selctList = filterList
+                            }
+                        },
+                        cilckItemFn:function(data){
+                            api.sendEvent({
+                                name: 'logPersonListCurent',
+                                extra: {
+                                    logPersonListCurent:data
+                                }
+                            });
+                            setTimeout(function(){
+                                api.closeWin()
+                            },500)
+
+                        }
+
+                    }
+                })
+            }
+        </script>
+</body>
+
+</html>

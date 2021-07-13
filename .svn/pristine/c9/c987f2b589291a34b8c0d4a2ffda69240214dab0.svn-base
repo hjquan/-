@@ -1,0 +1,91 @@
+.hover {
+    opacity: 0.6;
+}
+
+.header_title {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(51, 51, 51, 1);
+}
+
+.flex_start {
+    justify-content: flex-start !important;
+}
+.main_box{
+    margin-top:10px;
+    background-color: #fff;
+}
+.triange_bg:before {
+    content: '';
+    height: 26px;
+    width: 26px;
+    background: url('../../image/triangle.png') 0 0 no-repeat;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.txt_999{
+    color:#999;
+}
+/*下拉三角形*/
+/*.tri_bottom:before{
+       content: "";
+       width: 0px;
+       height: 0px;
+       border-top: 10px solid #058FFD;
+       border-left: 10px solid transparent;
+       border-right: 10px solid transparent;
+       position: absolute;
+       top: 18px;
+       left: 15px;
+   }*/
+.select{
+    line-height: 45px;
+    padding-left:15px;
+    position:relative;
+}
+.select i{
+    font-weight: bold;
+    font-size: 16px;
+    transition: height 2s;
+}
+.parentselect{
+    line-height: 45px;
+    padding-left:15px;
+    position:relative;
+}
+.parentselect i{
+    font-weight: bold;
+    font-size: 16px;
+    transition: height 2s;
+}
+.border_bottom_after:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: rgba(240, 240, 240, 1);
+    left: 50%;
+    bottom: 0px;
+    transform: translateX(-50%);
+}
+.main_box ul{
+    padding:0 15px 10px 15px;
+    display: none;
+}
+.main_box ul.active{display: block;}
+.main_box ul li{
+    line-height: 45px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+/*.main_box ul.active{
+    overflow:visible;
+    opacity: 1;
+    height:auto;
+}*/
+.txt_333{
+    color:#333;
+}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/about.css">
+    <style>
+        .txt{color:#058FFD}
+        .txt_active{
+            width:52px;
+            height:26px;
+            line-height: 26px;
+            background:rgba(5,143,253,1);
+            border-radius:2px;
+            font-size: 14px;
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode @click="close()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">电子签名</div>
+            <div class="aui-pull-right aui-btn" >
+                <span class="txt aui-text-danger" tapmdoe  @click="delSign()">删除</span>
+                &nbsp;&nbsp;
+                <span class="txt" tapmdoe  @click="editFn()">修改</span>
+
+            </div>
+
+        </header>
+
+    </div>
+
+
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var drawingBoard = api.require('drawingBoard');
+                var offset = $api.offset($api.dom('header'));
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        singurlinfo:'',//接收签名地址
+                        isShow:true,//控制展示修改还是保存
+
+                    },
+                    created:function(){
+                        this.singurlinfo = api.pageParam.signIfo;
+                        console.log($api.jsonToStr(this.singurlinfo));
+                        this.openFrame();
+
+                    },
+                    methods: {
+                        //修改
+                        editFn:function(){
+                            api.openWin({
+                                name: 'electronicsignWrite',
+                                url: './electronicsignWrite.html',
+                                slidBackEnabled:false,
+                                pageParam: {
+                                    signIfo:api.pageParam.signIfo
+                                }
+                            });
+
+                        },
+                        //删除电子签名
+                        delSign:function(){
+                            api.confirm({
+                                title: '警告',
+                                msg: '确认删除电子签名',
+                                buttons: ['删除', '取消']
+                            }, function(ret, err){
+                                if( ret ){
+                                    if(ret.buttonIndex == 1){
+                                        $app.post(
+                                            true,
+                                            deleteElectronicSignature,
+                                            {'userId':$api.getStorage('userId')},
+                                            function(ret){
+                                                api.toast({
+                                                    msg: ret.msg,
+                                                    duration: 2000,
+                                                    location: 'bottom'
+                                                });
+                                                api.sendEvent({
+                                                    name: 'refsh_sign_event',
+                                                    extra: {
+                                                    }
+                                                });
+                                                setTimeout(function(){api.closeWin()},500)
+                                            }
+                                        )
+                                    }
+                                }else{
+
+                                }
+                            });
+
+
+                        },
+
+                        //打开frame
+                        openFrame:function(){
+                            api.openFrame({
+                                name: 'electronicsign_show_frame',
+                                url: './electronicsign_show_frame.html',
+                                rect: {
+                                    x: 0,
+                                    y: offset.h,
+                                    w: 'auto',
+                                    h: 'auto'
+                                },
+                                pageParam: {
+                                    signIfo:api.pageParam.signIfo
+                                },
+                                bounces: false,
+                                bgColor: 'rgba(0,0,0,0)',
+                                vScrollBarEnabled: true,
+                                hScrollBarEnabled: true
+                            });
+
+                        },
+
+                        //关闭且竖屏
+                        close:function(){
+                            //横屏操作
+                            // api.setScreenOrientation({
+                            //     orientation: 'portrait_down'
+                            // });
+                            // api.setFullScreen({
+                            //     fullScreen: false
+                            // });
+                            setTimeout(function(){
+                                api.closeWin();
+                            },100)
+
+                        },
+                    }
+                })
+
+            }
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        #search {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_box {
+            padding-top: 45px
+        }
+
+        .list_item {
+            position: relative;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+        }
+
+        .list_item p+span {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(1, 1, 1, 1);
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode>
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="请输入姓名" v-model="condition">
+                </form>
+            </div>
+            <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+        </div>
+        <ul class="list_box">
+            <li class="list_item line_after_1">
+                全部实名制人员&nbsp;(<span v-text="totalNumer">56</span>)人
+            </li>
+            <li class="list_item line_after_1" tapmode @click="openPage(item)" v-for="item in accountinfo"
+                v-if="accountinfo.length">
+                <p v-text="item.units">木匠工</p>&nbsp;&nbsp;<span>(<span v-text="item.counts"></span>人)</span>
+            </li>
+            <li v-else>
+                <div class="noData">
+                    <img src="../../../image/noData.png" alt="">
+                    <p>没有相关数据~</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //监听点击弹出菜单事件
+            api.addEventListener({
+                name: 'realnameattendance_meau2_toggle_event'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.isMeauShow = !vm.isMeauShow
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+            //监听提交表单刷新
+            api.addEventListener({
+                name: 'addrealname_form_event'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.init()
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    isMeauShow: false, //控制弹出菜单显示隐藏
+                    accountinfo: [],//实名制台账信息
+                    copyaccountinfo: [],//实名制台账信息(用于检索)
+                    condition: '',//检索条件
+
+                    totalNumer: 0,//总数
+                },
+                created: function () {
+                    this.init()
+
+                },
+                mounted: function () {
+
+
+                },
+                watch: {
+                    condition: function () {
+                        this.searchFn()
+                    }
+
+                },
+                computed: {
+
+
+                },
+                methods: {
+                    //检索
+                    //检索
+                    searchFn: function () {
+                        var reg = new RegExp(this.condition.split('').join('.*'), 'gi')
+                        var filterData = this.accountinfo.filter(function (item) {
+                            var itemName = item.units;
+                            if (reg.test(itemName)) {
+                                return item
+                            }
+                        })
+                        this.accountinfo = filterData;
+                        if (!this.condition) {
+                            this.accountinfo = this.copyaccountinfo;
+                        }
+                    },
+                    //获取实名制台账信息
+                    init: function () {
+                        var _this = this;
+                        $app.post(
+                            true,
+                            realNameAccount,
+                            { 'projectId': $api.getStorage('enterpriseId') },
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.accountinfo = ret.obj;
+                                _this.totalNumer = ret.obj.reduce(function (total, currentValue, index, arr) {
+                                    return total += currentValue.counts
+                                }, 0)
+                                console.log(_this.totalNumer);
+                                _this.copyaccountinfo = $api.strToJson($api.jsonToStr(_this.accountinfo));
+                            }
+                        )
+                    },
+
+                    openPage: function (data) {
+                        api.openWin({
+                            name: 'subcontractor',
+                            url: 'new-realname/subcontractor.html',
+                            pageParam: {
+                                subcontractor: data
+                            }
+                        });
+                    },
+                    //菜单跳转
+                    meauJump: function (type) {
+                        switch (type) {
+                            case '0':
+                                api.openWin({
+                                    name: 'attendance_shotId',
+                                    url: './shotId.html',
+                                    pageParam: {}
+                                });
+                                break;
+                            case '1':
+                                api.openWin({
+                                    name: 'attendance_addteam',
+                                    url: './addteam.html',
+                                    pageParam: {}
+                                });
+
+                                break;
+                            default:
+
+                        }
+                    },
+
+                }
+
+
+
+            })
+        }
+    </script>
+
+</html>

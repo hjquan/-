@@ -1,0 +1,320 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            font-family: PingFang SC;
+            font-weight: 500;
+            background: rgba(245, 245, 245, 1);
+        }
+
+        .box-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 30px;
+            align-items: center;
+            position: relative;
+            background-color: #fff
+        }
+
+        .b_b_line:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #F5F5F5;
+        }
+
+        .box-item span {
+            font-size: 14px;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .box-item p {
+            font-size: 14px;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .f_t {
+            font-size: 17px;
+            font-family: PingFang SC;
+            font-weight: bold;
+            color: rgba(85, 85, 85, 1);
+            padding: 10px 10px;
+        }
+
+        .list_item {
+            margin-bottom: 10px;
+        }
+
+        .item_top {
+            height: 30px;
+            background: rgba(5, 143, 253, 0.3);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            align-items: center;
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(102, 102, 102, 1);
+        }
+
+        .item_rt {
+            display: flex;
+        }
+
+        .item_top p {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(102, 102, 102, 1);
+            display: flex;
+        }
+
+        .close_cir {
+            width: 16px;
+            height: 16px;
+            border-radius: 7px;
+            background-color: #f00;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 15px;
+
+        }
+
+        .close_cir i {
+            color: #fff;
+            font-size: 10px;
+        }
+
+        .img_box {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .img_box img {
+            width: 100px;
+            height: 65px;
+            margin-left: 5px;
+            margin-top: 5px;
+        }
+
+        .addBtn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            background-color: #008EFF;
+            border-radius: 22px;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+        }
+
+        .addBtn i {
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 1px 1px 1px #008EFF
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <h2 class="f_t">管理信息记录</h2>
+        <ul class="list_box" v-if="maintainList.length !== 0">
+            <li class="list_item" v-for="(item,index) in maintainList">
+                <div class="item_top">
+                    <span v-text="item.typeText"></span>
+                    <div class="item_rt">
+                        <span v-text="item.createDate">2020-02-12 12:30</span>
+                        <div class="close_cir" @click="deleteMaintain(item)" v-if="item.userId == userId">
+                            <i class="aui-iconfont aui-icon-close"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="img_box">
+                    <img :src=" itemImg" alt="" v-for="(itemImg,index) in item.imgSrc">
+                </div>
+                <input style="padding-left: 1rem;" type="text" v-model="item.memo" disabled>
+            </li>
+        </ul>
+        <div class="noData" v-if="maintainList.length == 0">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+        <div class="addBtn" @click="addBtn()"><i class="aui-iconfont aui-icon-plus"></i></div>
+    </div>
+
+</body>
+
+</html>
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script src="../../../../script/sha1.js"></script>
+<script src="../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+
+<script type="text/javascript">
+    apiready = function () {
+        var app = new Vue({
+            el: '#app',
+            data: {
+                liftInfo: api.pageParam.liftInfo,
+                // liftInfo: { "id": "e355431d2cdc4d2cbb73750750362d3c", "towerName": "100T升降机", "towerNo": "1#", "ccid": "89860439111880030129", "towerType": "1", "towerPhoto": "/demo/a3.jpg", "towerModel": "大汉建机QTZ63(5010)", "towerLicenseNo": "00569LBZC3100", "towerCapHeight": null, "towerTopHeight": 85, "towerArmHeight": 120, "towerFarmLength": 75, "towerBarmLength": 35, "towerMaxMoment": 5, "towerMaxWeight": 100, "towerMaxRanger": null, "towerMaxHeight": null, "towerMaxAnger": null, "towerMinAnger": null, "towerMaxWind": null, "towerMaxDips": null, "longitude": null, "latitude": null, "agentNumber": null, "coordX": null, "coordY": null, "rentalUnit": null, "rentalOperator": null, "rentalPhone": null, "imei": "1#-HMI-P KEY:1 FACE:1 ERR:37", "towerStandards": "最大载荷100T", "towerProducer": "大汉建机工程设备有限公司", "towerLeaveDate": "2020-04-01 00:00:00", "towerPunonNo": "EF202002234589130", "towerStatus": "0", "insureName": "人保财险", "insureNo": "BL30-2319-M8910-1158", "insureStartdate": "2020-05-01 00:00:00", "insureEnddate": "2024-06-01 00:00:00", "operator": "刘华", "operatorPhone": "1359235626", "tpmOperator": "张胜", "tpmOperatorPhone": "16625869632", "mainContractor": "中建三局", "tpmUnit": "广华泰机械设备有限公司", "ownUnit": "民有工程设备公司", "entryTime": "1588262400000", "exitTime": null, "projectId": "4dd6d6f62bc44b05989a73c96171eb22", "urlPrefix": "http://47.92.149.108/SmartSite", "createDate": "2020-05-29 10:53:41", "maintainList": null, "repairList": null, "healthList": null },
+                maintainList: null, //日常管理
+                userId: $api.getStorage('userId'),
+            },
+            created: function () {
+                //获取单个升降机详细信息
+                this.getElevatorInfoById();
+            },
+            methods: {
+                //添加页面
+                addBtn: function () {
+                    api.openFrame({
+                        name: 'dailymanagement_add',
+                        url: './add.html',
+                        pageParam: {
+                            liftInfo: api.pageParam.liftInfo
+                        }
+                    });
+                },
+                getElevatorInfoById: function () {
+                    var that = this;
+                    var prame = {
+                        id: this.liftInfo.id,
+                    };
+                    console.log(JSON.stringify(prame));
+                    $app.post(
+                        true,
+                        getElevatorInfoById,
+                        prame,
+                        function (ret) {
+                            console.log("升降机数据：" + JSON.stringify(ret));
+                            var typeText = null
+                            if (!ret.obj.maintainList) {
+                                ret.obj.maintainList = [];
+                            }
+                            ret.obj.maintainList.map(function (item) {
+                                switch (item.type) {
+                                    case "0":
+                                        typeText = '进场信息';
+                                        break;
+                                    case "1":
+                                        typeText = '安装信息';
+                                        break;
+                                    case "2":
+                                        typeText = '检测信息';
+                                        break;
+                                    case "3":
+                                        typeText = '使用登记';
+                                        break;
+                                    case "4":
+                                        typeText = '加节信息';
+                                        break;
+                                    case "5":
+                                        typeText = '附着信息';
+                                        break;
+                                    case "6":
+                                        typeText = '拆卸信息';
+                                        break;
+                                    case "7":
+                                        typeText = '维保信息';
+                                        break;
+                                    case "8":
+                                        typeText = '日常检查记录';
+                                        break;
+                                    case "9":
+                                        typeText = '交接班记录';
+                                        break;
+                                    case "10":
+                                        typeText = '班前教育记录';
+                                        break;
+                                }
+                                item.typeText = typeText
+                                item.imgSrc = item.photos.split(',');
+                                // console.log("返回日常管理数据：" + JSON.stringify(item.imgSrc.length));
+                                for (var i = 0; i < item.imgSrc.length; i++) {
+                                    item.imgSrc[i] = ret.obj.urlPrefix + item.imgSrc[i]
+                                }
+                                item.createDate = item.createDate.slice(0, 16);
+                            });
+                            that.maintainList = ret.obj.maintainList;
+                            // console.log("返回日常管理数据：" + JSON.stringify(that.maintainList));
+                        }
+                    )
+                },
+                deleteMaintain: function (item) {
+                    // console.log(JSON.stringify(item))
+                    var that = this;
+                    api.confirm({
+                        title: '警告',
+                        msg: '确认删除日常管理',
+                        buttons: ['删除', '取消']
+                    }, function (ret, err) {
+                        if (ret) {
+                            if (ret.buttonIndex == 1) {
+                                var prame = {
+                                    id: item.id,
+                                    userId: item.userId,
+                                };
+                                console.log("删除日常管理：" + JSON.stringify(prame));
+                                $app.post(
+                                    true,
+                                    dailyManagerDelURL,
+                                    prame,
+                                    function (ret) {
+                                        console.log("删除日常管理：" + JSON.stringify(ret));
+                                        that.getElevatorInfoById();
+                                    }
+                                )
+                            }
+                        } else {
+
+                        }
+                    });
+                },
+            },
+        })
+
+    }
+</script>
+
+</body>
+
+</html>

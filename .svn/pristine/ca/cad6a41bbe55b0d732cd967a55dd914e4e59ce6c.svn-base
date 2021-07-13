@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+  <style>
+    html,
+    body {
+      font-family: PingFang SC;
+      font-weight: 500;
+    }
+
+    .top {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #eee;
+      background-color: #fff;
+    }
+
+    .top img {
+      width: 100px;
+      height: 100px;
+      margin-right: 20px;
+    }
+
+    .t_rt {
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .fs_li {
+      font-size: 15px;
+      color: rgba(51, 51, 51, 1);
+    }
+
+    .fs_li2 {
+      font-size: 15px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .fs_li3 {
+      font-size: 12px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .list_item {
+      font-size: 14px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(85, 85, 85, 1);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-start;
+      ;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      background-color: #fff
+    }
+
+    .list_item span {
+      color: rgba(85, 85, 85, 1);
+    }
+
+    .list_item p {
+      margin-left: 20px;
+      font-size: 14px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .ft_box {
+      background-color: #008EFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .raduis {
+      width: 95%;
+      margin: 12px 0 12px 0;
+
+      background: rgba(255, 255, 255, 1);
+      border-radius: 10px;
+    }
+
+    .ft_box h2 {
+      font-size: 14px;
+      font-family: SimHei;
+      font-weight: 400;
+      color: rgba(0, 142, 255, 1);
+      text-align: center;
+      padding: 20px 0 15px 0;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo_item {
+      width: 75px;
+      height: 50px;
+      background: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(0, 142, 255, 1);
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .succ_img {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      max-width: 15px;
+      max-height: 15px;
+    }
+
+    .logo_item p {
+      font-size: 10px;
+      color: rgba(0, 142, 255, 1);
+    }
+
+    .logo_item img {
+      width: 16px;
+      height: 20px;
+    }
+
+    .date {
+      margin: 10px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 45px;
+      background: rgba(0, 142, 255, 0.2);
+      font-size: 12px;
+      padding: 0 12px;
+      ;
+
+
+    }
+
+    .date p {
+      color: #008EFF
+    }
+
+    .date i {
+      width: 17px;
+      height: 17px;
+      color: #008EFF
+    }
+
+    .ft_box textarea {
+      width: 95%;
+      height: 100px;
+      background: rgba(0, 142, 255, 0.2);
+      box-sizing: border-box;
+      margin: 10px auto;
+      font-size: 12px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 142, 255, 1);
+      padding: 10px;
+    }
+
+    .btn {
+      width: 90%;
+      height: 60px;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 5px;
+      margin: 10px auto;
+      font-size: 15px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 142, 255, 1);
+      text-align: center;
+      line-height: 60px;
+
+    }
+
+    ::-webkit-input-placeholder {
+      /* WebKit browsers */
+      color: #008EFF;
+      font-size: 16px;
+    }
+
+    ::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+      color: #008EFF;
+      font-size: 16px;
+    }
+
+    :-ms-input-placeholder {
+      /* Internet Explorer 10+ */
+      color: #008EFF;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="top">
+      <img :src="towerDeviceInfo.photoUrl" alt="">
+      <ul class="t_rt">
+        <li class="fs_li"><span v-text="towerDeviceInfo.liftNo"></span></li>
+        <li class="fs_li2"><span v-text="towerDeviceInfo.towerModel"></span></li>
+        <li class="fs_li3">备案号: <span v-text="towerDeviceInfo.towerPunonNo"></span></li>
+      </ul>
+    </div>
+    <ul class="list">
+      <li class="list_item">
+        <span>维保单位:</span>
+        <p v-text="towerDeviceInfo.tpmUnit">设备公司</p>
+      </li>
+      <li class="list_item">
+        <span>维保单位负责人:</span>
+        <p v-text="towerDeviceInfo.tpmOperator">张三</p>
+      </li>
+      <li class="list_item">
+        <span>维保单位负责人联系电话:</span>
+        <p v-text="towerDeviceInfo.tpmOperatorPhone">17823395190</p>&nbsp;&nbsp;&nbsp;<i
+          @click="call(towerDeviceInfo.tpmOperatorPhone)" class="aui-iconfont aui-icon-phone"
+          style="color:rgba(0,142,255,1)"></i>
+      </li>
+
+    </ul>
+    <div class="ft_box">
+      <div class="raduis">
+        <h2>选择保养项目</h2>
+        <ul class="logo">
+          <li class="logo_item" @click="selectOjb(0)">
+            <img class="succ_img" src="../../../../image/elevator/succ.png" alt="" v-if="objFlage">
+            <img src="../../../../image/elevator/youping.png" alt="">
+            <p>加油润滑</p>
+          </li>
+          <li class="logo_item" @click="selectOjb(1)">
+            <img class="succ_img" src="../../../../image/elevator/succ.png" alt="" v-if="objFlage1">
+            <img src="../../../../image/elevator/elevator_4.png" alt="">
+            <p>螺丝紧固</p>
+          </li>
+          <li class="logo_item" @click="selectOjb(2)">
+            <img class="succ_img" src="../../../../image/elevator/succ.png" alt="" v-if="objFlage2">
+            <img src="../../../../image/elevator/check.png" alt="">
+            <p>检查</p>
+          </li>
+          <li class="logo_item" @click="selectOjb(3)">
+            <img class="succ_img" src="../../../../image/elevator/succ.png" alt="" v-if="objFlage3">
+            <img src="../../../../image/elevator/other.png" alt="">
+            <p>其他</p>
+          </li>
+        </ul>
+        </ul>
+        </ul>
+        <div class="date" @click="clicklogTimeFn()">
+          <p><span class="aui-text-danger">*</span>
+            <span v-text="orderDate" v-if="orderDate"></span>
+            <span v-text="" v-else>预约时间</span>
+          </p>
+          <i class="aui-iconfont aui-icon-calendar"></i>
+        </div>
+        <textarea name="name" placeholder="请填写具体的保养要求，如：上油等(50字以内)" rows="8" cols="80" v-model="content"
+          maxlength="50"></textarea>
+      </div>
+      <div class="btn" @click="submit()">提交订单</div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../../../../script/api.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script type="text/javascript" src="../../../../script/vue.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+  <script>
+    apiready = function () {
+      var app = new Vue({
+        el: '#app',
+        data: {
+          towerDeviceInfo: api.pageParam.towerDeviceInfo,//塔机信息
+          // towerDeviceInfo: { "id": "500de8f937304d2a93cf87695f0c25c6", "towerName": "100T塔机", "liftNo": "1#", "ccid": "89860439111880030129", "towerType": "1", "towerPhoto": "/demo/a3.jpg", "towerModel": "大汉建机QTZ63(5010)", "towerLicenseNo": "00569LBZC3100", "towerCapHeight": null, "towerTopHeight": 85, "towerArmHeight": 120, "towerFarmLength": 75, "towerBarmLength": 35, "towerMaxMoment": 5, "towerMaxWeight": 100, "towerMaxRanger": null, "towerMaxHeight": null, "towerMaxAnger": null, "towerMinAnger": null, "towerMaxWind": null, "towerMaxDips": null, "longitude": null, "latitude": null, "agentNumber": null, "coordX": null, "coordY": null, "rentalUnit": null, "rentalOperator": null, "rentalPhone": null, "imei": "1#-HMI-P KEY:1 FACE:1 ERR:37", "towerStandards": "最大载荷100T", "towerProducer": "大汉建机工程设备有限公司", "towerLeaveDate": "2020-04-01 00:00:00", "towerPunonNo": "EF202002234589130", "towerStatus": "0", "insureName": "人保财险", "insureNo": "BL30-2319-M8910-1158", "insureStartdate": "2020-05-01 00:00:00", "insureEnddate": "2024-06-01 00:00:00", "operator": "刘华", "operatorPhone": "1359235626", "tpmOperator": "张胜", "tpmOperatorPhone": "16625869632", "mainContractor": "中建三局", "tpmUnit": "广华泰机械设备有限公司", "ownUnit": "民有工程设备公司", "entryTime": "1588262400000", "exitTime": null, "projectId": "4dd6d6f62bc44b05989a73c96171eb22", "urlPrefix": "http://47.92.149.108/SmartSite", "createDate": "2020-05-29 10:53:41", "maintainList": null, "repairList": null, "healthList": null },
+          objFlage: false,  //保养项目标识
+          objFlage1: false,  //保养项目标识
+          objFlage2: false,  //保养项目标识
+          objFlage3: false,  //保养项目标识
+          orderDate: null,  //保养时间
+          content: null,    //保养内容
+          type: '',
+          typeArr: [],
+        },
+        methods: {
+          //拨打电话
+          call: function (phone) {
+            console.log(phone);
+            api.call({
+              type: 'tel_prompt',
+              number: phone
+            });
+          },
+          //选择保养项目
+          selectOjb: function (falge) {
+            switch (falge) {
+              case 0:
+                if (this.objFlage) {
+                  this.objFlage = false;
+                } else {
+                  this.objFlage = true;
+                }
+                break;
+              case 1:
+                if (this.objFlage1) {
+                  this.objFlage1 = false;
+                } else {
+                  this.objFlage1 = true;
+                }
+                break;
+              case 2:
+                if (this.objFlage2) {
+                  this.objFlage2 = false;
+                } else {
+                  this.objFlage2 = true;
+                }
+                break;
+              case 3:
+                if (this.objFlage3) {
+                  this.objFlage3 = false;
+                } else {
+                  this.objFlage3 = true;
+                }
+                break;
+            }
+            this.typeArr = [this.objFlage, this.objFlage1, this.objFlage2, this.objFlage3];
+            this.type = '';
+            for (var i = 0; i < this.typeArr.length; i++) {
+              if (this.typeArr[i]) {
+                this.type += i + ','
+              }
+            }
+            this.type = this.type.substr(0, this.type.length - 1);
+          },
+          //提交保养
+          submit: function () {
+            if (this.orderDate == null || this.type == '') {
+              api.toast({
+                msg: '预约时间或保养项目不能为空',
+                duration: 2000,
+                location: 'bottom'
+              });
+              return;
+            }
+            var that = this;
+            var prame = {
+              cranesId: this.towerDeviceInfo.id,
+              type: this.type,
+              orderDate: this.orderDate + " 00:00:01",
+              // orderDate: "2020-08-24 14:12:00",
+              content: this.content,
+              state: "0",
+              flag: "0"
+            };
+            console.log("新增保养接口参数：" + JSON.stringify(prame));
+            $app.post(
+              true,
+              healthAddURL,
+              prame,
+              function (ret) {
+                console.log(JSON.stringify(ret));
+                var repairOrderInfo = {
+                  id: ret.obj
+                };
+                api.openFrame({
+                  name: 'order',
+                  url: './order.html',
+                  pageParam: {
+                    repairOrderInfo: repairOrderInfo
+                  }
+                });
+              }
+            )
+          },
+          //获取日志日期
+          clicklogTimeFn: function () {
+            var timeDate = new Date();
+            var that = this;
+            timeSelector.fnOpenSelector({
+              title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+              sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+              isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+              itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+              itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+              date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+            }, function (ret) {
+              if (!ret) { return }
+              var date = new Date(ret.date)
+              var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+              var currenDateTime = new Date();//当前时间毫秒数
+              var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+              if (selectDate < curenDate) {
+                api.toast({
+                  msg: '不能选择小于当前日期',
+                  duration: 2000,
+                  location: 'bottom'
+                });
+                return false;
+              }
+              var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+              var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+              that.orderDate = time;
+            })
+          },
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

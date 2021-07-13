@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .bg_f {
+            background: #fff
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+        .aui-bar-btn .aui-active {
+            color: #fff
+        }
+        .pb_10{padding-bottom: 10px; }
+        .footer{
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 45px;
+            line-height: 45px;
+            background-color: #fff;
+            box-shadow: 0 1px 1px #eee;
+        }
+        .footer .item{
+            font-size: 14px;
+            color: #323233;
+            line-height: 14px;
+        }
+        .txt_b_l{color: #7E7E80;font-size: 14px;}
+    </style>
+</head>
+
+<body>
+    <div class="bg_f pb_10 header" id="app">
+        <header class="aui-bar aui-bar-nav bg_f ">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title color_3">任务</div>
+            <a class="aui-pull-right color_3" tapmode @click="openaddtask()">
+                    新增
+                </a>
+        </header>
+        <div class="aui-bar aui-bar-btn " style="width:80%">
+            <div class="aui-bar-btn-item" :class="{'aui-active':index == curIndex}" v-for="(item,index) in btnBox" v-text="item" @click="toggle_item(item,index)"></div>
+
+        </div>
+        <div class="footer">
+            <div class="item" tapmode @click="openActionTypeFn()" v-cloak>{{degreeName?degreeName:'类型不限'}} &nbsp;<i class="aui-iconfont aui-icon-top"></i></div>
+            <div class="item" tapmode @click="openActionStateFn()" v-cloak >{{stateName?stateName:'状态不限' }} &nbsp; <i class="aui-iconfont aui-icon-top"></i></div>
+
+        </div>
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var offset = $api.offset($api.dom('.header'));
+            var footer_h =  $api.offset($api.dom('.footer'));
+            api.openFrame({
+                name: 'task_index_frame',
+                url: './index_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: api.winHeight - footer_h.h - offset.h
+
+                },
+                pageParam: {},
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    btnBox:['派给我的','我安排的'],
+                    // btnType:1,
+                    curIndex:0,
+                    degree:'',
+                    degreeName:'',
+                    stateName:''
+
+                },
+                methods:{
+                    //筛选类型
+                    openActionTypeFn:function(){
+                        var data = ['一般','紧急','特急','类型不限'];
+                        api.actionSheet({
+                            // title: '',
+                            cancelTitle: '取消',
+                            buttons: data
+                        }, function(ret, err){
+                            if( ret ){
+                                vm.degreeName = data[ret.buttonIndex-1];
+                                switch (vm.degreeName) {
+                                    case '一般':
+                                        vm.degree = '0';
+                                        break;
+                                    case '紧急':
+                                        vm.degree = '1';
+                                        break;
+                                    case '特急':
+                                        vm.degree = '2';
+                                        break;
+                                    case '类型不限':
+                                        vm.degree = ''
+                                        break;
+                                    default:
+
+                                }
+                                api.sendEvent({
+                                    name: 'task_degree_event',
+                                    extra: {
+                                        'degreeName':vm.degree
+                                    }
+                                });
+
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    //紧急状态
+                    openActionStateFn:function(){
+                        var data = ['待反馈','待验收','已完成','状态不限'];
+                        api.actionSheet({
+                            // title: '',
+                            cancelTitle: '取消',
+                            buttons: data
+                        }, function(ret, err){
+                            if( ret ){
+                                vm.stateName = data[ret.buttonIndex-1] == '状态不限' ?   ''  :  data[ret.buttonIndex-1];
+                                console.log(vm.stateName);
+                                api.sendEvent({
+                                    name: 'task_state_event',
+                                    extra: {
+                                        stateName:vm.stateName
+                                    }
+                                });
+
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    toggle_item:function(item,i){
+                        this.curIndex = i;
+                        switch (item) {
+                            case '派给我的':
+                                api.sendEvent({
+                                    name: 'task_sendtome_event',
+                                    extra: {
+                                    }
+                                });
+                                break;
+                            case '我安排的':
+                                api.sendEvent({
+                                    name: 'task_Iassign_event',
+                                    extra: {
+                                    }
+                                });
+
+                                break;
+                            default:
+
+                        }
+                    },
+                    openaddtask:function(){
+                        api.openWin({
+                            name: 'task_add',
+                            url: './task_add.html',
+                            pageParam: {
+                                // name: 'test'
+                            }
+                        });
+                    }
+                }
+            })
+        }
+
+
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

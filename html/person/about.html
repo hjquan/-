@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/about.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" onclick="openWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">关于筑迹云</div>
+
+        </header>
+
+        <div class="main_box clearfix" id="app">
+
+            <img class="logo" src="../../image/logo.png" alt="">
+            <h1 class="logoTxt">筑迹云</h1>
+            <div class="edition" v-text="version"></div>
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode="hover" onclick="openAgreement(1)">
+                    <p>服务协议</p>
+                    <p><i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode="hover" onclick="openAgreement(2)">
+                    <p>隐私协议</p>
+                    <p><i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode="hover" @click="copy()">
+                    <p>微信公众号</p>
+                    <p v-text="aboutInfo.zjPublic"></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode="hover" @click="callPhone()">
+                    <p>联系电话</p>
+                    <p v-text="aboutInfo.tel"></p>
+                </li>
+
+            </ul>
+            <p class="bottom_title">©大匠科技</p>
+        </div>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    aboutInfo: '',
+                    tell: '',
+                    version:''
+                },
+                methods: {
+                    callPhone: function() {
+                        api.call({
+                            type: 'tel_prompt',
+                            number: this.tell
+                        });
+                    },
+                    copy:function(){
+                        var clipBoard = api.require('clipBoard');
+                        clipBoard.set({
+                            value: this.aboutInfo.zjPublic
+                        }, function(ret, err) {
+                            if (ret) {
+                                clipBoard.get(function(ret, err) {
+                                    if (ret) {
+                                        api.toast({
+                                            msg: '复制成功',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    init: function() {
+                        api.showProgress({
+                            style: 'default',
+                            animationType: 'fade',
+                            title: '努力加载中...',
+                            text: '先喝杯茶...',
+                            modal: true
+                        });
+                        ajaxPost(true,'数据拉取中...',aboutZJURL,'',function(ret){
+                            vm.aboutInfo = ret.obj;
+                            vm.tell = ret.obj.tel
+                        });
+                    }
+
+                }
+            })
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar( $api.dom('header') );
+                vm.version = api.appVersion;
+                vm.init();
+            }
+            function openAgreement(type) {
+                var url = './'+ (type == 1?'agreement':'privacyprotocol') +'.html';
+                api.openWin({
+                    name: 'agreement'+type,
+                    url: url,
+                    pageParam: {
+                        isheaderShow:true
+                    }
+                });
+            }
+        </script>
+</body>
+
+</html>

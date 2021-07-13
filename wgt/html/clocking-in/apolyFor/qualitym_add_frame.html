@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../../css/voice.css">
+    <style>
+        html,
+        body {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .mian_item .inputPosition {
+            padding-right: 10px
+        }
+
+        .last-txt {
+            font-size: 11px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(185, 185, 185, 1);
+            /*height:30px;
+            line-height: 30px;*/
+            padding: 8px 10px;
+        }
+
+        .btnActive {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box ">
+            <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                    <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                        tapmode="hover"></i>
+                    <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div @click="uploadHeadPic()" tapmode>+</div>
+            </div>
+            <ul>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/lunarcalendar.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../../script/commonJS/voiceinput.js"></script>
+    <script>
+        // var vm;
+        apiready = function () {
+            //自定义键盘按钮
+            // var keyboardView = api.require('keyboardView');
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    "isCloseBtn": true,//是否显示删除图片icon
+                    "imgSrc": [],
+                    "personliablebox": '',//选中的责任人集合用于匹配是否选中
+                    "personlaborbox": '',//选中的劳务队集合用于匹配是否选中
+                    "problemlocationbox": '',//选中的劳务队集合用于匹配是否选中
+                    "serverImg": '',//服务器返回图片地址
+
+
+                    "areaId": "",//区域id
+                    "areaName": "",//区域名称
+                    "questionType": "",//问题类型(更改:只需要传第一级问题类型id)
+                    "personliableId": "",//责任人ID
+                    "personliableName": "",//责任人名称
+
+                    "laborTeamId": "",//劳务队ID
+                    "laborTeamName": "",//劳务队名称
+
+
+                    "deadline": '',//整改到期日期
+                    "createUserId": '',//创建人ID
+                    "createUserName": '',//创建人名称
+                    "projectId": '',//项目ID
+                    "lableUrl": "",//标注图片地址(更改：该字段已清除)
+
+                    "srcImgUrl": "",//原图片地址（多张逗号分隔）
+                    "compressImgUrl": "",//压缩图片地址（多张逗号分隔）
+                    "voiceUrl": "",//语音文件地址
+                    "content": '',//问题描述
+                    "questionDetails": "",//问题类型名称(更改：只需要传第一级)
+                    "voiceLong": "",//语音时长
+                    "zgMeasures": '',//整改措施
+                    "zgVoice": "",//整改语音文件路径
+                    "zgVoiceLong": "",//整改措施语音时长
+                    "isFlow": 1//是否进入流程(更改的)（1进入流程 0不进入）
+                },
+                watch: {
+
+                },
+                computed: {
+
+                    // 控制提交按钮状态
+                    isSubmitActive: function () {
+                        if (!this.areaName || !this.questionDetails || !this.personliableName || !this.laborTeamName || !this.deadline) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+
+                },
+                mounted: function () {
+
+
+                },
+                created: function () {
+                    this.init();
+                    var d = new Date();
+                    var m = (d.getMonth() + 1) + '', day = d.getDate() + '';
+                    var time = d.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                    this.deadline = time;
+                    this.createUserId = $api.getStorage('userId');//创建人ID
+                    this.createUserName = $api.getStorage('enterLoginInfo').name;//创建人名称
+                    this.projectId = $api.getStorage('enterpriseId');//项目ID
+                },
+                methods: {
+                    // 初始化数据
+                    init: function () {
+                        api.getPrefs({
+                            key: 'savequality_add_draft'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.value && api.pageParam.addDraft_comfig) {
+                                    var data = $api.strToJson(ret.value);
+                                    vm.imgSrc = data.imgSrc;
+                                    vm.areaId = data.areaId;
+                                    vm.areaName = data.areaName;
+                                    vm.questionType = data.questionType;
+                                    vm.personliableId = data.personliableId;
+                                    vm.personliableName = data.personliableName;
+                                    vm.laborTeamId = data.laborTeamId;
+                                    vm.laborTeamName = data.laborTeamName;
+                                    // vm.deadline = data.deadline;
+                                    vm.content = data.content;
+                                    vm.questionDetails = data.questionDetails;
+                                    vm.zgMeasures = data.zgMeasures;
+                                    vm.isFlow = data.isFlow;
+                                } else {
+                                    vm.imgSrc = [];
+                                    vm.areaId = '';
+                                    vm.areaName = ''
+                                    vm.questionType = '';
+                                    vm.personliableId = '';
+                                    vm.personliableName = '';
+                                    vm.laborTeamId = '';
+                                    vm.laborTeamName = '';
+                                    // vm.deadline = '';
+                                    vm.content = '';
+                                    vm.questionDetails = '';
+                                    vm.zgMeasures = '';
+                                    // vm.isFlow = data.isFlow;
+                                }
+
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function (fncFN) {
+                        if (vm.serverImg) {
+                            var src_join = this.serverImg.map(function (item) {
+                                return item.srcPath
+                            })
+                            var compress_join = this.serverImg.map(function (item) {
+                                return item.compressPath
+                            })
+                            vm.srcImgUrl = src_join.join(',');
+                            vm.compressImgUrl = compress_join.join(',');
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function (fncFN) {
+                        var compressImg = [];
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: vm.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            var timer = setInterval(function () {
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                        enterpriseId: $api.getStorage('enterpriseId')
+                                    }, {
+                                        imgFile: compressImg
+                                    },
+                                        function (ret) {
+                                            vm.isCloseBtn = false;
+                                            var data = ret.obj;
+                                            vm.serverImg = data;
+                                            vm.imgFilter(fncFN)
+
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - vm.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                }
+            })
+            //
+
+        };
+
+    </script>
+</body>
+
+</html>

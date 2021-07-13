@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            background-color: transparent;
+            width: 100%;
+            /*min-height: 100vh;*/
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+        }
+
+        .content {
+            /*min-height: 100vh;*/
+            background-color: transparent;
+        }
+
+        .rt {
+            width: 250px;
+            min-height: 100vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(245, 245, 245, 1);
+            padding: 10px;
+            background: #fff;
+            position: relative;
+            z-index: 50;
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px 0;
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px
+        }
+
+        .btnBox {
+            width: 250px;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+        .status{
+          display: flex;
+          justify-content: space-between;
+          align-content: center;
+          flex-wrap: wrap;
+        }
+        .status .time:nth-of-type(2n){
+        }
+        .w_100{width: 100px;}
+        .box{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background-color: rgba(245,245,245,.5);
+
+        }
+        .color_txt{color:#058FFD}
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+            <div class="box" @click.self="close">
+            </div>
+            <div class="rt">
+                    <div>
+                        <h2>部位</h2>
+                        <div>
+                            <div class="time startTime aui-ellipsis-1 color_txt" tapmode @click="openlocation()" v-text="area_name ? area_name : '请选择'"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2>检查项</h2>
+                        <div>
+                            <div class="time startTime aui-ellipsis-1 color_txt" tapmode @click="opencheckPage()" v-text="check_name ? check_name : '请选择'"></div>
+                        </div>
+                    </div>
+                  <div style="width:229px">
+                      <h2>状态</h2>
+                      <div class="status">
+                          <div class="time w_100" v-text="item.name" v-for="(item,i) in state_txt" :class="{'active':i == curIndex}" @click="stateFn(item,i)"></div>
+                      </div>
+                  </div>
+
+                <div>
+                    <h2>日期</h2>
+                    <div>
+                        <div class="time startTime" tapmode  @click="beginTimeFn()" tapmode v-text="startTime ? startTime :'开始时间'"></div>
+                        <div class="time entime" tapmode @click="endTimeFn()" v-text="endTime ? endTime :'结束时间'"></div>
+                    </div>
+                </div>
+                <div class="btnBox">
+                    <div class="btn " tapmode @click="rotate()">重置</div>
+                    <div class="btn active " tapmode @click="submit()">确定</div>
+
+                </div>
+            </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="../../../script/api.js"></script>
+<script type="text/javascript" src="../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<script>
+apiready =function(){
+    $api.fixStatusBar( $api.byId('app'));
+    //监听区域自定义事件
+    api.addEventListener({
+        name: 'measuredlocation_location_event'
+    }, function(ret, err){
+        if( ret ){
+            var data = $api.strToJson(ret.value.measuredlocation_location);
+            vm.defalutLocation = $api.strToJson(ret.value.measuredlocation_location);
+            var areaId = [],areaName=[];//区域id  区域名称
+            var filterData = data.filter(function(items) {
+                var flag = items.subArea.some(function(item) {
+                    return item.checked
+                })
+                console.log(flag);
+                if (flag) {
+                    return items;
+                }
+            })
+            filterData.forEach(function(items){
+                areaId.push(items.area_id);
+                areaName.push(items.area_name);
+                items.subArea.forEach(function(item){
+                    if(item.checked){
+                        areaId.push(item.area_id);
+                        areaName.push(item.area_name);
+                    }
+                })
+            })
+            vm.area_id = areaId.join(',');
+            vm.area_name = areaName.join(',');
+            console.log( vm.area_id  )
+            console.log( vm.area_name  );
+
+        }else{
+        }
+    })
+
+
+    //监听检查项事件
+    api.addEventListener({
+        name: 'actual_chekck_event'
+    }, function(ret, err){
+        if( ret ){
+             vm.check = ret.value.actual_chekck;
+             vm.check_name = ret.value.actual_chekck.name
+        }else{
+             alert( JSON.stringify( err ) );
+        }
+    });
+    function fillDate(date) {
+        return ('0' + date).slice(-2)
+    }
+
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            'state_txt':[
+                {name:'合格',type:'0'},
+                {name:'不合格',type:'1'},
+                {name:'全部',type:''}
+            ],//状态文本
+            "curIndex":0,//当前状态选中下标
+            "defalutLocation":'',//区域选中数据
+            "check_name":'',//检查项名称
+
+
+            'area_id':'',//区域id
+            'area_name':'',//区域名称
+            'check':'',//检查项
+            'state':'0',//合格
+            'startTime':'',//开始日期
+            'endTime':'',//结束日期
+
+        },
+        created: function() {
+             this.selectDate  = new Date().getFullYear() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getDate();//默认时间
+        },
+        methods: {
+            //重置按钮
+            rotate: function() {
+                this.area_id = '';//区域id
+                this.area_name = '';//区域名称
+
+                this.check_name = '';//检查项名称
+                this.check ='';//检查项
+
+
+                this.curIndex = 0;//状态下标
+                this.state='0';//合格
+
+                this.startTime='';//开始日期
+                this.endTime='';//结束日期
+            },
+            //状态选择
+            stateFn:function(data,i){
+                this.curIndex = i;
+                this.state = data.type;
+            },
+            submit: function() {
+                var infoBox = {
+                    area_id:this.area_id,//区域id
+                    area_name:this.area_name,//区域名称
+                    check:this.check,//检查项
+                    state:this.state,//合格
+                    startTime:this.startTime,//开始日期
+                    endTime:this.endTime,
+                }
+                api.sendEvent({
+                    name: 'actual_scren_info_event',
+                    extra: {
+                        'screen_info':infoBox
+                    }
+                });
+                setTimeout(function(){
+                    api.closeFrame();
+                },500)
+
+
+            },
+            //打开检查项
+            opencheckPage: function() {
+                var _this = this;
+                api.openWin({
+                    name: 'actualcheck',
+                    url: './actualcheck.html',
+                    pageParam: {
+                        'actualcheck':_this.check
+                    }
+                });
+
+
+            },
+            beginTimeFn: function() {
+                timeSelector.fnOpenSelector({
+                    title: '时间选择',
+                    sureText: '完成',
+                    isShowUnit: true,
+                    itemShowCount: 5,
+                    itemHeight: 55,
+                    date: vm.selectDate
+                }, function(ret) {
+                    //ret.date
+                    if (ret) {
+                        var d = new Date(ret.date);
+                        var selectTime = d.getTime(); //选择毫秒数
+                        var seconds = d.getSeconds() + '';
+                        seconds.length == 2 ? seconds : (seconds = '0'+seconds);
+                        var time = d.getFullYear() + '-' + fillDate(d.getMonth() + 1) + '-' +fillDate(d.getDate());
+                        vm.startTime = time;
+                    }
+
+                })
+
+            },
+            endTimeFn: function() {
+                var _this = this;
+                if(!this.startTime){
+                    api.toast({
+                        msg: '请选择开始日期',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                    return false;
+
+                }
+                timeSelector.fnOpenSelector({
+                    title: '时间选择',
+                    sureText: '完成',
+                    isShowUnit: true,
+                    itemShowCount: 5,
+                    itemHeight: 55,
+                    date: vm.selectDate
+                }, function(ret) {
+                    //ret.date
+                    if (ret) {
+                        var d = new Date(ret.date);
+                        var selectTime = d.getTime(); //选择毫秒数
+                        var currenTime = new Date(_this.startTime).getTime(); //当前毫秒数
+
+                        if (currenTime > selectTime) {
+                            api.toast({
+                                msg: '选择不能小于开始日期',
+                                duration: 3000,
+                                location: 'bottom'
+                            });
+                            // vm.endTime = null
+                        } else {
+                            var split_line = api.systemType === 'ios' ? '/' : '-';
+                            var seconds = d.getSeconds() + '';
+                            seconds.length == 2 ? seconds : (seconds = '0'+seconds)
+                            var time = d.getFullYear() + split_line + fillDate(d.getMonth() + 1) + split_line +fillDate(d.getDate());
+                            _this.endTime = time;
+                        }
+
+                    }
+
+                })
+            },
+            openlocation:function(){
+                var _this = this;
+                api.openWin({
+                    name: 'actual_screen',
+                    url: './measuredlocation.html',
+                    pageParam: {
+                        'location':_this.defalutLocation
+                    }
+                });
+
+            },
+            close:function(){
+                api.closeFrame()
+            }
+
+        }
+    })
+}
+
+</script>
+
+</html>

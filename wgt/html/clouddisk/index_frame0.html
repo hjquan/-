@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+        .bottom li {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            padding: 10px;
+        }
+
+        .bottom img {
+            width: 35px;
+            height: 40px;
+        }
+
+        .noImage {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .aui-list .aui-list-item-media{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .size_rt{
+            width: 70px;
+            text-align: right;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="main_box">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content"  v-if="info.length">
+                    <ul class="aui-list aui-media-list">
+
+                        <li class="aui-list-item aui-list-item-middle border_size  "  v-for="(item,index) in info" :key="index" >
+
+                            <div class="aui-media-list-item-inner" style="width:95%">
+                                <div class="aui-list-item-media" tapmode  @click="openitem(item,index)" >
+                                    <img :src="typeFile(item.name)" style="width:40px;height:35px;" class=" aui-list-img-sm">
+                                </div>
+                                <div class="aui-list-item-inner aui-list-item-arrow"  tapmode @click="openitem(item,index)">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.name">AUI</div>
+                                        <!-- <div class="aui-list-item-right aui-ellipsis-1 size_rt" v-if="item.isDir != true" v-text="item.size" >08:00</div> -->
+                                    </div>
+                                    <div class="aui-list-item-text aui-ellipsis-1" >
+                                        <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.lastModified">AUI</div>
+                                        <div class="aui-list-item-right aui-ellipsis-1 size_rt" v-if="item.isDir != true" v-text="item.size" >08:00</div>
+                                    </div>
+                                </div>
+                                <label tapmode><input class="aui-radio" ref="check_parent" v-model="item.checked"      type="checkbox" name="checkbox"  ></label>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
+                <div class="noImage" v-else>
+                    <img src="../../../image/data/data_no.png" alt="">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+
+    <script>
+        var office,aliOSS,NVTabBar;
+        apiready = function() {
+                var UIAlbumBrowser = api.require('UIAlbumBrowser');
+                var photoBrowser = api.require('photoBrowser');
+                var dialogBox = api.require('dialogBox');
+                var fs = api.require('fs');
+                NVTabBar = api.require('NVTabBar');
+                office = api.require('officePreview');
+                aliOSS = api.require("aliOSS");
+                $api.fixStatusBar($api.dom('.fixd'));
+                // 返回上一页
+                api.addEventListener({
+                    name: 'clouddisk_return_event'
+                }, function(ret, err){
+                    if( ret ){
+
+                        var url = ret.value.currURL.split('/');
+                        url.pop();
+                        url.pop();
+                        var url = url.join('/') + '/';
+                        api.sendEvent({
+                            name: 'clouddisk_backname_event',
+                            extra: {
+                                backname:url
+                            }
+                        });
+
+                        vm.getAllList(url)
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+                //监听重命名事件
+                api.addEventListener({
+                    name: 'clouddisk_rename_event'
+                }, function(ret, err){
+                    if( ret ){
+                        var data = ret.value.rename_inputValue;
+                        vm.createBuketName(data)
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //监听创建文件夹
+
+                api.addEventListener({
+                    name: 'clouddisk_creatFolder_event'
+                }, function(ret, err){
+                    if( ret ){
+                        var data = ret.value.creatFolder_inputValue;
+                        console.log(data);
+                        // console.log($api.jsonToStr(vm.info));
+                        vm.createAliFolder('e76a19cf18f2498c99f66017c05f07d6/local_upload/1/',data)
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //下载事件监听
+            api.addEventListener({
+                name: 'clouddisk_download_event'
+            }, function(ret, err){
+                if( ret ){
+                    var params = {
+
+                    }
+                    vm.dowmloadFile()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            //文件删除事件监听
+            api.addEventListener({
+                name: 'clouddisk_del_event'
+            }, function(ret, err){
+                if( ret ){
+                    var params ={
+                        title:'提示',
+                        content:'是否删除文件',
+                        callback:function(ret){
+                            vm.delFile()
+                            setTimeout(function(){
+                                dialogBox.close({
+                                    dialogName: 'alert'
+                                });
+                            },500)
+                        }
+                    }
+                    vm.dialogBox_alert(params)
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            //监听图片上传事件
+            api.addEventListener({
+                name: 'clouddisk_upload_img_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.unloadImg()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+
+
+
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        // marker:'',//起始偏移位置
+                        backName:'',//返回文本显示
+                        authInfo:'',//授权信息
+                        inputValue:'',//数据过滤
+                        info: '', //列表数据
+                        topimg: [
+                            '../../../image/data/xslx.png',//0
+                            '../../../image/data/img.png',//1
+                            '../../../image/data/pdf.png',//2
+                            '../../../image/data/ppt.png',//3
+                            '../../../image/data/word.png',//4
+                            '../../../image/data/txt.png',//5
+                            '../../../image/data/video.png',//6
+                            '../../../image/data/zip.png',//7
+                            '../../../image/data/wz.png',//8
+                            '../../../image/data/Group.png',//9
+                        ]
+                    },
+                    created: function() {
+                        this.getOssAuthInfo();
+
+                    },
+                    mounted:function(){
+
+                    },
+                    watch:{
+                        info:{
+                            deep: true,
+                            handler: function (newVal,oldVal){
+                                var isFlg = this.info.some(function(item){
+                                    return item.checked == true;
+                                })
+                                var checkedList = this.info.filter(function(item){
+                                    if(item.checked){
+                                        return item
+                                    }
+                                })
+                                api.sendEvent({
+                                    name: 'cloud_index_check_event',
+                                    extra: {
+                                        clouddisk_check_flag:isFlg,
+                                        clouddisk_checkedlist:checkedList
+                                    }
+                                });
+
+                            }
+                        }
+
+                    },
+                    computed:{
+
+
+                    },
+                    methods: {
+                        //判断本地是否存在  url(文件路径)
+                        isExist:function(url,suc_callback,err_callback){
+                            fs.exist({
+                                path: url
+                            }, function(ret, err) {
+                                if (ret.exist) {
+                                    console.log($api.jsonToStr(ret));
+                                    suc_callback()
+                                } else {
+                                    console.log($api.jsonToStr(err));
+                                    err_callback()
+                                }
+                            });
+                        },
+                        //创建本地文件方法
+                        createFolder:function(folder_name,callback){
+                            var url = 'fs://' + folder_name
+                            fs.createDir({
+                                path: url,
+                            }, function(ret, err) {
+                                if (ret.status) {
+                                    callback()
+                                } else {
+                                    console.log(JSON.stringify(err));
+                                }
+                            });
+
+                        },
+                        //图片上传
+                        unloadImg:function(){
+                            var _this = this;
+                            api.getPicture(
+                              {
+                                sourceType: "album",
+                                mediaValue: "pic",
+                              },
+                              function (ret, err) {
+                                if (ret && ret.data != "") {
+                                    var file_name = ret.data.split('/');
+                                    var name = file_name[file_name.length-1];
+                                    var parmas = {
+                                        file: ret.data,
+                                        name: name,
+                                        // bucketName: 'e76a19cf18f2498c99f66017c05f07d6/local_upload/1',
+                                        // verify: 'CRC'
+                                    }
+                                    console.log($api.jsonToStr(parmas));
+                                    aliOSS.upload(
+                                        parmas,
+                                        function (ret2, err2) {
+
+                                          if (ret2.oper == "progress") {
+                                            //  console.log(JSON.stringify(ret2));
+                                          } else if (ret2.oper == "complete") {
+                                             console.log(JSON.stringify(ret2));;
+                                          }
+                                          if (err2) {
+                                            console.log(err2.msg);
+                                          }
+                                        }
+                                      );
+                                }
+                              }
+                            );
+                            // var _this = this;
+                            // var params = {
+                            //     size:3,
+                            //     callback:function(ret){
+                            //         var urlBox = ret.list.map(function(item){
+                            //             return item.path
+                            //         });
+                            //
+                            //         for (var i = 0; i < urlBox.length; i++) {
+                            //             var url = urlBox[i],
+                            //             filter_name = urlBox[i].split('/'),
+                            //             name = filter_name[filter_name.length-1]
+                            //             console.log(filter_name);
+                            //             console.log(name);
+                            //             var params={
+                            //                 file:url,
+                            //                 name:name,
+                            //                 callback:function(ret){
+                            //                     console.log($api.jsonToStr(ret));
+                            //                 }
+                            //             }
+                            //             (function(i){
+                            //                 _this.resumableUpload(params)
+                            //             })(i)
+                            //         }
+                            //     }
+                            // }
+                            // this.uploadHeadPic(params)
+                        },
+
+                        //图片选择
+                        /*
+                        params{
+                            size：最多多少张，
+                            callback：回调函数
+                        }
+                        */
+                        uploadHeadPic: function(params) {
+                            confirmPer('camera,photos', function() {})
+                            UIAlbumBrowser.imagePicker({
+                                max: params.size,
+                                styles: {
+                                bg: '#000',
+                                cameraImg:'widget://res/cameraImg.png',
+                                mark: {
+                                    icon: '',
+                                    position: 'bottom_left',
+                                    size: 20
+                                },
+                                nav: {
+                                    bg: '#eee',
+                                    cancelColor: '#fff',
+                                    cancelSize: 16,
+                                    nextStepColor: '#fff',
+                                    nextStepSize: 16
+                                }
+                                },
+                                animation:true,
+                            }, function(ret) {
+                               if (ret.eventType == 'nextStep') {
+                                   console.log('下一步');
+                                   UIAlbumBrowser.closePicker();
+                                   params.callback(ret)
+
+                               }
+                               console.log($api.jsonToStr(ret));
+                            });
+                        },
+                        //断点上传文件到alioss
+                        /*
+                            params={
+                                file:上传的文件路径
+                                name:上传 OSS 后保存的文件名
+                                callback:
+                            }
+                        */
+                        resumableUpload:function(parmas){
+                            alioss.upload(
+                              {
+                                file: parmas.file, // getPicture返回的图片路径
+                                name:parmas.name, // 上传至OSS的保存路径
+                              },
+                              function (ret2, err2) {
+                                //                alert("ret:"+JSON.stringify(ret2));
+                                if (ret2.oper == "progress") {
+                                  $api.css(progress, "width: " + ret2.progress);
+                                } else if (ret2.oper == "complete") {
+                                  alert(JSON.stringify(ret2));
+                                }
+                                if (err2) {
+                                  alert(err2.msg);
+                                }
+                              }
+                            );
+
+                        },
+
+                        //下载文件
+                        getObject:function(params){
+                            // api.removePrefs({
+                            //     key: 'clouddisk_dowmList_pref'
+                            // });
+
+                            var _this = this;
+                            api.setPrefs({
+                                key: 'clouddisk_undowmList_pref',
+                                value:params.objectKey
+                            });
+
+                            params.objectKey.forEach(function(item,i){
+                                filterUrl = item.split('/');
+                                saveUrl = 'fs://folder/' + filterUrl[filterUrl.length-1];
+                                aliOSS.getObject(
+                                  {
+                                    objectKey: item,
+                                    saveAs: saveUrl,
+                                    // process: "image/resize,m_fixed,w_100,h_100"
+                                  },
+                                  function(ret, err) {
+
+                                    if (ret.oper == "progress") {
+                                        if(i == 0){
+                                            api.sendEvent({
+                                                name: 'clouddisk_starsetbage_event',
+                                                extra: {
+                                                    'bagenumber':params.objectKey.length
+                                                }
+                                            });
+                                            _this.info.forEach(function(item){
+                                                item.checked = false;
+                                            })
+                                        }
+
+                                    } else if (ret.oper == "complete") {
+                                        // console.log($api.jsonToStr(ret));
+                                        //正在下载
+                                        var undowmlistPref = api.getPrefs({
+                                            sync: true,
+                                            key: 'clouddisk_undowmList_pref'
+                                        });
+                                        var copydowmlod = $api.strToJson(undowmlistPref);
+                                        var undowmlistPref_index = copydowmlod.indexOf(item);
+                                        // console.log(undowmlistPref_index);
+
+                                        if(undowmlistPref_index != -1){
+                                            copydowmlod.splice(undowmlistPref_index,1);
+                                            // console.log(copydowmlod);
+                                            api.setPrefs({
+                                                key: 'clouddisk_undowmList_pref',
+                                                value:copydowmlod
+                                            });
+                                        }
+
+
+                                        //监听下载个数
+                                        api.sendEvent({
+                                            name: 'clouddisk_endsetbage_event',
+                                            extra: {
+                                                bagenumber: --params.objectKey.length
+                                            }
+                                        });
+                                        //已下载
+                                        var dowmlistPref = api.getPrefs({
+                                            sync: true,
+                                            key: 'clouddisk_dowmList_pref'
+                                        });
+
+                                        if(dowmlistPref){
+                                            var prefData = $api.strToJson(dowmlistPref);
+                                            prefData.dowmList.push(ret);
+                                           api.setPrefs({
+                                               key: 'clouddisk_dowmList_pref',
+                                               value:prefData
+                                           });
+
+                                        }else{
+                                            console.log('不存在');
+                                            var prefData = {
+                                                dowmList:[ret]
+                                            }
+                                            api.setPrefs({
+                                                key: 'clouddisk_dowmList_pref',
+                                                value:prefData
+                                            });
+
+
+                                        }
+                                        api.toast({
+                                            msg: '下载成功',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+
+                                    }
+                                    if (err) {
+                                      api.toast({
+                                          msg: err.msg,
+                                          duration: 2000,
+                                          location: 'bottom'
+                                      });
+
+                                    }
+                                  }
+                                );
+                            })
+                        },
+                        //文件下载
+                        /*
+                            params.objectKey  文件地址数组
+                            params.saveUrl,  路径保存
+                        */
+                        dowmloadFile:function(){
+                            var checkedBox = [];//接收选中文件
+                            this.info.forEach(function(item){
+                                if(item.checked){
+                                    checkedBox.push(item.key)
+                                }
+                            })
+                            var _this = this;
+                            var params = {
+                                objectKey:checkedBox,
+                            }
+                            this.isExist(
+                                'fs://folder',
+                                function(){
+                                    _this.getObject(params)
+                                },
+                                function(ret){
+                                    _this.createFolder(
+                                        'folder',
+                                        function(ret){
+                                            _this.getObject(params)
+                                        }
+                                    )
+                                }
+
+                            )
+
+
+                        },
+                        //文件删除
+                        delFile:function(){
+                            var checkedBox = [];//接收选中文件
+                            this.info.forEach(function(item){
+                                if(item.checked){
+                                    checkedBox.push(item.key)
+                                }
+                            })
+                            var _this = this;
+                            var params = {
+                                objectKey:checkedBox,
+                            }
+                            for(var i = 0;i<params.objectKey.length;i++){
+                                var currUrl = params.objectKey[i];
+                                console.log(currUrl);
+                                (function(i){
+                                    aliOSS.delete(
+                                      {
+                                        objectKey: currUrl
+                                      },
+                                      function(ret, err) {
+
+                                          if(ret){
+                                              api.toast({
+                                                  msg: '删除成功',
+                                                  duration: 2000,
+                                                  location: 'bottom'
+                                              });
+                                            _this.getAllList(_this.prefix_url)
+                                          }else{
+                                              api.toast({
+                                                  msg: '删除失败',
+                                                  duration: 2000,
+                                                  location: 'bottom'
+                                              });
+                                          }
+
+
+                                      }
+                                    );
+
+                                })(i)
+                            }
+
+                        },
+                        /*
+                        alert对话框
+                        params.title  提示语
+                        params.content 内容
+                        params.callback(ret) 回调
+                        */
+                        //
+                        dialogBox_alert:function(params){
+                            dialogBox.alert({
+                                texts: {
+                                    title: params.title,
+                                    content: params.content,
+                                    leftBtnTitle: '取消',
+                                    rightBtnTitle: '确认'
+                                },
+                                styles: {
+                                    bg: '#fff',
+                                    w: 300,
+                                    corner:12,
+                                    title: {
+                                        marginT: 20,
+                                        icon: 'widget://res/gou.png',
+                                        iconSize: 40,
+                                        titleSize: 14,
+                                        titleColor: '#000'
+                                    },
+                                    content: {
+                                        color: '#000',
+                                        size: 14
+                                    },
+                                    left: {
+                                        marginB: 7,
+                                        marginL: 20,
+                                        w: 130,
+                                        h: 35,
+                                        corner: 2,
+                                        color: '#058FFD',
+                                        bg: '#fff',
+                                        size: 14
+                                    },
+                                    right: {
+                                        marginB: 7,
+                                        marginL: 10,
+                                        w: 130,
+                                        h: 35,
+                                        color: '#058FFD',
+                                        corner: 2,
+                                        bg: '#fff',
+                                        size: 14
+                                    },
+                                    horizontalLine:{
+                                           color:'#f5f5f5', //（可选项）字符串类型；左右按钮上边横线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                           height:1                //（可选项）数字类型；左右边按钮横线的高度；默认：0
+                                       },
+                                   verticalLine:{
+                                       color:'#f5f5f5', //（可选项）字符串类型；左右按钮中间竖线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                         width:1                 //（可选项）数字类型；左右边按钮竖线的高度；默认：0
+                                   }
+                                }
+                            }, function(ret) {
+                                if (ret.eventType == 'left') {
+                                    var dialogBox = api.require('dialogBox');
+                                    dialogBox.close({
+                                        dialogName: 'alert'
+                                    });
+                                }else{
+                                    params.callback(ret);
+
+                                }
+                            });
+
+                        },
+
+                        //获取授权信息
+                        getOssAuthInfo:function(){
+                            var _this = this;
+                            //获取oss授权信息
+                            $app.post(
+                                true,
+                                getAliyunOssAuthInfo,
+                                {roleSessionName:$api.getStorage('userId')},
+                                function(ret){
+                                    console.log($api.jsonToStr(ret));
+                                    _this.authInfo = ret.obj;
+                                    _this.aliOssInit()
+                                }
+                            )
+                        },
+                        //阿里云初始化
+                        aliOssInit:function(){
+                            var _this = this,
+                            data = this.authInfo,
+                            params = {
+                              endpoint:'http://oss-cn-shenzhen.aliyuncs.com',
+                              accessKeyId:'LTAI9OW54jvxLrQj',
+                              accessKeySecret:'wllzYdP18Y4dD3PZJGKMWEgse1H4jd' ,
+                              bucketName: data.bucketName
+                            }
+                            aliOSS.init(
+                              params,
+                              function(ret, err) {
+                                _this.getAllList();
+                              }
+                            );
+                        },
+                        //获取列表
+                        getAllList:function(url){
+                            var _this = this,
+                            prefix_url = url || ($api.getStorage('enterpriseId') + '/' + 'local_upload/' );
+                             _this.prefix_url = prefix_url;
+                            aliOSS.listObjects(
+                                  {
+                                    prefix: _this.prefix_url,
+                                    // maxKeys:3,
+                                    // marker:_this.marker,
+                                    current:true,
+
+                                  },
+                                  function(ret, err) {
+                                    //   console.log($api.jsonToStr(ret));
+                                    // _this.backName = ret.objects[1].key;
+                                    //   console.log( _this.backName);
+                                    // _this.marker = ret.marker;
+                                    _this.info = ret.objects.map(function(item){
+                                        var array_key = item.key.split('/');
+                                        item.name = array_key[array_key.length-1] ||array_key[array_key.length-2] ;
+                                        item.size = $app.fromCatcheSize(item.size,2);
+                                        item.checked = false;
+                                        return item;
+                                    });
+                                  }
+                                );
+                        },
+                        //打开文件夹或预览文件
+                        openitem: function(item) {
+                            var _this = this;
+                            if (item.isDir) {
+                                this.getAllList(item.key)
+                                _this.backName = item.key;
+                                api.sendEvent({
+                                    name: 'clouddisk_backname_event',
+                                    extra: {
+                                        backname:_this.backName
+                                    }
+                                });
+
+                            } else {
+                                api.sendEvent({
+                                    name: 'clouddisk_watch_h_event',
+                                    extra: {
+                                    }
+                                });
+
+                                this.getgrounpUrl(item.key,1)
+                            }
+                        },
+                        //获取预览文件地址
+                        // url  预览文件名字
+                        // isCopy 是否复制（1是 0不  默认为0）
+                        getgrounpUrl:function(url,isCopy){
+                            var _this = this;
+                            aliOSS.previewDoc(
+                              {
+                                objectKey: url,
+                                copy: isCopy || 0
+                              },
+                              function(ret2, err2) {
+                                if (ret2) {
+                                  console.log(ret2.url);
+
+
+                                  var filterType = url.split('.')[1];
+                                  _this.getUrl(ret2.url,filterType)
+                                }
+                                if (err2) {
+                                  api.toast({
+                                      msg: err2.msg,
+                                      duration: 2000,
+                                      location: 'bottom'
+                                  });
+
+                                }
+                              }
+                            );
+                        },
+                        //文件预览
+                        getUrl: function(urlSee,fileType) {
+
+                            switch (fileType) {
+                                case 'jpg':
+                                case 'png':
+                                    photoBrowser.open({
+                                        images:urlSee,
+                                        activeIndex:0,
+                                        // placeholderImg: 'widget://res/img/apicloud.png',
+                                        bgColor: '#000'
+                                    }, function(ret, err) {
+                                        if (ret) {
+                                            if (ret.eventType === 'click') {
+                                                photoBrowser.close();
+                                            }
+                                        } else {}
+                                    });
+
+                                    break;
+                                default:
+                                    var fileType = fileType.toLowerCase();
+                                    office.open({
+                                       rect:{x:0, y:0,w:'auto', h:'auto'},
+                                    //    fixedOn:api.frameName,
+                                       fixed:true,
+                                       url:urlSee,
+                                       fileType:fileType
+
+                                       });
+
+                            }
+                        },
+                        //根据文件名后缀匹配对应图片
+                        typeFile: function(type) {
+                            var data = type.split('.')[1];
+                            if(data){
+                                data = data.toLowerCase()
+                            }else{
+                                data = 'group'
+                            }
+                            switch (data) {
+                                case 'zip':
+                                    return  this.topimg[7]
+                                    break;
+                                case 'mp4':
+                                    return  this.topimg[6]
+                                    break;
+                                case 'txt':
+                                    return  this.topimg[5]
+                                    break;
+                                case 'doc':
+                                case 'docx':
+                                    return this.topimg[4]
+                                    break;
+                                case 'ppt':
+                                case 'pptx':
+                                    return  this.topimg[3]
+                                    break;
+                                case 'pdf':
+                                    return  this.topimg[2]
+                                case 'jpg':
+                                case 'png':
+                                    return  this.topimg[1]
+                                    break;
+                                case 'xls':
+                                case 'xlsx':
+                                    return  this.topimg[0]
+                                    break;
+                                case 'group':
+                                    return  this.topimg[9]
+                                    break;
+
+                                default:
+                                    return this.topimg[8]
+
+                            }
+                        },
+                        //ali文件重命名
+                        createBuketName:function(name){
+
+                        },
+                        // 创建ali云文件夹
+                        createAliFolder:function(aliUrl,newName){
+                            aliOSS.createFolder(
+                              {
+                                // bucketName: aliUrl,
+                                name:newName,
+                              },
+                              function (ret, err) {
+                                console.log($api.jsonToStr(ret));
+                                console.log($api.jsonToStr(err));
+                              }
+                            );
+                        }
+
+
+
+                    }
+
+                })
+
+
+
+            }
+    </script>
+
+</html>

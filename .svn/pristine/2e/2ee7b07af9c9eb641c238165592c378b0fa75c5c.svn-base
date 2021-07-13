@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/timeAxis/libs/index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .propress,
+        .center {
+            width: 95%;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px;
+            padding: 20px 20px;
+            margin-top: 10px;
+
+        }
+
+        .order_code {
+            font-size: 10px;
+            color: rgba(136, 136, 136, 1);
+            float: left;
+        }
+
+        .statu {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .time_active {
+            color: #058FFD;
+
+        }
+
+        .list .item-inner .time_active_bg i {
+            border: 3px solid #008EFF
+        }
+
+        .center_item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 40px;
+            position: relative;
+        }
+
+        .center_item h1 {
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(5, 143, 253, 1);
+        }
+
+        .type {
+            font-size: 14px;
+            color: rgba(153, 153, 153, 1);
+            flex: 0 0 80px;
+        }
+
+        .val {
+            font-size: 14px;
+            color: rgba(102, 102, 102, 1)
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #f5f5f5;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .img_box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .img_item {
+            width: 50px;
+            height: 50px;
+            margin-left: 5px;
+        }
+
+        .info_type {
+            flex: 0 0 100px;
+        }
+
+        .info_val {
+            flex: 1
+        }
+
+        .qvxioa {
+            float: right;
+            width: 3rem;
+            height: 1rem;
+            background: rgba(253, 168, 38, 1);
+            border-radius: 2px;
+            font-size: 0.5rem;
+            text-align: center;
+            color: #ffffff;
+            line-height: 1rem;
+
+        }
+
+        .header-qvxiao {
+            width: 100%;
+            height: 1rem;
+            font-size: 0.2rem;
+        }
+
+        .sbuBtn {
+            width: 12rem;
+            height: 2rem;
+            color: #fff;
+            background: #008EFF;
+            border: 0;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .add_img {
+            margin-left: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(0, 142, 255, 1);
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .add_img i {
+            color: #008EFF
+        }
+
+        .add_img span {
+            font-size: 9px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 142, 255, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="propress">
+            <div class="header-qvxiao">
+                <p style=" font-size: 0.6rem;" class="order_code">订单编号: <span
+                        v-text="repairDetailInfo.repair.orderId">EFGHHJH1564646456</span></p>
+            </div>
+            <div class="list">
+                <div class="item-inner flex-box-x" v-if="repairDetailInfo.repair.state == 3">
+                    <div class="dot time_active_bg"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type time_active" v-if="repairDetailInfo.repair.state == 3">已完成</div>
+                    </div>
+                    <span class="statu" v-text="finishDate" v-if="repairDetailInfo.repair.state == 3">2020-07-16
+                        02:05</span>
+                </div>
+                <div class="item-inner flex-box-x"
+                    v-if="repairDetailInfo.repair.state == 1 || repairDetailInfo.repair.state == 3 || repairDetailInfo.repair.state == 0">
+                    <div class="dot time_active_bg"><i></i></div>
+                    <div class="item-main col-xs-x" v-if="repairDetailInfo.repair.state == 0">
+                        <div class="item-type time_active">待接单</div>
+                    </div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type time_active"
+                            v-if="repairDetailInfo.repair.state == 1 || repairDetailInfo.repair.state == 3">已接单</div>
+                    </div>
+                    <span class="statu" v-text="createDate"
+                        v-if="repairDetailInfo.repair.state == 1 || repairDetailInfo.repair.state == 3 || repairDetailInfo.repair.state == 0">2020-07-16
+                        02:05</span>
+                </div>
+                <div class="item-inner flex-box-x">
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type">提交订单</div>
+                    </div>
+                    <span class="statu" v-text="repairDetailInfo.orders[0].createDate">2020-07-16 02:05</span>
+                </div>
+            </div>
+        </div>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">报修信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障类型</span>
+                <span class="val" v-text="repairOrderInfo.faultName"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障问题</span>
+                <span class="val" v-text="repairDetailInfo.repair.description"></span>
+            </li>
+            <li class="center_item img_box">
+                <img class="img_item" :src="item" alt="" v-for="(item,index) in imgUrl">
+            </li>
+        </ul>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">设备信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">品牌型号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerModel"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">备案号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerPunonNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">自编号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">项目名称</span>
+                <span class="val info_val" v-text="projectInfo.projectName"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">项目地址</span>
+                <span class="val info_val" v-text="projectInfo.address"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">联系人</span>
+                <span class="val info_val" v-text="projectInfo.headMan"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">联系电话</span>
+                <span class="val info_val"><span v-text="projectInfo.tel"></span>&nbsp;&nbsp;&nbsp;<i
+                        class="aui-iconfont aui-icon-phone " style="color:#008EFF"
+                        @click="call(projectInfo.tel)"></i></span>
+            </li>
+        </ul>
+        <ul class="center" v-if="repairDetailInfo.repair.state == 1">
+            <li class="center_item line_after_1" style="border-bottom: 1px #e3e4e5 solid;">
+                <h1>维修反馈</h1>
+            </li>
+            <li class="center_item ">
+                <input class="val" placeholder="输入内容（50字以内）" type="text" v-model="feedback" />
+            </li>
+            <div class="img_box">
+                <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                    <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                        <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                            tapmode="hover"></i>
+                        <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                    </div>
+                    <div class="add_img" @click="uploadHeadPic()" style="background-color: #fff;" tapmode
+                        v-if="imgSrc.length < 3">
+                        <i class="aui-iconfont aui-icon-camera"></i>
+                        <span>故障部位</span>
+                    </div>
+                </div>
+            </div>
+        </ul>
+        <ul class="center" v-if="repairDetailInfo.repair.state == 3">
+            <li class="center_item line_after_1" style="border-bottom: 1px #e3e4e5 solid;">
+                <h1>报修反馈</h1>
+            </li>
+            <li class="center_item ">
+                <input class="val" style="background: #fff;" v-model="repairDetailInfo.repair.feedback" disabled />
+            </li>
+            <div class="img_box">
+                <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                    <img class="img_item" :src="item" alt="" v-for="(item,index) in echoPhotosUrl">
+                </div>
+            </div>
+        </ul>
+        <button class="sbuBtn" @click="healthCancelOrder()" v-if="repairDetailInfo.repair.state == 0">确认接单</button>
+        <button class="sbuBtn" @click="saveImg()" v-if="repairDetailInfo.repair.state == 1">确认完成</button>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    repairOrderInfo: api.pageParam.repairOrderInfo,
+                    repairDetailInfo: null,
+                    imgUrl: [],
+                    createDate: null, //接单日期
+                    finishDate: null,  //
+                    projectInfo: null,
+
+                    //上传图片字段
+                    isCloseBtn: true,//是否显示删除图片icon
+                    imgSrc: [],
+                    serverImg: "",//服务器返回图片地址
+                    lableUrl: "",//标注图片地址(更改：该字段已清除)
+                    srcImgUrl: "",//原图片地址（多张逗号分隔）
+                    compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+                    feedback: null,  //反馈
+                    echoPhotosUrl: [],
+                },
+                created: function () {
+                    this.getRepairDetailInfo();
+                    this.getProjectinfo();
+                },
+                methods: {
+                    //拨打电话
+                    call: function (phone) {
+                        console.log(phone);
+                        api.call({
+                            type: 'tel_prompt',
+                            number: phone
+                        });
+                    },
+                    //查询单个报修明细信息
+                    getRepairDetailInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getRepairDetailInfolURL, {
+                            id: that.repairOrderInfo.id.toString(),
+                        },
+                            function (ret) {
+                                console.log("获取单个报修数据：" + JSON.stringify(ret));
+                                that.repairDetailInfo = ret.obj;
+                                // that.imgUrl = that.repairDetailInfo.repair.photos.split(",");
+                                // for (var i = 0; i < that.imgUrl.length; i++) {
+                                //     that.imgUrl[i] = that.repairDetailInfo.urlPrefix + that.imgUrl[i]
+                                // }
+                                that.imgUrl = that.repairDetailInfo.repair.photos.split(",");
+                                for (var i = 0; i < that.imgUrl.length; i++) {
+                                    that.imgUrl[i] = that.repairDetailInfo.crane.urlPrefix + that.imgUrl[i]
+                                }
+                                that.repairDetailInfo.orders.map(function (item) {
+                                    switch (item.name) {
+                                        case "订单取消":
+                                            that.createDate = item.createDate;
+                                            break;
+                                        case "已完成":
+                                            that.finishDate = item.createDate;
+                                            break;
+                                        case "已接单":
+                                            that.createDate = item.createDate;
+                                            break;
+                                    }
+                                });
+                                var echoPhotos = [];
+                                if (that.repairDetailInfo.repair.echoPhotos) {
+                                    echoPhotos = that.repairDetailInfo.repair.echoPhotos.split(",");
+                                }
+                                echoPhotos.map(function (item) {
+                                    item = that.repairDetailInfo.crane.urlPrefix + item
+                                    that.echoPhotosUrl.push(item);
+                                });
+
+                            }
+                        )
+                    },
+                    //获取项目信息
+                    getProjectinfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getProjectinfoURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                        },
+                            function (ret) {
+                                console.log("获取项目信息" + JSON.stringify(ret));
+                                that.projectInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //提交
+                    healthCancelOrder: function () {
+                        var that = this;
+                        api.confirm({
+                            title: "确认接单",
+                            msg: '是否确认接单',
+                            buttons: ['确认', '取消']
+                        }, function (ret) {
+                            if (ret.buttonIndex == 1) {
+                                var prame = {
+                                    id: that.repairDetailInfo.repair.id.toString(),
+                                    orderId: that.repairDetailInfo.repair.orderId,
+                                    cranesId: that.repairDetailInfo.crane.id,
+                                    state: "1",
+                                    flag: "0"
+                                };
+                                console.log("接单请求数据：" + JSON.stringify(prame));
+                                $app.post(
+                                    true,
+                                    repairEditURL,
+                                    prame,
+                                    function (ret) {
+                                        console.log("接单返回数据：" + JSON.stringify(ret));
+                                        api.sendEvent({
+                                            name: 'repairEditURL'
+                                        });
+
+                                        that.getRepairDetailInfo();
+                                    }
+                                )
+                            }
+                        })
+                    },
+                    //上传图片
+                    //上传图片处理函数start
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片上传服务器保存
+                    saveImg: function () {
+                        var compressImg = [];
+                        var that = this;
+                        if (that.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        }
+                                    });
+                                })(i);
+                            }
+
+                            var timer = setInterval(function () {
+                                console.log("compressImg:" + JSON.stringify(compressImg));
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeURL, {}, {
+                                        files: compressImg
+                                    },
+                                        function (ret) {
+                                            console.log("上传图片返回数据：" + JSON.stringify(ret))
+                                            that.isCloseBtn = false;
+                                            that.serverImg = '';
+                                            ret.obj.map(function (item) {
+                                                that.serverImg += item.fileName + ','
+                                            });
+                                            that.serverImg = that.serverImg.substr(0, that.serverImg.length - 1);
+                                            var prame = {
+                                                id: that.repairDetailInfo.repair.id.toString(),
+                                                orderId: that.repairDetailInfo.repair.orderId,
+                                                cranesId: that.repairDetailInfo.crane.id,
+                                                state: "3",
+                                                echoPhotos: that.serverImg,
+                                                feedback: that.feedback,
+                                                flag: "0"
+                                            };
+                                            that.submitFn(prame, that);
+                                        }
+                                    )
+                                }
+                            }, 1000)
+                        }
+                    },
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        // confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - that.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    that.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //提交保修订单
+                    submitFn: function (prame, that) {
+                        api.confirm({
+                            // title: "确认接单",
+                            msg: '确认完成',
+                            buttons: ['确认', '取消']
+                        }, function (ret) {
+                            if (ret.buttonIndex == 1) {
+                                console.log("接单请求数据：" + JSON.stringify(prame));
+                                $app.post(
+                                    true,
+                                    repairEditURL,
+                                    prame,
+                                    function (ret) {
+                                        console.log("接单返回数据：" + JSON.stringify(ret));
+                                        api.sendEvent({
+                                            name: 'repairEditURL'
+                                        });
+                                        that.getRepairDetailInfo();
+                                    }
+                                )
+                            }
+                        })
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

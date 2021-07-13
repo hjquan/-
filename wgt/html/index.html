@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>底部导航</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        header {
+            background-color: #fff;
+        }
+
+        header ul li {
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            display: none;
+            color: #323237;
+            position: relative;
+            font-size: 18px;
+        }
+
+        header ul li.active {
+            display: block;
+            display: flex;
+        }
+
+        #footer {
+            background-color: #fff;
+        }
+
+        #footer ul li {
+            padding-top: 36px;
+            padding-bottom: 4px;
+            background: url() no-repeat center 2px;
+            background-size: auto 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        #footer ul li.active {
+            color: #058FFD;
+        }
+
+        #footer ul li:nth-child(1) {
+            background-image: url(../../image/enterprice/tab_0101.png);
+        }
+
+        #footer ul li:nth-child(2) {
+            background-image: url(../../image/enterprice/tab_0202.png);
+        }
+
+        #footer ul li:nth-child(3) {
+            background-image: url(../../image/enterprice/tab_0401.png);
+        }
+
+        #footer ul li:nth-child(4) {
+            background-image: url(../../image/enterprice/tab_0303.png);
+        }
+
+        #footer ul li:nth-child(1).active {
+            background-image: url(../../image/enterprice/tab_01.png);
+        }
+
+        #footer ul li:nth-child(2).active {
+            background-image: url(../../image/enterprice/tab_02.png);
+        }
+
+        #footer ul li:nth-child(3).active {
+            background-image: url(../../image/enterprice/tab_04.png);
+        }
+
+        #footer ul li:nth-child(4).active {
+            background-image: url(../../image/enterprice/tab_03.png);
+        }
+
+        .flex-con {
+            overflow: auto
+        }
+
+        .top {
+            height: 45px;
+            line-height: 45px;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0 15px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .tri_bottom:before {
+            content: "";
+            width: 0px;
+            height: 0px;
+            border-top: 6px solid #666;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            position: absolute;
+            top: 18px;
+            right: 0px;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap" class="flex-wrap flex-vertical">
+        <header id="app">
+            <ul>
+                <li class="active">
+                    <div class="top tri_bottom" v-text="currenProject" onclick="openProjectList()"></div>
+                </li>
+                <li class="">
+                    <div class="top tri_bottom" onclick="openProjectList()" v-text="currenProject"></div>
+                </li>
+                <li class="">
+                    <div class="top">资料库</div>
+                </li>
+                <li class="" style="background-color: #058FFD;"></li>
+            </ul>
+        </header>
+        <div id="main" class="flex-con">
+
+        </div>
+        <div id="footer" class="border-t">
+            <ul class="flex-wrap">
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active">
+                    <div class="aui-badge bage_position" style="top: 5px;right:20px;left:auto"></div>
+                    待办
+                </li>
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">筑迹云</li>
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">资料库</li>
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">我的</li>
+                <!-- <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con" >文档</li> -->
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="../../script/sha1.js"></script>
+<script src="../../script/api.js"></script>
+<script src="../../script/common.js"></script>
+<script src="../../script/vue.js"></script>
+<script type="text/javascript">
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'projectIndex'
+        }, function (ret, err) {
+            if (ret) {
+                footer.init()
+            }
+        });
+        api.addEventListener({
+            name: 'enterpriceMessage'
+        }, function (ret, err) {
+            if (ret) {
+                footer.init()
+            }
+        });
+
+        api.addEventListener({
+            name: 'projectInit'
+        }, function (ret, err) {
+            footer.init()
+        });
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                menuBox: '',//菜单列表
+                selctList: [],
+                currenProject: ''
+            },
+
+            methods: {
+
+            }
+        })
+        var footer = new Vue({
+            el: '#footer',
+            data: {
+                getAllMessageNumTotal: null//待办数
+            },
+
+            methods: {
+                init: function () {
+                    //获取消息条数
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        getAllMessageNumTotal, {
+                        userId: $api.getStorage('userId'),
+                        projectId: $api.getStorage('enterpriseId')
+                    },
+                        function (ret) {
+                            vm.messageNumber = ret.obj.unReadWarningMsgTotal + ret.obj.unReadMsgTotal;
+                            if (vm.messageNumber == 0) {
+                                $api.addCls($api.dom('.bage_position'), 'hide');
+
+                            } else {
+                                $api.removeCls($api.dom('.bage_position'), 'hide');
+                                vm.messageNumber > 99 ? $api.text($api.dom('.bage_position'), '99+') : $api.text($api.dom('.bage_position'), vm.messageNumber);
+                            }
+                        }
+                    )
+                }
+            }
+        })
+        footer.init()
+
+        //侵入式导航栏
+        $api.fixStatusBar($api.dom('header'));
+        $api.fixTabBar($api.byId('footer'));
+        //监听物理按键退出app
+        exit_app();
+        function exit_app() {
+            api.addEventListener({
+                name: 'keyback'
+            }, function (ret, err) {
+                api.toast({
+                    msg: '双击退出' + api.appName,
+                    duration: 2000,
+                    location: 'bottom'
+                });
+                api.addEventListener({
+                    name: 'keyback'
+                }, function (ret, err) {
+                    api.closeWidget({
+                        id: 'A6017026983510', //你的APPid
+                        retData: {
+                            name: 'closeWidget'
+                        },
+                        animation: {
+                            type: 'flip',
+                            subType: 'from_bottom',
+                            duration: 500
+                        },
+                        silent: true
+                    });
+                });
+                setTimeout(function () {
+                    exit_app();
+                }, 3000);
+            });
+        }
+
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: 0
+        });
+        vm.currenProject = $api.getStorage('currentProject');
+        api.addEventListener({
+            name: 'currenProject'
+        }, function (ret, err) {
+            if (ret) {
+                vm.currenProject = $api.getStorage('currentProject')
+            }
+        });
+        // $api.fixStatusBar( $api.dom('header') );
+        api.setStatusBarStyle({
+            style: 'dark',
+            color: '#058FFD'
+        });
+
+        funIniGroup();
+    }
+    function openProjectList() {
+        api.openWin({
+            name: 'projectList',
+            url: './projectList.html',
+            pageParam: {
+            }
+        });
+
+    }
+    function funIniGroup() {
+        var eHeaderLis = $api.domAll('header li'),
+            frames = [];
+        for (var i = 0, len = eHeaderLis.length; i < len; i++) {
+            frames.push({
+                name: 'frame' + i,
+                url: './frame' + i + '.html',
+                bgColor: 'rgba(0,0,0,.2)',
+                bounces: false,
+                softInputMode: 'pan'//设置ios错位问题
+            })
+        }
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: $api.dom('header').offsetHeight,
+                w: api.winWidth,
+                h: $api.dom('#main').offsetHeight
+            },
+            index: 0,
+            frames: frames
+        }, function (ret, err) {
+
+        });
+    }
+    // 随意切换按钮
+    function randomSwitchBtn(tag) {
+
+
+        if (tag == $api.dom('#footer li.active')) return;
+        var eFootLis = $api.domAll('#footer li'),
+            eHeaderLis = $api.domAll('header li'),
+            index = 0;
+        for (var i = 0, len = eFootLis.length; i < len; i++) {
+            if (tag == eFootLis[i]) {
+                index = i;
+            } else {
+                $api.removeCls(eFootLis[i], 'active');
+                $api.removeCls(eHeaderLis[i], 'active');
+            }
+        }
+        $api.addCls(eFootLis[index], 'active');
+        $api.addCls(eHeaderLis[index], 'active');
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: index
+        });
+        // 监听底部btn切换刷新
+        // api.sendEvent({
+        //     name: 'projectInit'+index,
+        //     extra: {
+        //     }
+        // });
+    }
+</script>

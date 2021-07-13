@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .txt_cl_FF1515 {
+            color: #FF1515 !important;
+        }
+        .list_box{background-color: #fff;margin-top:10px}
+        .list_item{
+            height:115px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0
+        }
+        .list_item img{
+            width:80px;
+            height:80px;
+            border-radius:2px;
+        }
+        .list_item .noImg{
+            width:80px;
+            height:80px;
+            border-radius:2px;
+            line-height: 80px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .item_center p{
+            height:20px;
+            font-size:13px;
+            font-weight:400;
+            color:rgba(102,102,102,1);
+            line-height:20px;
+        }
+        .item_center p:first-child{
+            font-size:15px;
+            font-weight:600;
+        }
+        .item_center{
+            margin-left: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content:flex-start;
+            align-items: flex-start;
+            height: 100%;
+        }
+        .item_rt{
+            height:80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 80px;
+        }
+        .item_rt span{
+            font-size:13px;
+            font-family:PingFang-SC-Regular;
+            font-weight:400;
+            color:rgba(153,153,153,1);
+        }
+        i.aui-iconfont{
+            font-size:1rem;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list_box" v-if="safetyWenInfo.length">
+            <li class="list_item" v-for="item in  safetyWenInfo" @click="openSafetyDetails(item)" tapmode>
+                <template v-if="item">
+                    <img v-lazy="item.compressUrl" alt="" v-if="item.compressUrl" class="lay_img">
+                    <!-- <div class="noImg" v-if="!item.compressUrl">暂无图片</div> -->
+                    <div class="item_center" v-cloak>
+                        <p v-if="item.position" class="aui-ellipsis-1" style="width:150px"  v-cloak>{{item.position}}</p>
+                        <p class="aui-ellipsis-1" style="width:150px" v-if="item.problemDescribe">问题描述:&nbsp;{{item.problemDescribe}}</p>
+                        <!-- <p>问题依据:&nbsp;&nbsp;{{item.problemDescribe}}</p> -->
+                        <p>整改期限:&nbsp;&nbsp;
+                            <span style="color:#FF1515" v-if="item.day < 0 && item.state != 2" v-cloak>(逾期{{-item.day}}天)</span>
+                            <span v-if="item.day >= 0 && item.state != 2" v-cloak>(剩余{{item.day}}天)</span>
+                        </p>
+
+                    </div>
+                    <div class="item_rt">
+                        <div>
+                            <i class="aui-iconfont aui-icon-date" v-if="item.state != 2"></i>
+                            <i class="aui-iconfont aui-icon-correct"  v-if="item.state == 2"></i>
+                        </div>
+                        <span v-text="item.createTime"></span>
+                    </div>
+                </template>
+            </li>
+
+        </ul>
+        <div class="noData" v-else>
+            <img src="../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script src="../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+          error: '../../image/err.jpg',
+          loading: '../../image/lay_img.gif'
+        });
+        apiready = function(){
+            api.setRefreshHeaderInfo({
+                visible: true,
+                loadingImg: 'widget://image/refresh.png',
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err){
+                vm.init(false)
+            });
+            //上拉加载
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 200 //设置距离底部多少距离时触发，默认值为0，数字类型
+                }
+            }, function(ret, err) {
+                vm.init(true);
+            });
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    currentPage:'1',
+                    safetyWenInfo:[]
+                },
+                mounted:function(){
+                //   $app.layImg('app')
+                },
+                methods:{
+                    init:function(loadMore){
+                        if(loadMore){
+                            this.currentPage = this.currentPage + 1
+                        }else {
+                            this.currentPage = '1'
+                        }
+                        $app.post(
+                            true,
+                            getSecurityCheckArrays
+                            ,
+                            {
+                                "userId": $api.getStorage('userId'),
+                            	"projectId":  $api.getStorage('enterpriseId'),
+                            	"showCount": PAGE_NUMBER,
+                            	"currentPage": vm.currentPage
+                            },
+                            function(ret){
+                                api.refreshHeaderLoadDone();
+                                if (loadMore) {
+                                    ret.obj.forEach(function(item){
+                                        if (ret.totalResult > vm.safetyWenInfo.length) {
+                                            if(item){
+                                                vm.safetyWenInfo.push(item)
+                                            }
+                                        } else {
+                                            api.toast({
+                                                msg: '没有更多数据了...',
+                                                duration: 3000,
+                                                location: 'bottom'
+                                            });
+
+                                        }
+                                    })
+                                } else {
+                                    vm.safetyWenInfo= ret.obj
+                                }
+
+
+                            }
+                        )
+                    },
+                    openSafetyDetails:function(item){
+                        api.openWin({
+                            name: 'SafetyDetails',
+                            url: './SafetyDetails.html',
+                            reload: true,
+                            pageParam: {
+                                SafetyDetailsInfo:item
+                            }
+                        });
+
+                    }
+                }
+            })
+            vm.init(false)
+        }
+    </script>
+</body>
+
+</html>

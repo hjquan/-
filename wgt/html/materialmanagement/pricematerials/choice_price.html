@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 90%;
+          height: 1px;
+          background:rgba(199,199,206,1);
+          opacity:0.36;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .mt-5{margin-top:5px;}
+        .txt_p{
+          color: #B7B7BC
+        }
+        .main_box{
+          background: #fff;
+        }
+        .list_item{
+          padding: 10px 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+
+        }
+        .lf{
+          display: flex;
+          flex-direction: row;
+          justify-content: space-around;;
+          align-items: center;
+          width: 100%
+        }
+        .title_txt{
+          display: flex;
+          justify-content:space-between;
+          font-size:15px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(150,150,155,1);
+
+        }
+        .title_box{
+          margin-left:15px;
+          width: 100%
+        }
+        .type_txt{
+          font-size:17px;
+          color:rgba(0,1,14,1);
+        }
+        .title_txt p{
+          font-size:15px;
+          color:rgba(150,150,155,1);
+        }
+        .rt{
+          font-size:20px;
+          color:rgba(0,1,14,1);
+        }
+        .selectBox{
+          width: 100%;
+          position: fixed;
+          bottom: 0;
+          box-sizing: border-box;
+          padding: 2px 15px;
+          font-size:17px;
+          font-family:PingFangSC-Medium,PingFang SC;
+          font-weight:500;
+          color:rgba(19,147,250,1);
+          height: 50px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .s_rt{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .btn{
+          width:108px;
+          height:41px;
+          line-height: 41px;
+          text-align: center;
+          background:rgba(19,147,250,1);
+          border-radius:0px 4px 4px 0px;
+          margin-left: 35px;
+          color: #fff;
+          font-weight: bold;
+        }
+        .flx_r{
+          display: flex;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box">
+            <ul class="list_box">
+              <li class="list_item bottom_before_line">
+                <div class="lf">
+                  <!-- <input class="aui-radio" type="checkbox" name=""> -->
+                  <div class="title_box">
+                    <p class="type_txt">钢筋</p>
+                    <div class="title_txt">
+                      <div class="flx_r">
+                        <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                        <p>单位:<span>kg</span></p>
+                      </div>
+                      <div>2039/78/123</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="rt">
+                  45
+                </div> -->
+              </li>
+              <li class="list_item bottom_before_line">
+                <div class="lf">
+                  <!-- <input class="aui-radio" type="checkbox" name=""> -->
+                  <div class="title_box">
+                    <p class="type_txt">钢筋</p>
+                    <div class="title_txt">
+                      <div class="flx_r">
+                        <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                        <p>单位:<span>kg</span></p>
+                      </div>
+                      <div>2039/78/123</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="rt">
+                  45
+                </div> -->
+              </li>
+
+
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+        <!-- <div class="selectBox">
+          <label><input class="aui-radio" type="checkbox" name="" checked> 全选</label>
+          <div class="s_rt">
+            <span>入库</span>
+            <div class="btn">倒入场地</div>
+          </div>
+        </div> -->
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    copySelctList: [],
+                    selctList: [], //拉取的列表数据
+                    listIf: '' //过滤条件
+                },
+                computed: {
+
+                },
+                methods: {
+                    //筛选
+                    changeInput: function() {
+                        var copyList = $api.strToJson($api.jsonToStr(this.selctList));
+                        this.selctList = $api.strToJson($api.jsonToStr(this.copySelctList));
+                        var filterList = vm.copySelctList.filter(function(item) {
+                            var itemName = item.enterpriseName;
+                            if (itemName.indexOf(vm.listIf) != -1) {
+                                return item
+                            } else {
+                                return false
+                            }
+                        })
+                        if (this.listIf == '') {
+                            this.selctList = this.copySelctList
+                        } else {
+                            this.selctList = filterList
+                        }
+                    },
+                }
+
+            })
+        }
+    </script>
+</body>
+
+</html>

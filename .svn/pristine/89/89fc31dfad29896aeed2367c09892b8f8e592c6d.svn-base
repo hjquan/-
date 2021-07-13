@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .container {
+            margin-bottom: 80px
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+        .main_box{
+            margin-top:70px;
+        }
+
+        .main_box .title {
+            display: flex;
+            justify-content: space-between;
+            height: 40px;
+            line-height: 40px;
+            padding-left: 20px;
+            padding-right: 10px;
+            position: relative;
+        }
+
+        .main_box .title p {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .beforeLine:before {
+            content: '';
+            width: 4px;
+            height: 14px;
+            background-color: #03a9f4;
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+        }
+
+        .flex_start div:first-child {
+            margin-right: 10px;
+            flex: 1;
+            color: #999;
+        }
+
+        .flex_start div:last-child {
+            flex: 4;
+            color: #333;
+        }
+
+        .listImage {
+            height: 80px;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            background-color: #fff;
+        }
+
+        .listImage img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        img.toVoid {
+            position: absolute;
+            top: 113px;
+            right: 13px;
+            z-index: 200;
+            width: 130px;
+            height: 130px;
+        }
+
+        .show {
+            display: none;
+        }
+
+        .btnBox {
+            width: 100%;
+            padding-top: 5px;
+            height: 60px;
+            position: fixed;
+            bottom: 0px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 300;
+            background-color: #fff;
+        }
+
+        .btnBox button {
+            width:335px;
+            height:46px;
+            line-height:46px;
+            background:rgba(5,143,253,1);
+            border-radius:6px;
+            border: none;
+            box-shadow: 0 0 3 #ccc;
+            color: #fff;
+        }
+        .header{
+            position: fixed;
+            top:0px;
+            left:0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="btnBox" v-if="isFncBtn">
+            <button tapmode="hover" @click="handleFn()">处理</button>
+        </div>
+        <img class="toVoid" v-if="checkDetail.state == 0" id="toVoid" src="../../image/toVoid.png" alt="作废标识">
+        <!-- //v-if="checkDetail.state == 0" -->
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" tapmode onclick="openWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">问题详情</div>
+            <!-- <a class="aui-pull-right aui-btn" :class="{'show':userId == checkDetail.createUserId}" onclick="toggleToVoid()">
+                <span class="" style="color:#058FFD">作废</span>
+            </a> -->
+        </header>
+        <div class="main_box"  v-if="checkDetail">
+            <div class="title aui-bg-default" v-cloak>
+                <p class="beforeLine">检查情况</p>
+                <p @click="openTimeAxis()" tapmode v-if="checkDetail.isRectification == 1 && checkDetail.state != 0" v-cloak>{{checkDetail.state == 1 ? '处理中':'完成'}}<i class="aui-iconfont aui-icon-right"></i></p>
+            </div>
+            <div class="main-top">
+
+                <ul class="aui-list">
+                    <li class="aui-list-item " v-if="projectName">
+                        <div class="aui-list-item-inner">
+                            <div class="" style="margin-right:13px;">
+                                <i class="aui-iconfont aui-icon-home"></i>
+                            </div>
+                            <div class="aui-list-item-input">
+                                <p v-text="projectName"></p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" v-if="checkDetail.position">
+                        <div class="aui-list-item-inner">
+                            <div class="" style="margin-right:13px;">
+                                <i class="aui-iconfont aui-icon-location"></i>
+                            </div>
+                            <div class="aui-list-item-input">
+                                <p v-text="checkDetail.position"></p>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+                <div class="listImage" v-if="imgSrc.length">
+                    <img :src="item" alt="详情图" v-for="(item,index) in imgSrc" tapmode @click="imgSee(showImg,index)">
+                </div>
+                <ul class="aui-list">
+                    <li class="aui-list-item " tapmode v-if="checkDetail.problemDescribe" @click="openShowDispaly(checkDetail.problemDescribe)">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                问题描述
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.problemDescribe">
+
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" tapmode v-if="checkDetail.basis" @click="openShowDispaly(checkDetail.basis)">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                检查依据
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.basis">
+                            </div>
+                        </div>
+                    </li>
+                    <!-- <li class="aui-list-item ">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                检查结论
+                            </div>
+                            <div class="aui-ellipsis-1">
+                                {{checkDetail.isQualified == 1?"合格":"不合格"}}
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item ">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                需要整改
+                            </div>
+                            <div class="aui-ellipsis-1">
+                                {{checkDetail.isRectification == 1?"整改":"不整改"}}
+                            </div>
+                        </div>
+                    </li> -->
+                    <li class="aui-list-item ">
+                        <div class="aui-list-item-inner flex_start">
+                            <div style="color:#999">
+                                整改期限
+                            </div>
+                            <div class="aui-ellipsis-1" v-cloak>
+                                {{checkDetail.deadline}}
+                                <span style="color:#FF1515" v-if="checkDetail.day < 0 && checkDetail.state != 2" v-cloak>(逾期{{-checkDetail.day}}天)</span>
+                                <span  v-if="checkDetail.day > 0 && checkDetail.state != 2" v-cloak>(剩余{{checkDetail.day}}天)</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item " tapmode v-if="checkDetail.requirement" @click="openShowDispaly(checkDetail.requirement)">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                整改要求
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.requirement">
+
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item " tapmode v-if="checkDetail.createUserName">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                检查人
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.createUserName">
+
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item " tapmode v-if="checkDetail.createTime">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                检查时间
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.createTime">
+
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+            <div v-if="checkDetail.rectificationInfo">
+                <div class="title aui-bg-default">
+                    <p class="beforeLine">整改情况</p>
+                    <!-- <p>处理中 <i class="aui-iconfont aui-icon-right"></i></p> -->
+                </div>
+                <div class="listImage" v-if="rectificationSrc.length">
+                    <img :src="item" alt="详情图" v-for="(item,index) in rectificationSrc" @click="imgSee(showrectificationPath,index)">
+                </div>
+                <ul class="aui-list" v-if="checkDetail.rectificationInfo.content">
+                    <li class="aui-list-item" tapmode @click="openShowDispaly(checkDetail.rectificationInfo.content)">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                整改描述
+                            </div>
+                            <div class="aui-ellipsis-1" v-text="checkDetail.rectificationInfo.content">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar( $api.dom('header') );
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    userId: '',
+                    checkDetail: '',
+                    projectName: '', //项目名称
+                    rectificationSrc: [], //整改后的压缩img地址
+                    rectificationPath:[],//整改后的未压缩img地址
+                    imgSrc: [],//检查的图片
+                    imgPath:[],//检查的未压缩img图片
+                    isFncBtn: false,//功能操作按钮是否显示
+                    showImg:[],//http未压缩地址
+                    showrectificationPath:[]//http整改后的未压缩
+                },
+                methods: {
+                    init: function() {
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getSecurityCheckDetailURL, {
+                                'checkId':api.pageParam.SafetyDetailsInfo.checkId || api.pageParam.SafetyDetailsInfo.objectId
+                            },
+                            function(ret) {
+                                //监听消息中心变化
+                                api.sendEvent({
+                                    name: 'newCenterListFn',
+                                    extra: {
+                                    }
+                                });
+                                //监听首页待办消息中心变化
+                                api.sendEvent({
+                                    name: 'enterpriseIndexList',
+                                    extra: {
+                                    }
+                                });
+
+                                vm.fncBtnFn(ret.obj);
+                                if(!ret.obj){
+                                    return
+                                }
+                                vm.checkDetail = ret.obj;
+                                if (ret.obj.imgUrl) {
+                                    ret.obj.imgUrl.forEach(function(item) {
+                                        //https压缩图片地址
+                                        api.imageCache({
+                                            url: item.compressUrl
+                                        }, function(ret, err) {
+                                            if(ret){
+                                                vm.imgSrc.push(ret.url)
+                                            } else {
+                                            }
+                                        });
+                                        //https未压缩图片地址
+                                        api.imageCache({
+                                            url: item.srcUrl,
+                                            thumbnail:false
+                                        }, function(ret, err){
+                                            if( ret ){
+                                                  vm.imgPath.push(ret.url)
+                                            }else{
+                                            }
+                                        });
+                                        vm.showImg.push(item.srcUrl)
+
+                                    })
+                                }
+                                if (ret.obj.rectificationInfo) {
+                                    if (ret.obj.rectificationInfo.imgUrl) {
+                                        ret.obj.rectificationInfo.imgUrl.forEach(function(item) {
+                                            //https整改详情压缩图
+                                            api.imageCache({
+                                                url: item.compressUrl
+                                            }, function(ret, err) {
+                                                if (ret) {
+                                                    vm.rectificationSrc.push(ret.url)
+                                                } else {}
+                                            });
+                                            //https整改详情未压缩图
+                                            api.imageCache({
+                                                url: item.srcUrl,
+                                                thumbnail:false
+                                            }, function(ret, err){
+                                                if( ret ){
+                                                      vm.rectificationPath.push(ret.url)
+                                                }else{
+                                                }
+                                            });
+                                            vm.showrectificationPath.push(item.srcUrl)
+                                        })
+                                    }
+                                }
+                            }
+                        )
+                    },
+                    //查看内容详情
+                    openShowDispaly:function(txt){
+                        api.openFrame({
+                            name: 'contentDisplay',
+                            url: '../../contentDisplay.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                content:txt
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(240,240,240,0.4)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    },
+                    // //图片查看
+                    imgSee:function(url,index){
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images:url,
+                            activeIndex:index,
+                            placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if(ret.eventType === 'click'){
+                                    photoBrowser.close();
+                                }
+                            } else {
+                            }
+                        });
+                    },
+
+                    //按处理钮控制是否显示
+                    fncBtnFn:function(info){
+                        if(!info){
+                            return
+                        }
+                        if(info.state == 0){
+                            vm.isFncBtn = false;
+                        }else if(info.isRectification == 1 && info.isStart == 0 && $api.getStorage('userId') == info.personliableId ){
+                            vm.isFncBtn = true;
+                        }else if($api.getStorage('userId') == info.handleUserId && $api.getStorage('userId') == info.rectificationId){
+                            vm.isFncBtn = true;
+                            vm.isBackBtn = false;
+                        }else if($api.getStorage('userId') == info.handleUserId  &&  $api.getStorage('enterpriseType') == 3){
+                            vm.isFncBtn = true;
+                        }else if($api.getStorage('userId') == info.handleUserId  &&  $api.getStorage('enterpriseType') == 2){
+                            vm.isFncBtn = true;
+                        }else if($api.getStorage('userId') == info.handleUserId  && $api.getStorage('userId') == info.createUserId){
+                            vm.isFncBtn = true;
+                        }
+                    },
+                    openTimeAxis:function() {
+                        api.openWin({
+                            name: 'timeAxis',
+                            url: '../../commonUi/timeAxis/index.html',
+                            pageParam: {
+                                checkId: api.pageParam.SafetyDetailsInfo.checkId || api.pageParam.SafetyDetailsInfo.objectId
+                            }
+                        });
+
+                    },
+                    //处理按钮方法
+                    handleFn:function (){
+                        api.openWin({
+                            name: 'projectRectification',
+                            url: './projectRectification.html',
+                            pageParam: {
+                                checkId:api.pageParam.SafetyDetailsInfo.checkId || api.pageParam.SafetyDetailsInfo.objectId,//检查id
+                                checkDetail:vm.checkDetail //项目详情
+                            }
+                        });
+
+                    },
+
+
+                }
+            });
+            vm.projectName = api.pageParam.projectName;
+            vm.init();
+            vm.userId = $api.getStorage('userId');
+            //是否作废
+            function toggleToVoid() {
+                $api.toggleCls($api.byId('toVoid'), 'show');
+            }
+
+
+            function openSelectPerson() {
+                api.openWin({
+                    name: 'selectPerson',
+                    url: './selectPerson.html',
+                    pageParam: {}
+                });
+            }
+
+        }
+
+
+    </script>
+</body>
+
+</html>

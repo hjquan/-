@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .content {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .rule-name {
+            padding: 0.5rem;
+            height: 2rem;
+            background: #ffffff;
+        }
+
+        .text-left {
+            float: left;
+        }
+
+        .text-right {
+            float: right;
+            color: #909090;
+        }
+
+        .rule-content {
+            width: 100%;
+            height: 10rem;
+            margin-top: 0.5rem;
+            background: #ffffff;
+
+        }
+
+        .name-right {
+            margin-left: 6rem;
+            color: #909090;
+        }
+
+        .rule-content ul li {
+            width: 100%;
+            height: 2rem;
+            padding: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .rule-wifi {
+            width: 100%;
+            height: 2rem;
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">查看考勤组</div>
+            <a class="aui-pull-right " style="color: #058FFD;" tapmode @click="openaddtask()">
+                修改
+            </a>
+        </header>
+        <div class="content">
+            <div class="rule-name">
+                <div class="text-left">考勤组名称</div>
+                <div class="name-right">{{ruleInfo.rulesName}}</div>
+            </div>
+            <div class="rule-content">
+                <ul>
+                    <li>
+                        <div class="text-left">考勤对象</div>
+                        <div class="text-right">{{ruleInfo.attendanceRoleName}}</div>
+                    </li>
+                    <li>
+                        <div class="text-left">上下班时间</div>
+                        <div class="text-right">{{ruleInfo.startWorkTime}}-{{ruleInfo.endWorkTime}}</div>
+                    </li>
+                    <li>
+                        <div class="text-left">休假</div>
+                        <div class="text-right">{{ruleInfo.restStartDay}} - {{ruleInfo.restEndDay}}</div>
+                    </li>
+                    <li>
+                        <div class="text-left">考勤方式</div>
+                        <div class="text-right">{{attendanceWays}}</div>
+                    </li>
+                    <li>
+                        <div class="text-left">{{ruleInfo.attendanceAddress}}</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="rule-wifi">
+                <div class="text-left">考勤Wi-Fi</div>
+                <div class="text-right">{{ruleInfo.attendanceWifi}}</div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        var dialog = new auiDialog({})
+        apiready = function () {
+            $api.fixStatusBar($api.dom('.header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleInfo: api.pageParam.ruleInfo || null,//考勤规则对象
+                    attendanceWays: null
+                },
+                created: function () {
+                    //格式化数据
+                    this.layoutData()
+                },
+                methods: {
+                    //格式化数据
+                    layoutData: function () {
+                        var attendanceWays = api.pageParam.ruleInfo.attendanceWays;
+                        if (attendanceWays == "1") {
+                            this.attendanceWays = "Wi-Fi"
+                        }
+                        if (attendanceWays == "2") {
+                            this.attendanceWays = "地址"
+                        }
+                        if (attendanceWays == "3") {
+                            this.attendanceWays = "地址、Wi-Fi"
+                        }
+                    },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //openaddtask修改考勤组数据
+                    openaddtask: function () {
+                        var that = this;
+                        api.openFrame({
+                            name: 'addRule',
+                            url: 'addRule.html',
+                            pageParam: {
+                                ruleInfo: that.ruleInfo
+                            }
+                        });
+                    },
+                },
+            })
+        }
+    </script>
+</body>
+
+</html>

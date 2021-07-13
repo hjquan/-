@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background-color: #000;
+        }
+
+        .img {}
+
+        .img img {
+            width: 310px;
+            height: 310px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /*show*/
+
+        .show {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+        }
+
+        .show-item {
+            display: flex;
+            justify-content: flex-start;
+            ;
+            align-items: center;
+            flex: 1;
+        }
+
+        .line {
+            width: 25px;
+            height: 5px;
+            background: rgba(253, 167, 38, 1);
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+
+        .show-item p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .danger {
+            background-color: #f00;
+        }
+
+        .footer {
+            background-color: #000;
+            margin-bottom: 20px;
+        }
+
+        .date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .date h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .date i {
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_show {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .show_item {
+            width: 25%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .show_item div {
+            width: 85px;
+            height: 100px;
+            background: rgba(4, 164, 69, 1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 5px;
+        }
+
+        .show_item div.danger {
+            background: #f00;
+        }
+
+        .show_item h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item h3 {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="img">
+            <img src="../../../../image/towercrane/tower_lg.png" alt="">
+            <div class="show">
+                <div class="show-item">
+                    <div class="line"></div>
+                    <p>预警:&nbsp;<span>超过额定值的30%</span></p>
+                </div>
+                <div class="show-item">
+                    <div class="line danger"></div>
+                    <p>预警:&nbsp;<span>超过额定值的30%</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="date">
+                <h2>2020-05-12  02:34</h2>&nbsp;
+                <i class="aui-iconfont aui-icon-recovery"></i>
+            </div>
+            <ul class="f_show">
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h3>阙值(25)</h3>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="danger">
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>载重(t)</h2>
+                        <h2>0.2</h2>
+                        <h2>阙值(25)</h2>
+                    </div>
+                </li>
+
+
+
+            </ul>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function() {
+
+
+        }
+    </script>
+
+</body>
+
+</html>

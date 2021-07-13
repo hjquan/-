@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .content {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .rule-name {
+            padding: 0.5rem;
+            height: 2rem;
+            background: #ffffff;
+        }
+
+        .text-left {
+            float: left;
+        }
+
+        .text-right {
+            float: right;
+            color: #909090;
+        }
+
+        .rule-content {
+            width: 100%;
+            height: 10rem;
+            margin-top: 0.5rem;
+            background: #ffffff;
+
+        }
+
+        .name-right {
+            margin-left: 6rem;
+            color: #909090;
+            height: 1.5rem;
+        }
+
+        .rule-content ul li {
+            width: 100%;
+            height: 2rem;
+            padding: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .rule-wifi {
+            width: 100%;
+            /* height: 2rem; */
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .add-btn {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .name-right input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left img {
+            display: inline;
+            width: 1rem;
+            margin-left: -0.4rem;
+        }
+
+        .text-right img {
+            float: right;
+            width: 1rem;
+        }
+
+        .xiujia div {
+            float: right;
+            margin-left: 0.5rem;
+        }
+
+        /*divselecTime模块  */
+        .select-time-div {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            display: none;
+        }
+
+        .div-top {
+            width: 100%;
+            height: 65%;
+            position: absolute;
+            top: 0;
+            background: #000000;
+            opacity: 0.2;
+        }
+
+        .div-bottom {
+            background-color: #ffffff;
+            height: 35%;
+            width: 100%;
+            position: absolute;
+            top: 65%;
+        }
+
+        .confirm {
+            background: #ffffff;
+            color: #058FFD;
+            border: 0;
+            position: absolute;
+            right: 1rem;
+            top: 0.5rem;
+        }
+
+        .aui-list-item-label span {
+            color: #058FFD;
+        }
+
+        .wifi-name {
+            width: 100%;
+            height: 2rem;
+            color: #323233;
+            background: #ffffff;
+            padding-left: 1rem;
+            line-height: 2rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">新增考勤组</div>
+            <a class="aui-pull-right" tapmode>
+                <div class="add-btn" @click="saveRule()">保存</div>
+            </a>
+        </header>
+        <div class="content">
+            <div class="rule-name">
+                <div class="text-left">考勤组名称
+                    <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                </div>
+                <div class="name-right">
+                    <input type="text" placeholder="请输入名称" v-model="rulesName">
+                </div>
+            </div>
+            <div class="rule-content">
+                <ul>
+                    <li @click="openSelectObj()">
+                        <div class="text-left">考勤对象
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            {{strNum(attendanceRoleName,10)}}
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li @click="openSelectTime()">
+                        <div class="text-left">上下班时间
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            <span
+                                v-if="startWorkHour">{{startWorkHour}}:{{startWorkMinute}}-{{endWorkHour}}:{{endWorkMinute}}
+                            </span>
+                            <span v-if="startFlage">
+                                <span>{{startWorkTime}} &nbsp;-&nbsp; {{endWorkTime}}</span>
+                            </span>
+                            {{countWorkHour}}<span v-if="countWorkHour">小时</span>&nbsp;&nbsp;&nbsp;
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">休假</div>
+                        <div class="text-right xiujia">
+                            <div class="aui-list-item-input">
+                                <input type="checkbox" class="aui-switch" v-model="holidayFlage" checked>
+                            </div>
+                            <div class="aui-list-item-label" v-if="holidayFlage">
+                                <span
+                                    @click="selectStartHoliday()">{{startHoliday}}</span>&nbsp;&nbsp;-&nbsp;&nbsp;<span
+                                    @click="selectEndHoliday()">{{endHoliday}}</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">考勤方式
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            <div class="aui-list-item-input">
+                                <label><input class="aui-radio" type="checkbox" name="demo1" v-model="addrFlage"
+                                        checked> 地址</label>
+                                <label><input class="aui-radio" type="checkbox" name="demo1" v-model="wifiFlage">
+                                    Wi-Fi</label>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">
+                            <input id="addr" type="text" placeholder="请输入考勤地址" v-model="attendanceAddress">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="rule-wifi">
+                <div class="wifi-name" v-for="(items,index) in selectedWifi" :key="index"
+                    @click="chooseWifi(items,index)">
+                    {{items.SSID}}
+                    <i class="aui-iconfont aui-icon-close " style="float: right;" @click="deleteWifi(index)"></i>
+                </div>
+                <a @click="addWifi()">添加考勤Wi-Fi</a>
+            </div>
+        </div>
+        <div class="select-time-div">
+            <div class="div-top" @click="colseSelectTime()">
+
+            </div>休假
+            <div class="div-bottom">
+                <div class="aui-tab" id="tab" style="border-bottom: 1px #FCFCFC solid;">
+                    <div class="aui-tab-item aui-active" onclick="randomSwitchBtn(this)" @click="goWorkTime()">上班时间
+                    </div>
+                    <div class="aui-tab-item" onclick="randomSwitchBtn(this)" @click="closeWorkTime()">下班时间</div>
+                    <div class="aui-tab-item"></div>
+                    <div class="aui-tab-item"></div>
+                </div>
+                <button class="confirm" @click="confirmSelectTime()">确定</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        var dialog = new auiDialog({})
+        apiready = function () {
+            var goWorkTime = api.require('timeSelector');
+            $api.fixStatusBar($api.dom('.header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleInfo: api.pageParam.ruleInfo || null,//考勤规则对象
+                    WorkHour: 0,
+                    WorkMinute: 0,
+                    startWorkHour: 0,  //上班时间小时
+                    startWorkMinute: 0,  //上班时间分钟
+                    endWorkHour: 0,  //下班时间小时
+                    endWorkMinute: 0,  //下班时间分钟
+                    countWorkHour: null,    //工作时常
+                    attendanceRoleName: '',//考勤人员
+                    attendanceRoleIds: '',  //考勤人员id
+                    totalPerson: null,
+                    addrFlage: null,    //地址选择标识
+                    wifiFlage: null,   //wifi标识
+                    holidayFlage: null,  //休假标识
+                    rulesName: null,  //规则对象名
+                    startHoliday: '开始时间',
+                    endHoliday: '结束时间',
+                    attendanceWifi: '',  //wifi名字
+                    macAddress: '',    // mac地址  
+                    selectedWifi: [],   //选择的wifi
+                    attendanceAddress: '', //考勤地址
+                    //更新的展示时间数据
+                    startWorkTime: '',    //上班时间
+                    endWorkTime: '',         //下班时间
+                    startFlage: false,     //上班显示falge
+                },
+                created: function () {
+                    //格式化数据
+                    this.layoutData()
+                    var that = this;
+                    //监听选择对象返回的数据
+                    api.addEventListener({
+                        name: 'selectOjc'
+                    }, function (ret, err) {
+                        // console.log(JSON.stringify(ret.value.selectOjcInfo));
+                        var name_join = '';
+                        var id_join = '';
+                        that.totalPerson = 0;
+                        ret.value.selectOjcInfo.map(function (item) {
+                            name_join += item.position + ',';
+                            id_join += item.roleId + ',';
+                            that.totalPerson++;
+                        });
+                        that.totalPerson = name_join.substr(0, 7) + '   等' + that.totalPerson + '人';
+                        that.attendanceRoleName = name_join.substr(0, name_join.length - 1);
+                        that.attendanceRoleIds = id_join.substr(0, id_join.length - 1);
+                    });
+                    //监听选择wifi返回数据
+                    api.addEventListener({
+                        name: 'selectWifi'
+                    }, function (ret, err) {
+                        // console.log(JSON.stringify(selectOjcInfo));
+                        that.selectedWifi = ret.value.selectedWifi;
+                    });
+                    //修改函数
+                    this.updataRule();
+                },
+                methods: {
+                    //格式化数据
+                    layoutData: function () { },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //渲染修改数据
+                    updataRule: function () {
+                        var ruleInfo = null;
+                        var that = this;
+                        console.log("需要更新的数据:" + JSON.stringify(api.pageParam.ruleInfo))
+                        if (api.pageParam.ruleInfo) {
+                            var ruleInfo = api.pageParam.ruleInfo;
+                            that.rulesName = ruleInfo.rulesName;
+                            that.attendanceRoleName = ruleInfo.attendanceRoleName;
+                            that.startWorkTime = ruleInfo.startWorkTime;
+                            that.endWorkTime = ruleInfo.endWorkTime;
+                            that.startFlage = true;
+                            if (ruleInfo.restEndDay) {
+                                holidayFlage = true;
+                                that.endHoliday = ruleInfo.restEndDay;
+                                that.startHoliday = ruleInfo.restStartDay;
+                            }
+                            if (ruleInfo.attendanceWays == '1') {
+                                that.addrFlage = true;
+                                that.wifiFlage = true;
+                            }
+                            if (ruleInfo.attendanceWays == '2') {
+                                that.addrFlage = true;
+                                that.wifiFlage = false;
+                            }
+                            if (ruleInfo.attendanceWays == '3') {
+                                that.addrFlage = false;
+                                that.wifiFlage = true;
+                            }
+                            that.attendanceAddress = ruleInfo.attendanceAddress;
+                            document.getElementById('addr').setAttribute('disabled', 'disabled');
+                            //格式化wifi数据
+                            var newSelectedWifi = ruleInfo.attendanceWifi.split(",");
+                            var i = 0;
+                            newSelectedWifi.map(function (item) {
+                                that.selectedWifi[i++] = {
+                                    SSID: item
+                                };
+                            });
+                            //初始化数据
+                            that.attendanceRoleIds = ruleInfo.attendanceRoleIds;
+                        }
+                    },
+                    //保存按钮函数
+                    saveRule: function () {
+                        if (this.ruleInfo.rulesId) {
+                            this.postRule();
+                        } else {
+                            this.addRule();
+                        }
+                    },
+                    //更新考勤规则
+                    postRule: function () {
+                        //格式化数据
+                        var that = this;
+                        var attendanceWifi = '';
+                        var macAddress = '';
+                        this.selectedWifi.map(function (item) {
+                            attendanceWifi += item.SSID + ',';
+                            if (item.BSSID) {
+                                macAddress += item.BSSID + ',';
+                            } else {
+                                macAddress = that.ruleInfo.macAddress;
+                            }
+
+                        });
+                        var attendanceWays = '';
+                        if (this.addrFlage == true && this.wifiFlage == true) {
+                            attendanceWays = '1';
+                        } else if (this.addrFlage == false && this.wifiFlage == true) {
+                            attendanceWays = '3';
+                        } else if (this.addrFlage == true && this.wifiFlage == false) {
+                            attendanceWays = '2';
+                        }
+                        console.log("attendanceWays:" + attendanceWays)
+                        var parme = {
+                            rulesId: that.ruleInfo.rulesId,
+                            rulesName: this.rulesName,
+                            attendanceRoleIds: this.attendanceRoleIds,
+                            startWorkTime: this.startWorkHour != 0 ? this.startWorkHour + ':' + this.startWorkMinute : that.ruleInfo.startWorkTime,
+                            endWorkTime: this.endWorkHour != 0 ? this.endWorkHour + ':' + this.endWorkMinute : that.ruleInfo.startWorkTime.endWorkTime,
+                            holidaySet: '1',
+                            attendanceWays: attendanceWays,
+                            mapX: '',
+                            mapY: '',
+                            attendanceAddress: '',
+                            attendanceWifi: attendanceWifi,
+                            macAddress: macAddress,
+                            projectId: $api.getStorage('enterpriseId'),
+                            createUserId: $api.getStorage('userId'),
+                            mapC: '30',
+                            restEndDay: this.startHoliday,
+                            restStartDay: this.endHoliday,
+                            attendanceRoleName: this.attendanceRoleName,
+                        }
+                        console.log('parme:' + JSON.stringify(parme));
+                        if (parme.rulesName && parme.attendanceRoleName && parme.endWorkTime && parme.startWorkTime) {
+                            $app.post(
+                                'true',
+                                attendanceRuleURL,
+                                parme,
+                                function (ret) {
+                                    console.log(JSON.stringify(ret));
+                                    that.closeWin()
+                                })
+                        } else {
+                            api.toast({
+                                msg: '部位为必填项...',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                        }
+                    },
+                    //新增考勤规则
+                    addRule: function () {
+                        //格式化数据
+                        var that = this;
+                        var attendanceWifi = '';
+                        var macAddress = '';
+                        this.selectedWifi.map(function (item) {
+                            attendanceWifi += item.SSID + ',';
+                            macAddress += item.BSSID + ',';
+                        });
+                        var attendanceWays = '';
+                        if (this.addrFlage == true && this.wifiFlage == true) {
+                            attendanceWays = '1';
+                        } else if (this.addrFlage == false && this.wifiFlage == true) {
+                            attendanceWays = '3';
+                        } else if (this.addrFlage == true && this.wifiFlage == false) {
+                            attendanceWays = '2';
+                        }
+                        console.log("attendanceWays:" + attendanceWays)
+                        //根据地址，获取经纬度
+                        // var map = api.require('bMap');
+                        // map.getCoordsFromName({
+                        //     city: '北京',
+                        //     address: '天安门'
+                        // }, function (ret, err) {
+                        //     if (ret.status) {
+                        //         alert(JSON.stringify(ret));
+                        //     }
+                        // });
+                        //新增需要传出的字段
+                        var parme = {
+                            rulesId: '',
+                            rulesName: this.rulesName,
+                            attendanceRoleIds: this.attendanceRoleIds,
+                            startWorkTime: this.startWorkHour + ':' + this.startWorkMinute,
+                            endWorkTime: this.endWorkHour + ':' + this.endWorkMinute,
+                            holidaySet: '1',
+                            attendanceWays: attendanceWays,
+                            mapX: '',
+                            mapY: '',
+                            attendanceAddress: this.attendanceAddress,
+                            attendanceWifi: attendanceWifi,
+                            macAddress: macAddress,
+                            projectId: $api.getStorage('enterpriseId'),
+                            createUserId: $api.getStorage('userId'),
+                            mapC: '30',
+                            restEndDay: this.startHoliday,
+                            restStartDay: this.endHoliday,
+                            attendanceRoleName: this.attendanceRoleName,
+                        }
+                        console.log('parme:' + JSON.stringify(parme));
+                        if (parme.rulesName && parme.attendanceRoleName && parme.endWorkTime && parme.startWorkTime) {
+                            $app.post(
+                                'true',
+                                attendanceRuleURL,
+                                parme,
+                                function (ret) {
+                                    console.log(JSON.stringify(ret));
+                                    that.closeWin()
+                                })
+                        } else {
+                            api.toast({
+                                msg: '部位为必填项...',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                        }
+                    },
+                    //删除wifi
+                    deleteWifi(index) {
+                        this.selectedWifi.splice(index, 1);
+                    },
+                    //选择时间模块
+                    openSelectTime: function () {
+                        document.getElementsByClassName('select-time-div')[0].style.display = "block";
+                        this.startFlage = false;
+                        this.goWorkTime();
+                    },
+                    //关闭时间模块
+                    colseSelectTime: function () {
+                        document.getElementsByClassName('select-time-div')[0].style.display = "none";
+                        goWorkTime.close();
+                        this.startWorkHour = null;  //上班时间小时
+                        this.startWorkMinute = null;  //上班时间分钟
+                        this.endWorkHour = null;  //下班时间小时
+                        this.endWorkMinute = null;  //下班时间分钟
+                    },
+                    //确定选择时间
+                    confirmSelectTime: function () {
+                        document.getElementsByClassName('select-time-div')[0].style.display = "none";
+                        goWorkTime.close();
+                    },
+                    //选择上班时间
+                    goWorkTime: function () {
+                        var that = this
+                        goWorkTime.open({
+                            x: 0,
+                            y: 500,
+                            width: api.frameWidth,
+                            height: 260,
+                            fixedOn: api.frameName,
+                            separateColor: '#ffffff',
+                            hour: that.startWorkHour,
+                            minute: that.startWorkMinute,
+                        }, function (ret, err) {
+                            console.log(JSON.stringify(ret) + JSON.stringify(err))
+                            if (ret) {
+                                // console.log("上班时间" + JSON.stringify(ret));
+                                that.startWorkHour = that.addZero(ret.hour);
+                                if (ret.minute == 0) {
+                                    that.startWorkMinute = '00'
+                                } else {
+                                    that.startWorkMinute = that.addZero(ret.minute);
+                                }
+                            }
+                        });
+                    },
+                    //选择下班班时间
+                    closeWorkTime: function () {
+                        var that = this
+                        goWorkTime.open({
+                            x: 0,
+                            y: 500,
+                            width: api.frameWidth,
+                            height: 260,
+                            fixedOn: api.frameName,
+                            separateColor: '#ffffff',
+                            hour: that.endWorkHour,
+                            minute: that.endWorkMinute,
+                        }, function (ret, err) {
+                            if (ret) {
+                                // console.log("上班时间" + JSON.stringify(ret));
+                                that.endWorkHour = that.addZero(ret.hour);
+                                if (ret.minute == 0) {
+                                    that.endWorkMinute = '00'
+                                } else {
+                                    that.endWorkMinute = that.addZero(ret.minute);
+                                }
+                            }
+                        });
+                    },
+                    //补充o
+                    addZero: function(s) {
+                        return s < 10 ? '0' + s : s
+                    },
+                    //选择对象
+                    openSelectObj: function () {
+                        api.openWin({
+                            name: 'selectOjc',
+                            url: 'selectOjc.html',
+                            pageParam: {
+                                name: 'selectOjc'
+                            }
+                        });
+                    },
+                    //添加wifi
+                    addWifi: function () {
+                        api.openFrame({
+                            name: 'selectWifi',
+                            url: 'selectWifi.html',
+                            pageParam: {},
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    //选择开始休假时间
+                    selectStartHoliday: function () {
+                        var that = this;
+                        //获取日志日期
+                        var timeDate = new Date();
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            that.startHoliday = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();//选择的时间年月日
+                        })
+                    },
+                    //选择结束休假时间
+                    selectEndHoliday: function () {
+                        var that = this;
+                        //获取日志日期
+                        var timeDate = new Date();
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            that.endHoliday = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();//选择的时间年月日
+                        })
+                    },
+                    strNum: function(txt, num) {
+                        if (!txt) return;
+                        var str = txt;
+                        str = str.substr(0, num) + '...';
+                        return str;
+                    }
+                },
+            })
+        }
+        // 随意切换按钮
+        function randomSwitchBtn(tag, falge) {
+            if (tag == $api.dom('.aui-tab-item.aui-active')) return;
+            var eHeaderLis = $api.domAll('.aui-tab-item'),
+                index = 0;
+            for (var i = 0, len = eHeaderLis.length; i < len; i++) {
+                if (tag == eHeaderLis[i]) {
+                    index = i;
+                } else {
+                    $api.removeCls(eHeaderLis[i], 'aui-active');
+                }
+            }
+            $api.addCls(eHeaderLis[index], 'aui-active');
+            if (falge === 1) {
+
+            } else {
+
+            }
+        }
+    </script>
+</body>
+
+</html>

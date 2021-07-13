@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../../css/voice.css">
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn_box {
+            width: 100%;
+            padding: 5px 10px;
+            position: fixed;
+            background: #fff;
+            bottom: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 1px #ccc;
+        }
+
+        .btn_item {
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn_active {
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .person {
+            padding: 10px;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .person,
+        .lf {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lf img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px
+        }
+
+        .name {
+            color: #000;
+            font-size: 15px;
+        }
+
+        .iphone {
+            color: #555;
+            font-size: 12px;
+        }
+
+        .train_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            /*padding-bottom: 5px;*/
+            position: relative;
+        }
+
+        .train_title {
+            width: 100%;
+            padding: 10px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .train_show {
+            width: 100%;
+            padding-left: 15px;
+        }
+
+        .train_show .train_show_item {
+            padding-left: 25px;
+        }
+
+        .btn_add {
+            color: rgba(5, 143, 253, 1);
+            font-size: 14px;
+            line-height: 45px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .train_box_item {
+            padding: 10px;
+            padding-right: 25px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+        .click_upload i {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D2D2D2;
+        }
+
+        .option_box {
+            width: 100%
+        }
+
+        .hours_cls {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .hours_cls input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #D2D2D2;
+            text-align: center;
+            margin-right: 5px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+
+        .enclosure {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .enclosure img {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+        }
+
+        .img_tain {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .click_close {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+        }
+
+        .float_btn {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #008EFF;
+            right: 25px;
+            bottom: 50px;
+            z-index: 100;
+        }
+
+        .float_btn i {
+            font-size: 24px;
+            background-color: #008EFF;
+            color: #fff;
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+            <ul>
+                <li class="mian_item border_bottom_after">
+                    <p>设备类型</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1" v-text="liftInfo.deviceType"></span>
+                    </p>
+                </li>
+                <li class="mian_item border_bottom_after " style="height:auto">
+                    <p>设备照片</p>
+                    <img :src="liftInfo.imgUrl" style="width:3rem; height: 3rem;" alt="" class="lay_img">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>设备序列号</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1" v-text="liftInfo.deviceNum"></span>
+                    </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>自编号</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.liftNo"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>品牌型号</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.liftModel"></span></p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>备案号</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.recordNo"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>高度</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.topheight"></span> <span
+                            v-if="liftInfo.topheight">m</span></p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>额重</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.maxweight"></span> <span
+                            v-if="liftInfo.maxweight">t</span></p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>电机控制</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.motorControl"></span></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>进场时间</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.entryTime"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>出场时间(选填)</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.exitTime"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" style="border-top: 1px #008EFF solid; " tapmode>
+                    <p>使用单位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.mainContractor"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" style="border-top: 1px #008EFF solid; " tapmode>
+                    <p>租赁单位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.rentalUnit"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>租赁单位负责人</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.rentalOperator"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>租赁单位负责人联系方式</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.rentalPhone"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" style="border-top: 1px #008EFF solid; " tapmode>
+                    <p>维保单位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.tpmUnit"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>维保单位负责人</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.tpmOperator"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>维保单位负责人联系方式</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.tpmOperatorPhone"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" style="border-top: 1px #008EFF solid; " tapmode>
+                    <p>操作人员</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.operator"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" style="border-bottom: 1px #008EFF solid; " tapmode>
+                    <p>操作人员联系方式</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="liftInfo.operatorPhone"></span> </p>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/lunarcalendar.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    liftRunMonitor: api.pageParam.liftRunMonitor,   //升降机信
+                    towerType: null,          //升降机类型
+                    deviceType: null,
+                    liftInfo: null,
+                },
+                created: function () {
+                    this.getElevatorInfoById();
+                },
+                methods: {
+                    //获取升降机数据
+                    getElevatorInfoById: function () {
+                        var that = this;
+                        var prame = {
+                            id: that.liftRunMonitor.id,
+                            // id: "e355431d2cdc4d2cbb73750750362d3c",
+                        };
+                        $app.post(
+                            true,
+                            getElevatorInfoById,
+                            prame,
+                            function (ret) {
+                                that.liftInfo = ret.obj;
+                                console.log("获取升降机运行监控列表:" + JSON.stringify(that.liftInfo));
+                                that.inte()
+                            }
+                        )
+                    },
+                    //格式数据
+                    inte: function () {
+                        if (this.liftInfo.deviceType == "2") {
+                            this.liftInfo.deviceType = "升降机"
+                        }
+                        this.liftInfo.imgUrl = this.liftInfo.urlPrefix + this.liftInfo.photo
+                        this.liftInfo.entryTime = $app.timeStampTurnTime(this.liftInfo.entryTime).slice(0, 10);
+                        this.liftInfo.exitTime = $app.timeStampTurnTime(this.liftInfo.exitTime).slice(0, 10);
+                    },
+                    openAdddeviceFn: function () {
+                        var that = this;
+                        api.closeWin({
+                            name: 'equipmentlist'
+                        });
+                        api.openWin({
+                            name: 'adddevice',
+                            url: './adddevice.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                liftInfo: that.liftInfo,   //升降机信息
+                            },
+                            bounces: true,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 25px;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 110px;
+            padding: 10px 15px;
+            background-color: #fff;
+        }
+
+        .list_item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .list_left {
+            display: flex;
+        }
+
+        .list_left p {
+            padding: 5px;
+            color: #323233;
+            font-size: 15px;
+            margin-left: 15px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: #7187E5;
+            color: #fff;
+            line-height: 36px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            margin-left: 15px;
+
+        }
+
+        .bottom_before_line::before {
+            content: "";
+            display: block;
+            width: 90%;
+            height: 1px;
+            background-color: #F5F5F5;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+        .txt_p {
+            color: #B7B7BC
+        }
+
+        .w_5 {
+            flex: 1;
+            /*text-align: right;*/
+        }
+
+        .btn {
+            font-size: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .active {
+            color: #058FFD
+        }
+
+        .title {
+            font-size: 16px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+            display: flex;
+            align-items: center;
+            height: 50px;
+            position: relative;
+        }
+
+        .title i {
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0 15px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" @click="closeWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">选择抄送人</div>
+                <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfonts btn active" @click="submit()">确定</span>
+                </a>
+            </header>
+            <div class="aui-searchbar" id="search">
+                <div class="aui-searchbar-input aui-border-radius" tapmode onclick="">
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <form action="">
+                        <input type="search" placeholder="请输入搜索内容" id="search-input" v-model.trim="listIf"
+                            @input="changeInput()">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="main_box" v-if="selctList.length">
+            <div class="" v-for=" (items,i) in selctList">
+                <div class="title bottom_before_line">
+                    <label tapmode v-if="items " @click="parentFn(items.checked,i)"><input class="aui-radio"
+                            ref="check_parent" :checked="items.checked" type="checkbox" name="checkbox"></label>
+                    <span tapmode @click="clickCurIndex(i)"><i class="aui-iconfont "
+                            :class="[i != curIndex?'aui-icon-right':'aui-icon-down']"></i>{{items.name}}</span>
+                </div>
+                <ul class="list_box" v-show="i== curIndex">
+                    <li class="list_item" v-for="(item,item_i) in items.children">
+                        <div class="list_left bottom_before_line ">
+                            <label tapmode><input class="aui-radio mt-5" :checked="item.checked"
+                                    :class="'check_child'+i" type="checkbox"
+                                    @click="childFn(item.checked,i,item_i)"></label>
+                            <div class="logo" v-cloak>{{item.name.substr(-2)}}</div>
+                            <p class="aui-ellipsis-1 " v-text="item.name">张建</p>
+                        </div>
+                        <p class="txt_p  aui-ellipsis-1 " v-text="item.position">工人</p>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            api.parseTapmode()
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    curIndex: 0,//显示当前项
+                    copySelctList: [],
+                    selctList: [], //拉取的列表数据
+                    listIf: '',//过滤条件
+                    checkedBox: [],//已选中的数据集合
+                    allcheckState_toggle: false,//全选是否选中
+                    project: null,//项目人员
+                    loaBox: null,//劳务队
+                },
+                computed: {
+
+
+                },
+                watch: {
+
+                },
+
+                created: function () {
+
+                },
+                methods: {
+                    // 父元素状态
+                    parentFn: function(data, i) {
+                        var curenState = this.$refs.check_parent[i].checked;
+                        this.selctList[i].children.forEach(function (item) {
+                            item.checked = curenState;
+                        })
+                        this.selctList[i].checked = curenState;
+                    },
+                    //子元素状态
+                    childFn: function(data, i, child_i) {
+                        var _this = this;
+                        var clsBox = document.getElementsByClassName('check_child' + i);
+                        this.selctList[i].children[child_i].checked = clsBox[child_i].checked;
+                        console.log(clsBox[child_i].checked);
+                        var isFlag = this.selctList[i].children.every(function (item) {
+                            return item.checked == true;
+                        })
+                        console.log(isFlag);
+                        this.selctList[i].checked = isFlag;
+                    },
+
+                    clickCurIndex: function(i) {
+                        this.curIndex == i ? this.curIndex = -1 : this.curIndex = i;
+                    },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeFrame({
+                            name: 'transmitPer'
+                        });
+                    },
+                    //初始化数据
+                    init: function () {
+                        var _this = this;
+                        //记住回显默认选中
+                        if (api.pageParam.defalutcheck) {
+                            _this.copySelctList = $api.strToJson(api.pageParam.defalutcheck);
+                            _this.selctList = $api.strToJson(api.pageParam.defalutcheck);
+                            return false;
+                        }
+
+                        var params = {
+                            "projectId": $api.getStorage('enterpriseId'),
+                            "userType": 'all',
+                            "areaId": '1'
+                        }
+                        function callback(ret) {
+                            //数据处理
+                            ret.obj.forEach(function (item) {
+                                item.checked = false;
+                            })
+                            var result = $app.groupArr(ret.obj, 'userType')
+
+                            //自定义组装数据结构
+                            var filterDate = [
+                                {
+                                    name: '项目经理',
+                                    userType: '3',
+                                    checked: false,
+                                },
+                                {
+                                    name: '劳务队',
+                                    userType: 4,
+                                    checked: false,
+                                }
+                            ]
+                            _this.project = result[0].list;
+                            _this.loaBox = result[1].list;
+                            filterDate.forEach(function (items, i) {
+                                items.children = result[i].list
+                            })
+                            // console.log($api.jsonToStr(filterDate));
+                            _this.copySelctList = filterDate;
+                            _this.selctList = filterDate;
+                        }
+                        $app.post(
+                            true,
+                            allgetUserList,
+                            params,
+                            callback
+                        )
+                    },
+
+                    // //标识已选择的数据选中状态
+                    defaultcheck: function () {
+                        var isState = null;
+                        this.checkedBox.forEach(function (item) {
+                            if (item.userId == data.userId) {
+                                return isState = 1;
+                            }
+                        })
+                        return isState;
+
+                    },
+
+                    //提交选中数据集合
+                    submit: function () {
+                        api.sendEvent({
+                            name: 'transmitPer',
+                            extra: {
+                                sendDuplInfo: $api.jsonToStr(vm.selctList)
+                            }
+                        });
+                        setTimeout(function () {
+                            api.closeFrame({
+                                name: 'transmitPer'
+                            });
+                        }, 100)
+                    },
+                    //筛选
+                    changeInput: function () {
+                        this.selctList.forEach(function (items) {
+                            var itemName = items.children;
+                            itemName.forEach(function (item, i) {
+                                var name = item.name;
+                                if (name.indexOf(vm.listIf) != -1) {
+                                    console.log(i);
+                                    itemName.unshift(itemName.splice(i, 1)[0])
+                                }
+                            })
+                        })
+                    },
+                }
+
+            })
+            vm.init();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .bg_f {
+            background: #fff
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+        .aui-bar-btn .aui-active {
+            color: #fff
+        }
+        .pb_10{padding-bottom: 10px; }
+        .tabbarbox{
+            height: 50px;
+            display: flex;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #323233;
+            z-index: 200;
+            background-color: #fff;
+            box-shadow: 0px -2px 2px #eee;
+        }
+        .tabbarbox img{
+            width: 25px;
+            height: 25px;
+            margin:0 auto;
+        }
+        .tabbarbox p{
+            font-size:12px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:#c7c7c7;
+            text-align: center;
+        }
+        .tabbarbox p.tabar_active{color:#058FFD}
+        .img_h{width:20px;height: 20px;}
+    </style>
+</head>
+
+<body>
+    <div class="bg_f  header" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title" v-text="curIndex == 0 ? '实测实量' : curIndex == 1 ? '实测实量统计': '图纸管理'"></div>
+            <a class="aui-pull-right aui-btn" >
+                <img  v-if="curIndex == 0" class="img_h" src="../../../image/qualityproblem/shuaixuan.png" tapmode @click="openNewPage('筛选')" alt="">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="aui-iconfont aui-icon-plus" tapmode v-if="curIndex == 0" @click="openNewPage('新增')"></i>
+                <i class="aui-iconfont aui-icon-plus" tapmode v-if="curIndex == 2" @click="openNewPage('新增图纸')"></i>
+            </a>
+        </header>
+        <ul class="tabbarbox" v-if="tabarIsShow">
+            <li v-for="(item,i) in barBar" @click="tabBarFn(item,i)" v-if="i === 0 || isRoleFn(item.btnRole)">
+                <img :src="i == curIndex ? item.active_src : item.src" alt="">
+                <p :class="{'tabar_active':i == curIndex}" v-text="item.name"></p>
+            </li>
+        </ul>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+    <script>
+        apiready = function() {
+            api.parseTapmode();
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var offset = $api.offset($api.dom('.header'));
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    tabarIsShow:false,//底部按钮是否展示
+                    barBar:[],//底部导航
+                    curIndex:0,
+                    btnRole:'',//按钮权限
+
+                },
+                created:function(){
+                    var btnBox = $api.getStorage('enterpriseSelectCurren').role.buttonRights;
+                    this.btnRole = btnBox;
+                    this.barBar = [
+                        {name:'列表',btnRole:'',src:'../../../image/actualmeasurement/list_focus.png',active_src:'../../../image/actualmeasurement/list_active.png','frame_name':'measure_index_frame',url:'./index_frame.html'},
+                        {name:'统计',btnRole:'scslCount',src:'../../../image/actualmeasurement/Statistics_focus.png',active_src:'../../../image/actualmeasurement/Statistics_active.png','frame_name':'measure_index1_frame',url:'./statistics/index_frame.html'},
+                        {name:'图纸',btnRole:'drawingManager',src:'../../../image/actualmeasurement/drawing_focus.png',active_src:'../../../image/actualmeasurement/drawing_active.png','frame_name':'measure_index2_frame',url:'./index_frame2.html'},
+                    ]
+                    console.log($api.jsonToStr(btnBox));
+                    this.tabarIsShow = btnBox.indexOf('scslCount') != -1 || btnBox.indexOf('drawingManager') != -1;
+                    // console.log(btnBox.indexOf('scslCount') != -1 || btnBox.indexOf('drawingManager') != -1);
+                    this.openFrametoggle(this.barBar[0])
+                },
+                methods:{
+                    //判断是否显示按钮
+                    isRoleFn:function(data){
+                        var state = this.btnRole.indexOf(data);
+                        console.log(state);
+                        if(state == -1){
+                            return false
+                        }else{
+                            return true
+                        }
+                    },
+                    //openFrame
+                    openFrametoggle:function(data){
+                        console.log(this.tabarIsShow);
+                        var frame_h = this.tabarIsShow ? api.winHeight-offset.h-50 : 'auto';
+                        api.openFrame({
+                            name: data.frame_name,
+                            url: data.url,
+                            rect: {
+                                x: offset.l,
+                                y: offset.h,
+                                w: 'auto',
+                                h: frame_h
+                            },
+                            pageParam: {},
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    //点击底部导航
+                    tabBarFn:function(item,i){
+                        this.curIndex = i;
+                        switch (item.name) {
+                            case '列表':
+                                this.openFrametoggle(item)
+                                api.closeFrame({
+                                    name: 'measure_index1_frame'
+                                });
+                                api.closeFrame({
+                                    name: 'measure_index2_frame'
+                                });
+                                break;
+                            case '统计':
+                                this.openFrametoggle(item)
+                                api.closeFrame({
+                                    name: 'measure_index_frame'
+                                });
+                                api.closeFrame({
+                                    name: 'measure_index2_frame'
+                                });
+                                break;
+                            case '图纸':
+                                this.openFrametoggle(item)
+                                api.closeFrame({
+                                    name: 'measure_index_frame'
+                                });
+                                api.closeFrame({
+                                    name: 'measure_index1_frame'
+                                });
+                                break;
+                            default:
+
+                        }
+                    },
+
+                    //点击顶部打开新页面
+                    openNewPage:function(data){
+                        switch (data) {
+                            case '筛选':
+                                api.openFrame({
+                                    name: 'actualmeasurement_screen',
+                                    url: './index_screen.html',
+                                    rect: {
+                                        x: 0,
+                                        y: 0,
+                                        w: 'auto',
+                                        h: 'auto'
+                                    },
+                                    pageParam: {
+                                    },
+                                    bounces: false,
+                                    bgColor: 'rgba(0,0,0,0)',
+                                    vScrollBarEnabled: true,
+                                    hScrollBarEnabled: true
+                                });
+
+
+                                break;
+                            case '新增':
+                                api.openWin({
+                                    name: 'actualmeasurement_add',
+                                    url: './add.html',
+                                    pageParam: {
+                                    }
+                                });
+
+
+                                break;
+                            case '新增图纸':
+                                api.openWin({
+                                    name: 'actualmeasurement_adddraw',
+                                    url: './adddraw.html',
+                                    pageParam: {
+                                    }
+                                });
+
+
+                                break;
+                            default:
+
+                        }
+                    }
+                }
+            })
+        }
+
+
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

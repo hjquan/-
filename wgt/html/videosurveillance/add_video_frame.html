@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+  <style>
+    html,
+    body {
+      font-family: PingFang SC;
+      font-weight: 500;
+    }
+
+    .nav_video {
+      display: flex;
+      justify-content: flex-start;
+      ;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 7px;
+
+    }
+
+    .nav_item {
+      width: 33.3%;
+      padding: 3px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      position: relative;
+
+    }
+
+    .nav_item div {
+      position: relative;
+      background: rgba(181, 181, 181, 0.4);
+    }
+
+    .nav_item video {
+      width: 100%;
+      height: 90px;
+
+    }
+
+    .nav_item .nav_stack {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 15px;
+      background: rgba(27, 27, 27, 0.8);
+      font-size: 9px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 1);
+      text-align: center;
+      padding: 0 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav_stack * {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 1);
+    }
+
+    .nav_item .txt_online {
+      color: #00994C
+    }
+
+    .addbtn {
+      width: 33.3%;
+      /*padding: 3px;*/
+      height: 90px;
+      border: 3px solid rgba(5, 143, 253, 1);
+      border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .addbtn i {
+      font-size: 26px;
+      font-weight: bold;
+      color: #058FFD
+    }
+
+    .nav_item .del_btn {
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      border-radius: 8px;
+      text-align: center;
+      color: #fff;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: #f00;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+    <ul class="nav_video">
+      <li class="nav_item" v-for="(item,index) in cameraListInfo">
+        <div class="del_btn">
+          -
+        </div>
+        <div>
+          <video :poster="item.posterAddress">
+            <source src="movie.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="nav_stack">
+            <div>设备1: <span>摄像机位1</span> </div>
+            <div class="txt_online">在线</div>
+          </div>
+        </div>
+      </li>
+      <li class="addbtn" @click="addVideo()">
+        <i class="aui-iconfont aui-icon-plus"></i>
+      </li>
+    </ul>
+  </div>
+
+  <script type="text/javascript" src="../../../script/api.js"></script>
+  <script src="../../../script/sha1.js"></script>
+  <script src="../../../script/common.js"></script>
+  <script type="text/javascript" src="../../../script/vue.js"></script>
+  <script>
+    apiready = function () {
+
+
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          cameraListInfo: [], //摄像机数组
+        },
+        created: function () {
+          this.getAICaptureInfoList();
+          var that = this;
+          api.addEventListener({
+            name: 'editHomePageURL'
+          }, function (ret, err) {
+            if (ret) {
+              that.getAICaptureInfoList();
+            }
+          });
+
+        },
+        methods: {
+          //新增首页显示
+          addVideo: function () {
+            api.openWin({
+              name: 'list',
+              url: 'list.html',
+            });
+          },
+          //查询视频列表
+          getAICaptureInfoList: function () {
+            var that = this;
+            var prame = {
+              projectId: $api.getStorage('enterpriseId'),
+              cranesId: "",
+              type: "100",
+              isHomePage: "1"
+            };
+            console.log("请求参数：" + JSON.stringify(prame));
+            $app.post(
+              true,
+              getCameraListInfoURL,
+              prame,
+              function (ret) {
+                if (ret.obj) {
+                  that.cameraListInfo = ret.obj;
+                  that.approveCamera = that.cameraListInfo[0];
+                }
+                // moviePlayer.replay({
+                //     title: '篮球',
+                //     path: that.approveCamera.playAddr
+                // });
+                console.log("视屏监控" + JSON.stringify(ret));
+              }
+            )
+          },
+
+
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

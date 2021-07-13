@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+
+</head>
+
+<body>
+
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+        <a class="aui-pull-left aui-btn" onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title header_title" id="header_title">塔机维保</div>
+        <!-- <a class="aui-pull-right aui-btn" tapmode onclick="add()" tapmode>
+            <span class="aui-iconfont aui-icon-plus"></span>
+
+        </a> -->
+    </header>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            api.parseTapmode();
+
+
+            var offset = $api.offset($api.byId('header'));
+            api.openFrame({
+                name: 'towercrane_index',
+                url: 'index_frame.html',
+                rect: {
+                    x: 0,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+
+        function closeWin() {
+            api.closeWin()
+        }
+    </script>
+
+</body>
+
+</html>

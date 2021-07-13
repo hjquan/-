@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/unqualified.css" />
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../commonUi/H5TimeSelector/libs/iosselect.css">
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode onclick="javascript:api.closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">不合格</div>
+        </header>
+        <div class="main_box">
+            <ul v-cloak>
+                <li class="mian_item border_bottom_after">
+                    <p v-text="isSwitch ? '整改' : '不整改'"></p>
+                    <p><input type="checkbox" class="aui-switch" v-model="isSwitch" checked></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode onclick="openSelect()" v-if="isSwitch">
+                    <p>责任人</p>
+                    <p><span>{{person}}</span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after border_bottom_after" tapmode @click="selectTime()" v-if="isSwitch">
+                    <p>整改期限</p>
+                    <p><span v-text="dateTime"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="textarea_box" v-if="isSwitch">
+                    <h2>整改要求</h2>
+                    <textarea name="" placeholder="请输入..." v-model.trim="requirement"></textarea>
+                </li>
+
+            </ul>
+            <div class="cancelBtn" tapmode="hover" @click="submit()">提交</div>
+        </div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript" src="../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            vm.describeContent = api.pageParam.describeContent;
+            vm.switchInput = api.pageParam.switchInput;
+            vm.basisTxt = api.pageParam.basisTxt;
+            // vm.serverImg = api.pageParam.serverImg;
+            vm.dictionaries_id = api.pageParam.dictionaries_id;
+            vm.currenProjectId = api.pageParam.currenProjectId;
+            vm.position = api.pageParam.position;
+            vm.imgSrc = api.pageParam.imgSrc;
+
+            // vm.imgFilter();
+            api.addEventListener({
+                name: 'selectPerson'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.info = ret.value.selectItem;
+                    vm.person = ret.value.selectItem.name;
+                }
+            });
+            vm.init();
+
+        };
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                // serverImg: '', //服务器返回图片地址
+                info: '', //selectPerson传递的信息img
+                imgSrc: '', //本地图片地址
+
+                isSwitch: true, //是否整改
+                person: '', //责任人
+                dateTime: null, //整改时间
+                requirement: '', //整改要求
+                describeContent: '', //项目描述
+                switchInput: '', //项目是否合格
+                basisTxt: '', //依据
+                dictionaries_id: '', //分项id
+                currenProjectId: '', //项目id
+                position: '', //部位
+                srcImgUrl: '', //原图片地址
+                compressImgUrl: '', //压缩图片地址
+                selectDate: '', //选择模块默认时间
+                projectUserList: '' //项目列表
+
+            },
+            methods: {
+                init: function() {
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        getProjectUserList, {
+                            'projectId': api.pageParam.currenProjectId
+                        },
+                        function(ret) {
+                            vm.projectUserList = ret.obj.projectUserList;
+                            if (ret.obj && ret.obj.projectUserList) {
+                                ret.obj.projectUserList.forEach(function(item) {
+                                    if (item.position) {
+                                        if (item.position == '项目经理' && item.isJob == 1) {
+                                            vm.person = item.name;
+                                            vm.info = item;
+                                        }
+                                    }
+                                })
+                            }
+
+                        }
+                    )
+
+                },
+
+                //图片上传服务器保存
+                saveImg: function(fncFN) {
+                    var compressImg = [];
+                    if (vm.imgSrc.length) {
+                        var imageFilter = api.require('imageFilter');
+                        for (var i = 0; i < vm.imgSrc.length; i++) {
+                            (function(index) {
+                                var imageName = randomWord(false, 9, 12);
+                                var imageCachePath = api.cacheDir;
+                                imageFilter.compress({
+                                    img: vm.imgSrc[index],
+                                    quality: 0.3,
+                                    save: {
+                                        album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                        imgPath: imageCachePath,
+                                        imgName: imageName + '.jpg'
+                                    }
+                                }, function(ret, err) {
+                                    if (ret) {
+                                        var txt = imageCachePath + '/' + imageName + '.jpg';
+                                        compressImg.push(txt)
+                                    } else {
+
+                                    }
+                                });
+                            })(i);
+                        }
+                        var timer = setInterval(function() {
+                            if (compressImg.length) {
+                                clearInterval(timer)
+                                ajaxFile(
+                                    true,
+                                    '图片上传中...',
+                                    uplodeEnterpriseFileURL, {
+                                        enterpriseId: $api.getStorage('enterpriseId')
+                                    }, {
+                                        imgFile: compressImg
+                                    },
+                                    function(ret) {
+                                        vm.isBtn = false;
+                                        vm.serverImg = ret.obj;
+                                        vm.imgFilter(fncFN)
+                                    }
+                                )
+                            }
+                        }, 1000)
+
+                    } else {
+                        fncFN()
+                    }
+                },
+                // 获取当前时间
+                getCurrentDate: function() {          
+                    var timeStr = '/';          
+                    var curDate = new Date();          
+                    var curYear = curDate.getFullYear();  //获取完整的年份(4位,1970-????)
+                              
+                    var curMonth = curDate.getMonth() + 1;  //获取当前月份(0-11,0代表1月)
+                              
+                    var curDay = curDate.getDate();    //获取当前日(1-31)
+                              
+                    var Current = curYear + timeStr + curMonth + timeStr + curDay ;       
+                    vm.selectDate = Current;
+                },
+                // 时间选择
+                selectTime: function() {
+                    this.getCurrentDate()
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function(ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date()
+                            var currenTime = new Date(currenD.getFullYear(), currenD.getMonth(), currenD.getDate()).getTime(); //当前毫秒数
+
+                            if (currenTime > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                vm.dateTime = null
+                            } else {
+                                var time = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+                                vm.dateTime = time;
+                            }
+
+                        }
+
+                    })
+                },
+                //图片分类处理
+                imgFilter: function(fncFN) {
+                    if (vm.serverImg) {
+                        var srcImgUrl = this.serverImg.map(function(item) {
+                            return item.srcPath
+                        })
+                        var compressImgUrl = this.serverImg.map(function(item) {
+                            return item.compressPath
+                        })
+                        vm.srcImgUrl = srcImgUrl.join(',');
+                        vm.compressImgUrl = compressImgUrl.join(',');
+                        vm.isBtn = false;
+                        fncFN()
+                    }
+                },
+                submit: function() {
+                    if (vm.isSwitch && !vm.info) {
+                        api.toast({
+                            msg: '选择责任人...',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        return false;
+
+                    }
+                    if (vm.isSwitch && !vm.dateTime) {
+                        api.toast({
+                            msg: '请选择整改期限',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        return false;
+                    }
+
+                    function fnc() {
+                        var dataJson = {
+                            checkType: $api.getStorage('checkType'),
+                            srcImgUrl: vm.srcImgUrl,
+                            compressImgUrl: vm.compressImgUrl,
+                            isQualified: vm.switchInput == false ? '0' : '1',
+                            projectId: vm.currenProjectId,
+                            position: vm.position,
+                            basis: vm.describeContent,
+                            subitemId: vm.dictionaries_id,
+                            problemDescribe: vm.basisTxt,
+                            isRectification: vm.isSwitch == true ? '1' : '0',
+                            personliableId: vm.info.userId,
+                            personliableName: vm.info.name,
+                            personliableRoleId: vm.info.roleId,
+                            personliableRoleName: vm.info.position,
+                            deadline: vm.dateTime ? vm.dateTime : null,
+                            requirement: vm.requirement,
+                            createUserId: $api.getStorage('enterLoginInfo').userId,
+                            createUserName: $api.getStorage('enterLoginInfo').name,
+                            createUserRoleId: $api.getStorage('enterpriseSelectCurren').role.roleId,
+                            createUserRoleName: $api.getStorage('enterpriseSelectCurren').role.roleName,
+                            state: '1'
+                        };
+                        ajaxPost(
+                            true,
+                            '提交中...',
+                            addSecurityCheckURL,
+                            dataJson,
+                            function(ret) {
+                                $api.setStorage('checkType', null)
+                                api.sendEvent({
+                                    name: 'frame0TotalNumber',
+                                    extra: {}
+                                });
+
+                                setTimeout(function() {
+                                    api.closeToWin({
+                                        name: 'Index'
+                                    })
+                                }, 500);
+
+                            }
+                        )
+                    }
+                    vm.saveImg(fnc)
+                }
+            }
+        })
+
+        function openSelect() {
+            api.openWin({
+                name: 'selectPerson',
+                url: './selectPerson.html',
+                pageParam: {
+                    projectId: vm.currenProjectId,
+                    projectUserList: vm.projectUserList
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

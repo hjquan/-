@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>任务</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/timeAxis/libs/index.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .container {
+            margin-bottom: 80px
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .main_box {
+            margin-top: 75px;
+
+        }
+
+        .main_box .title {
+            display: flex;
+            justify-content: space-between;
+            height: 40px;
+            line-height: 40px;
+            padding-left: 20px;
+            padding-right: 10px;
+            position: relative;
+        }
+
+        .main_box .title p {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .beforeLine:before {
+            content: '';
+            width: 4px;
+            height: 14px;
+            background-color: #03a9f4;
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+        }
+
+        .flex_start div:first-child {
+            margin-right: 10px;
+            flex: 1;
+            color: #999;
+        }
+
+        .flex_start div:last-child {
+            flex: 4;
+            color: #333;
+        }
+
+        .listImage {
+            height: 80px;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            background-color: #fff;
+        }
+
+        .listImage img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        img.toVoid {
+            position: absolute;
+            top: 113px;
+            right: 13px;
+            z-index: 200;
+            width: 130px;
+            height: 130px;
+        }
+
+        .show {
+            display: none;
+        }
+
+        .btnBox > div {
+            width: 100%;
+            height: 60px;
+            position: fixed;
+            bottom: 0px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 300;
+            background-color: #fff;
+            padding-top: 5px;
+        }
+
+        .btnBox button {
+            flex:1;
+            height: 40px;
+            line-height: 40px;
+            background: rgba(255, 174, 19, 1);
+            border-radius: 6px;
+            border: none;
+            box-shadow: 0 0 3 #ccc;
+            margin:0 20px;
+            color: #fff;
+        }
+
+        .btnBox button.active {
+            background-color: #058FFD;
+        }
+
+        .header {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+        }
+        .txt_show{
+          padding: 10px;
+          min-height:50px;
+          font-size:15px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(50,50,51,1);
+          line-height:25px;
+          background-color: #fff;
+        }
+        .bg_ff{background-color: #fff;}
+        .list{padding-bottom: 20px}
+        .flx{
+            display: flex;
+        }
+        .flx_s_b{
+            justify-content: space-between;
+        }
+        .jg{
+            font-size:14px;
+            font-family:PingFangSC-Semibold,PingFang SC;
+            font-weight:400;
+            color: #323233;;
+        }
+        .txt_r{
+            text-align: right;
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(144,144,144,1);
+        }
+        .red_state{
+            font-size:13px;
+            font-weight:400;
+            color:rgba(5,143,253,1);
+        }
+        .statu{
+            font-size:12px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(120,120,120,1);
+        }
+        .list .item-inner .dot i{
+            left:2px;
+        }
+        .btnBox .rectificationBtn{
+            width:335px;
+            height:40px;
+            line-height: 40px;
+            text-align: center;
+            background:rgba(5,143,253,1);
+            border-radius:6px;
+            color:#fff;
+            cursor: pointer;
+            margin: 0 auto;
+            margin-bottom: 5px
+        }
+        .btnBox .rectification{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .imgBox{
+            display: flex;
+            justify-content: flex-start;
+        }
+        .showimg {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
+        .img_t{width: 24px;height:24px;margin-left: 8px;}
+        nav{height:35px;line-height: 35px;margin-bottom:10px;display: flex;justify-content: space-between;padding: 0 15px;background-color: #fff;align-items: center;}
+        .main-top h2{
+            font-size: 16px;
+            color: #323233;
+            position: relative;
+            padding-left: 20px;
+            background-color: #fff;
+        }
+        .leftline::before{
+            content:'';
+            display: inline-block;
+            height: 10px;
+            width: 3px;
+            background-color:#0590FF;
+            position: absolute;
+            left: 15px;
+            top:50%;
+            transform: translateY(-50%);
+        }
+        .btn{border: 1px solid #EC4031;color: #EC4031;width: 40px;height: 20px;font-size: 12px;text-align: center;line-height: 20px}
+        .bg_f{background-color: #fff;padding-top: 20px;}
+        .fs_14{font-size: 14px;}
+        .active_expres{color: #F38A14}
+        .txt_c_yb{color: #35AA53;border: 1px solid #35AA53;}
+        .txt_c_jj{color: #F38A14;border: 1px solid #F38A14;}
+        .title_task{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app" >
+        <div class="btnBox" v-if="checkDetail.isNextStep == 1">
+            <div v-if="checkDetail.currentFlowStepName != '反馈'">
+                <button tapmode="hover" class="active"   @click="openRectficationWin('任务验收')">验收</button>
+                <!-- <button tapmode="hover" class="active"   @click="openRectficationWin('任务反馈')">验收</button> -->
+            </div>
+            <div class="rectification" v-else>
+                <div class="rectificationBtn"  @click="openRectficationWin('任务反馈')">反馈</div>
+            </div>
+
+        </div>
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" tapmode onclick="openWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">任务</div>
+            <a class="aui-pull-right aui-btn"  v-if="revokeBtn">
+                <i class="aui-iconfont aui-icon-back" tapmode @click="handleReverClick()"></i>
+            </a>
+        </header>
+
+        <div class="main_box">
+            <nav v-if="checkDetail.stateName">
+                <p v-cloak :class="{'active_expres':!dateExpir_state}">{{dateExpir_state ? '剩余' : '超时'}} :{{expireTime}}</p>
+
+            </nav>
+            <div class="main-top">
+                <div class="bg_f title_task">
+                    <h2 class="leftline">任务详情</h2>
+                    <div v-cloak class="btn" :class="[checkDetail.urgencyDegree==0?'txt_c_yb':checkDetail.urgencyDegree==1?'txt_c_jj':'']" >{{checkDetail.urgencyDegree==0?'一般':checkDetail.urgencyDegree==1?'紧急':'特急'}}</div>
+                </div>
+                <p class="txt_show" v-if="checkDetail.content"  v-text="checkDetail.content"></p>
+
+                <ul class="aui-list">
+                    <li class="aui-list-item"  v-if="checkDetail.deadline">
+                        <div class="aui-list-item-inner flex_start">
+                            <div class="fs_14">
+                                截止日期
+                            </div>
+                            <div class="aui-ellipsis-1  jg" v-text="checkDetail.deadline">
+                                2020-04-07
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="aui-list-item" tapmode v-if="checkDetail.personliableName">
+                        <div class="aui-list-item-inner flex_start aui-ellipsis-1">
+                            <div class="fs_14">
+                                责任人
+                            </div>
+                            <div class="aui-ellipsis-1 jg"  @click="openDipalyFn(checkDetail.personliableName)" v-text="checkDetail.personliableName">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" v-if="checkDetail.participantName">
+                        <div class="aui-list-item-inner flex_start">
+                            <div class="fs_14">
+                                参与人
+                            </div>
+
+                            <div class="aui-ellipsis-1 flx flx_s_b aui-ellipsis-1" >
+                                <span class="jg aui-ellipsis-1" v-text="checkDetail.participantName" @click="openDipalyFn(checkDetail.participantName)"></span>
+                                <span class="red_state" @click="openredSateFn(checkDetail.zrSubject)" tapmode>阅读状态</span>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+                <div class="listImage" v-if="checkDetail.imgUrl && checkDetail.imgUrl.length">
+                    <img :src="src_data.compressUrl" v-for="(src_data,index) in checkDetail.imgUrl" alt="详情图" @click="imgSee(checkDetail.imgUrl,index)">
+                </div>
+            </div>
+            <div class="list bg_ff" >
+
+                <div class="item-inner flex-box-x" :class="{'active':index == 0}" style="justify-content:baseline" v-for="(items,index) in record_box" >
+                    <div class="item-date">
+                        <div class="date" v-text="items.endTime" style="font-size:10px;"></div>
+                    </div>
+
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x aui-ellipsis-1">
+                        <div class="item-type aui-ellipsis-1" style="font-size:14px;" @click="openDipalyFn(items.userName)" v-cloak v-text="items.userName"></div>
+                        <div class="item-content" style="font-size:14px;" v-cloak v-if="items.content" v-text="items.content"></div>
+
+                        <div class="imgBox" v-if="items.imgUrl && items.imgUrl.length">
+                            <img class="showimg" v-for="(item,index) in items.imgUrl" :src="item.compressUrl" alt="" @click="imgSee(items.imgUrl,index)">
+                        </div>
+                    </div>
+                    <span class="statu"   v-cloak v-text="items.nodeName"></span>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var photoBrowser = api.require('photoBrowser');
+            //监听流程处理刷新详情事件
+            api.addEventListener({
+                name: 'refsh_task_detail_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.init();
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    dateExpir_state:true,//记录是否超时完成
+                    expireTime:'',//到期时间
+                    // backBtn:false,// 退回按钮
+                    checkDetail: '',
+                    record_box:[]//请求操作记录集合
+                },
+                computed:{
+                    revokeBtn:function(){
+                        if((this.checkDetail.isRevoke) == 1 && (this.checkDetail.createUserId == $api.getStorage('userId'))){
+                            return true
+                        }else{
+                            return false
+                        }
+                    }
+
+
+
+                },
+                created:function(){
+                    this.init()
+                },
+                methods: {
+                    //草稿保//草稿保存
+                    savedraftFn: function() {
+                        var _this = this;
+
+                        var item = this.checkDetail;
+
+                        var img_filter = item.imgUrl.map(function(item) { //图片处理
+                            return item.srcUrl
+                        })
+                        var params = {
+                            "imgSrc":[],
+                            "urgencyDegreeName":item.urgencyDegree === '0' ? '一般' : item.urgencyDegree === '1' ? '紧急' : '特急',//紧急程度名称
+
+                            // "deadline": item.deadline,//整改到期日期
+                            'urgencyDegree':item.urgencyDegree,//紧急程度
+
+                            "content":item.content,//问题描述
+                            'totalparticipant':item.totalparticipant,//参与人人数统计
+                            'totalPerson':item.totalPerson//责任人数统计
+                        };
+                        var isFlag, i_Index = 0;
+                        var imgArr = [];
+                        dowonloadFn();
+
+                        function dowonloadFn() {
+                            if(!img_filter.length) return false;
+                            api.download({
+                                url: img_filter[i_Index],
+                                // savePath: 'fs://test.rar',
+                                report: true,
+                                cache: true,
+                                allowResume: true
+                            }, function(ret, err) {
+                                if (ret.state == 1) {
+                                    if (ret) {
+                                        i_Index++;
+                                        if (i_Index < img_filter.length) {
+                                            dowonloadFn();
+                                        } else {
+                                            i_Index = 0;
+                                            // isFlag = true;
+                                        }
+                                        imgArr.push(ret.savePath)
+
+
+                                    } else {
+                                    }
+                                } else {
+
+                                }
+                            });
+
+                        }
+                        var timer = setInterval(function() {
+                            params.imgSrc = imgArr;
+                            console.log(imgArr.length );
+                            console.log(img_filter.length);
+                            if (imgArr.length == img_filter.length) {
+                                console.log($api.jsonToStr(params));
+                                clearInterval(timer);
+                                api.setPrefs({
+                                    key: 'task_draf_save',
+                                    value: $api.jsonToStr(params)
+
+                                });
+                                setTimeout(function() {
+                                    api.closeWin();
+                                }, 500)
+
+                            }
+                        }, 1000)
+
+                    },
+                    //撤回任务
+                    handleReverClick:function(){
+                        var _this = this;
+                        api.confirm({
+                            title: '提示',
+                            msg: '是否撤销任务',
+                            buttons: ['确定', '取消']
+                        }, function(ret, err){
+                            if( ret ){
+                                if(ret.buttonIndex == 1){
+                                    var params = {
+                                        "businessId":api.pageParam.task_detail_info.taskId || api.pageParam.task_detail_info.objectId ,// "业务ID == 问题ID",
+                                        "flowId":_this.checkDetail.flowId, // "流程ID",
+                                        "projectId":$api.getStorage('enterpriseId'),// "项目ID",
+                                        "userId": $api.getStorage('userId'), //"当前处理人得ID == 当前用户",
+                                        "problemType":'5'// "问题类型（1、质量问题2、安全问题3、隐蔽工程验收4、安全验收 5、任务管理）"
+                                    }
+                                    console.log($api.jsonToStr(params));
+                                    $app.post(
+                                        true,
+                                        revokeFlow,
+                                        params,
+                                        function(data){
+                                            api.toast({
+                                                msg: data.msg,
+                                                duration: 2000,
+                                                location: 'bottom'
+                                            });
+                                            api.sendEvent({
+                                                name: 'refsh_task_list_event',
+                                                extra: {
+                                                }
+                                            });
+                                            _this.savedraftFn()
+                                            // setTimeout(function(){api.closeWin()},200)
+
+
+                                        }
+                                    )
+                                }else{
+                                    // api.closeWin()
+                                }
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    //查看人员
+                    openDipalyFn:function(data){
+                        api.openFrame({
+                            name: 'contenDisplay',
+                            url: '../../../contentDisplay.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                'content':data
+                            },
+                            bounces: true,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    },
+                    //打开整改新页面
+                    openRectficationWin:function(typeBtn){
+                        api.openWin({
+                            name: 'taskrectification',
+                            url: './taskrectification.html',
+                            pageParam: {
+                                'detailInfo':$api.jsonToStr(vm.checkDetail),
+                                'tskId':api.pageParam.task_detail_info.taskId || api.pageParam.task_detail_info.objectId,
+                                'btnType':typeBtn
+                            }
+                        });
+
+                    },
+                    //请求记录流程
+                    initrecordInit: function() {
+                        var data  = vm.checkDetail;
+                        var taskId  = api.pageParam.task_detail_info.taskId || api.pageParam.task_detail_info.objectId ;
+
+                        var params = {
+                            "flowId": data.flowId,
+                            "taskId": taskId
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            taskgetOperationRecordList,
+                            params,
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                                vm.record_box = ret.obj;
+
+                            }
+                        )
+                    },
+                    //初始化详情
+                    init: function() {
+                        var data  = api.pageParam.task_detail_info;
+                        var params = {
+
+                            "taskId": data.taskId || data.objectId,
+                            "userId": $api.getStorage('userId'),
+
+
+                        }
+
+                        _this = this;
+                        $app.post(
+                            true,
+                            taskDetails,
+                            params,
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.expireTime = $app.getYMDHMS(ret.obj.deadline,new Date())
+                                _this.dateExpir_state = (new Date(ret.obj.deadline).getTime()) - (new Date().getTime()) >= 0;
+                                //刷新首页
+                                api.sendEvent({
+                                    name: 'enterpriseIndexList',
+                                    extra: {
+                                    }
+                                });
+                                //刷新消息中心未读列表
+                                api.sendEvent({
+                                    name: 'getUnReadFn',
+                                    extra: {
+                                    }
+                                });
+
+                                vm.checkDetail = ret.obj;
+                                vm.initrecordInit()
+                            }
+                        )
+                    },
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var Img_url_box = url.map(function(item){
+                            return item.srcUrl
+                        })
+
+                        photoBrowser.open({
+                            images: Img_url_box,
+                            activeIndex: index,
+                            placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+                    openredSateFn:function(data){
+                        api.openWin({
+                            name: 'taskredstate',
+                            url: './taskredstate.html',
+                            pageParam: {
+                                redstateInfo: data
+                            }
+                        });
+
+                    },
+                }
+            })
+            // vm.init();
+
+
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>

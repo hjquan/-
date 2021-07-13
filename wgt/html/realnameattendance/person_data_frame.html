@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../css/voice.css">
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn_box {
+            width: 100%;
+            padding: 5px 10px;
+            position: fixed;
+            background: #fff;
+            bottom: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 1px #ccc;
+
+        }
+
+        .btn_item {
+
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn_active {
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .person {
+            padding: 10px;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .person,
+        .lf {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lf img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px
+        }
+
+        .name {
+            color: #000;
+            font-size: 15px;
+        }
+
+        .iphone {
+            color: #555;
+            font-size: 12px;
+        }
+
+        .train_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            /*padding-bottom: 5px;*/
+            position: relative;
+        }
+
+        .train_title {
+            width: 100%;
+            padding: 10px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .train_show {
+            width: 100%;
+            padding-left: 15px;
+        }
+
+        .train_show .train_show_item {
+            padding-left: 25px;
+        }
+
+        .btn_add {
+            color: rgba(5, 143, 253, 1);
+            font-size: 14px;
+            line-height: 45px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .train_box_item {
+            padding: 10px;
+            padding-right: 25px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+        .click_upload i {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D2D2D2;
+        }
+
+        .option_box {
+            width: 100%
+        }
+
+        .hours_cls {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .hours_cls input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #D2D2D2;
+            text-align: center;
+            margin-right: 5px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+
+        .enclosure {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .enclosure img {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+
+        }
+
+        .img_tain {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .click_close {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+
+            <ul>
+                <li class="person border_bottom_after" tapmode @click="openpage()">
+                    <div class="lf">
+                        <img :src=" personInfo.urlPrefix + personInfo.photo" alt="">
+                        <div>
+                            <h3 class="aui-ellipsis-1" class="name" v-text="personInfo.name">张三</h3>
+                            <p class="aui-ellipsis-1" class="iphone" v-text="personInfo.mobile">13541870165</p>
+                        </div>
+                    </div>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </li>
+
+                <li class="mian_item border_bottom_after">
+                    <p>人员类别</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1"
+                            v-text="personInfo.categoryName"></span></p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category == 2">
+                    <p>班组</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.teamName">泥工班</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category == 2">
+                    <p>工种</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.worktypeName">泥工</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category == 2">
+                    <p>是否为班主长/代班</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.isleaderName">是</span></p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category == 2">
+                    <p>工作时间</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.hours"></span>小时为一工时 </p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category != 2">
+                    <p>岗位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.stationName">是</span></p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="personInfo.category != 2">
+                    <p>所属单位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.unit"></span>小时为一工时 </p>
+                </li>
+
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>入场日期</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="personInfo.entranceDay">2020-020-26</span> </p>
+                </li>
+                <!-- <li class="mian_item border_bottom_after" tapmode @click="trainInfo()">
+                    <p>培训记录</p>
+                    <p tapmode ><span class="aui-ellipsis-1"  >无记录</span> </p>
+                </li> -->
+                <!-- <li class="mian_item border_bottom_after" tapmode @click="abilityInfo()">
+                    <p>资质证书</p>
+                    <p tapmode > <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="contractInfo()">
+                    <p>合同</p>
+                    <p tapmode > <i class="aui-iconfont aui-icon-right"></i></p>
+                </li> -->
+
+                <li class="mian_item border_bottom_after" tapmode @click="openQuit()"
+                    v-if="personInfo.exitLetter || personInfo.salaryAccount">
+                    <p>离场信息</p>
+                    <p tapmode><i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="pjDetail()">
+                    <p>评价记录</p>
+                    <p tapmode><i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+            </ul>
+            <ul>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" tapmode @click="trin_toggle('train')">
+                        <p>培训记录</p>
+                        <p> <i class="aui-iconfont" :class="[trin_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i>
+                        </p>
+                    </div>
+                    <div class="option_box" v-show="trin_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="item in trainInfo">
+                            <!-- <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p >培训</p>
+                                <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode></i>
+                            </li> -->
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>培训机构</p>
+                                <p tapmode><span class="aui-ellipsis-1" v-text="item.trainAgency">无记录</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>培训内容</p>
+                                <p tapmode><span class="aui-ellipsis-1" v-text="item.trainContent">无记录</span> </p>
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>培训附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="img in item.trainPhoto">
+                                        <img :src="typeFile(img)" tapmode @click="seeFile(personInfo.urlPrefix + img)"
+                                            alt="">
+                                    </div>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+
+                </li>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" tapmode @click="trin_toggle('ability')">
+                        <p>资质证书</p>
+                        <p><i class="aui-iconfont "
+                                :class="[ability_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+                    </div>
+                    <div class="option_box" v-show="ability_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="item in abilityInfo">
+                            <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p>资质证书</p>
+                                <!-- <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode></i> -->
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>资质证书名称</p>
+                                <p tapmode><span class="aui-ellipsis-1" v-text="item.abilityName">无记录</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>资质证书编号</p>
+                                <p tapmode><span class="aui-ellipsis-1" v-text="item.abilityNo">无记录</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>资质证书类别</p>
+                                <p tapmode><span v-text="item.abilityTypeName">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after">
+                                <p>资质证书级别</p>
+                                <p tapmode><span v-text="item.abilityLevelName">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after">
+                                <p>资质证书发证日期</p>
+                                <p tapmode><span v-text="item.abilityIssueDay">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after">
+                                <p>资质证书有效期</p>
+                                <p tapmode><span v-text="item.abilityValidDay">54645464</span> </p>
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>资质证书附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="img in item.abilityPhoto">
+                                        <img :src="typeFile(img)" tapmode @click="seeFile(personInfo.urlPrefix + img)"
+                                            alt="">
+                                    </div>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </li>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" @click="trin_toggle('contract')">
+                        <p>劳动合同</p>
+                        <p><i class="aui-iconfont "
+                                :class="[contract_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+                    </div>
+                    <div class="option_box" v-show="contract_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="item in contractInfo">
+                            <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p v-text=" '劳动合同' ">劳动合同</p>
+                                <!-- <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode ></i> -->
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>合同编号</p>
+                                <p tapmode><span class="aui-ellipsis-1" v-text="item.contractNo">无记录</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>合同开始时间</p>
+                                <p tapmode><span v-text="item.contractStartDay">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after ">
+                                <p>合同终止时间</p>
+                                <p tapmode><span v-text="item.contractEndDay">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>合同期限类型</p>
+                                <p tapmode><span v-text="item.contractTypeName">54645464</span> </p>
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>合同附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="img in item.contractPhoto">
+                                        <img :src="typeFile(img)" tapmode @click="seeFile(personInfo.urlPrefix + img)"
+                                            alt="">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </li>
+
+            </ul>
+
+
+            <div class="btn_box" v-if="!personInfo.exitLetter && !personInfo.salaryAccount">
+                <div class="btn_item btn_active" tapmode @click="edit()">编辑</div>
+                <div class="btn_item" tapmdoe @click="departure()">离场</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/lunarcalendar.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        var vm;
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var photoBrowser = api.require('photoBrowser');
+            //删除草稿
+
+
+            //打开评价页面win
+            api.addEventListener({
+                name: 'openpage_pj_enevt'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.openpjPageFn()
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //监听退场自定义事件刷新接口
+            api.addEventListener({
+                name: 'upodate_quit_event'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.getPersonInfo()
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    "topimg": [ //文件匹配
+                        '../../../image/data/xslx.png',
+                        '../../../image/data/Group.png',
+                        '../../../image/data/pdf.png',
+                        '../../../image/data/ppt.png',
+                        '../../../image/data/word.png',//5
+                        '../../../image/data/txt.png',
+                        '../../../image/data/video.png',
+                        '../../../image/data/zip.png',
+                        '../../../image/data/audio.png',
+                        '../../../image/data/img.png',//10
+                        '../../../image/data/wz.png'
+                    ],
+                    'pageParamInfo': '',//接收跨页面参数
+                    'personInfo': '',//实名制信息
+
+                    'trainInfo': [], //培训记录
+                    'trin_toggle_flag': false, //培训展开
+
+                    'abilityInfo': [], //资质记录
+                    'ability_toggle_flag': false, //资质展开
+
+                    'contractInfo': [], //合同记录
+                    'contract_toggle_flag': false, //合同展开
+
+
+                },
+                created: function () {
+                    this.pageParamInfo = api.pageParam.workattendanceinfo;
+                    // {
+                    //     trainAgency: '', //机构名称
+                    //     trainContent: '', //机构内容
+                    //     trainPhoto: [], //机构附件
+                    // }
+                    this.trainInfo = [];
+                    //资质记录数据结构初始化
+                    // {
+                    //     abilityName: '', //资质名称
+                    //     abilityNo: '', //资质编号
+                    //     abilityTypeName: '', //资质类别
+                    //     abilityLevel: '', //资质级别
+                    //     abilityIssueDay: '', //资质发证日期
+                    //     abilityValidDay: '', //资质发证有效日期
+                    //     abilityPhoto: [], //资质附件
+                    // }
+                    this.abilityInfo = [];
+                    //合同记录数据结构初始化
+                    // {
+                    //     contractNo: '', //合同编号
+                    //     contractStartDay: '', //合同开始时间
+                    //     contractEndDay: '', //合同终止时间
+                    //     contractType: '', //合同类型
+                    //     contractPhoto: [], //合同附件
+                    // }
+                    this.contractInfo = []
+                    this.getPersonInfo()
+                },
+                methods: {
+                    //查看离场信息
+                    openQuit: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'realname_quit',
+                            url: './quit.html',
+                            pageParam: {
+                                quitInfo: _this.personInfo
+                            }
+                        });
+
+                    },
+                    //编辑按钮
+                    edit: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'addrealname',
+                            url: './addrealname.html',
+                            pageParam: {
+                                fromInfo: _this.personInfo
+                            }
+                        });
+
+                    },
+                    //编辑离场
+                    departure: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'realname_quit',
+                            url: './quit.html',
+                            pageParam: {
+                                fromInfo: _this.personInfo
+                            }
+                        });
+                    },
+
+                    // //图片查看
+                    imgSee: function (url, index) {
+
+                        photoBrowser.open({
+                            images: url,
+                            // activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    //查看文件
+                    seeFile: function (data) {
+                        var _this = this;
+                        console.log(data);
+                        // if(!data)return false;
+                        var fileSplit = data.split('.');
+                        var type = fileSplit[fileSplit.length - 1].toLowerCase();
+                        var params = {
+                            url: data,
+                            type: type
+                        }
+                        console.log($api.jsonToStr(params));
+                        switch (type) {
+                            case 'jpg':
+                            case 'png':
+                                _this.imgSee([data], 0);
+                                break;
+                            case 'txt':
+                            case 'doc':
+                            case 'docx':
+                            case 'ppt':
+                            case 'pptx':
+                            case 'pdf':
+                            case 'xlsx':
+                                api.openWin({
+                                    name: 'office',
+                                    url: '../../../commonpage/office.html',
+                                    pageParam: {
+                                        office: params,
+
+                                    }
+                                });
+                                break;
+
+                            default:
+                                api.download({
+                                    url: data.url,
+                                    // savePath: 'fs://test.rar',
+                                    report: true,
+                                    cache: true,
+                                    encode: false,
+                                    allowResume: true
+                                }, function (ret, err) {
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+
+                                    if (ret.state == 1) {
+                                        docInteraction.open({
+                                            path: 'widget://' + ret.savePath
+                                        }, function (ret, err) {
+                                            if (err) {
+                                                api.toast({
+                                                    msg: '打开失败',
+                                                    duration: 2000,
+                                                    location: 'bottom'
+                                                });
+
+                                            } else {
+                                            }
+                                        });
+                                    } else if (ret.state != 1) {
+                                        // api.toast({
+                                        //     msg: '下载失败',
+                                        //     duration: 2000,
+                                        //     location: 'bottom'
+                                        // });
+                                    }
+                                    if (err) {
+                                        api.toast({
+                                            msg: err,
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                });
+                                break;
+
+                        }
+                    },
+                    //附件图片匹配
+                    typeFile: function (data) {
+                        var _this = this;
+                        console.log(data);
+                        if (!data) return false;
+                        var fileSplit = data.split('.');
+                        var type = fileSplit[fileSplit.length - 1].toLowerCase();
+                        console.log(type);
+                        switch (type) {
+                            case 'jpg':
+                            case 'png':
+                                return (_this.personInfo.urlPrefix + data)
+                                break;
+                            case 'mp3':
+                                return this.topimg[8]
+                                break;
+                            case 'zip':
+                            case 'rar':
+                                return this.topimg[7]
+                                break; y
+                            case 'avi':
+                            case 'rmvb':
+                                return this.topimg[6]
+                                break;
+                            case 'txt':
+                                return this.topimg[5]
+                                break;
+                            case 'doc':
+                            case 'docx':
+                                return this.topimg[4]
+                                break;
+                            case 'ppt':
+                            case 'pptx':
+                                return this.topimg[3]
+                                break;
+                            case 'pdf':
+                                return this.topimg[2]
+                                break;
+                            case '':
+                                return this.topimg[1]
+                                break;
+                            case 'xlsx':
+                                return this.topimg[0]
+                                break;
+                            default:
+                                return this.topimg[this.topimg.length - 1]
+                                break;
+
+                        }
+                    },
+                    //选填培训 ,资质,劳动合同展开
+                    trin_toggle: function (type) {
+                        switch (type) {
+                            case 'train':
+                                this.trin_toggle_flag = !this.trin_toggle_flag
+                                break;
+                            case 'ability':
+                                this.ability_toggle_flag = !this.ability_toggle_flag
+                                break;
+                            case 'contract':
+                                this.contract_toggle_flag = !this.contract_toggle_flag
+                                break;
+                            // default:
+
+                        }
+                    },
+                    //打开评价win页面
+                    openpjPageFn: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'punchevaluation',
+                            url: './punchevaluation.html',
+                            pageParam: {
+                                personInfo: _this.personInfo
+                            }
+                        });
+                    },
+                    //获取实名制信息
+                    getPersonInfo: function () {
+                        var _this = this;
+                        var prames = {
+                            idcardNo: "",
+                            name: "",
+                            teamId: "",
+                            projectId: "",
+                            category: "",
+                            id: this.pageParamInfo.id,
+                            pageNo: "",
+                            pageSize: "",
+                            station: "",
+                            status: "",
+                        };
+                        console.log("JSON.stringify(prames)：" + JSON.stringify(prames));
+                        $app.post(
+                            true,
+                            realNameList,
+                            prames,
+                            function (ret) {
+                                console.log("人员信息：" + $api.jsonToStr(ret));
+                                // "trainAgency": "培训一#培训二",
+                                // "trainContent": "培训内容一#培训内容二",
+                                // "trainPhoto":
+                                var data = ret.obj.list[0];
+                                _this.personInfo = ret.obj.list[0];
+                                //切割培训个数
+                                if (ret.obj.trainAgency) {
+                                    console.log('培训');
+                                    var trainAgency_split = data.trainAgency && data.trainAgency.split('#');
+                                    var trainContent_split = data.trainContent && data.trainContent.split('#');
+                                    var trainPhoto_split = data.trainPhoto && data.trainPhoto.split('#');
+                                    for (var i = 0; i < trainAgency_split.length; i++) {
+                                        _this.trainInfo.push({
+                                            trainAgency: '', //机构名称
+                                            trainContent: '', //机构内容
+                                            trainPhoto: [], //机构附件
+                                        })
+                                        _this.trainInfo[i].trainAgency = trainAgency_split && trainAgency_split[i];
+                                        _this.trainInfo[i].trainContent = trainContent_split && trainContent_split[i];
+                                        _this.trainInfo[i].trainPhoto = trainPhoto_split && trainPhoto_split[i].split(',');
+                                    }
+                                }
+                                console.log($api.jsonToStr(_this.trainInfo));
+
+                                //切割i资质个数
+                                //     abilityName: '', //资质名称
+                                //     abilityNo: '', //资质编号
+                                //     abilityType: '', //资质类别
+                                //     abilityLevel: '', //资质级别
+                                //     abilityIssueDay: '', //资质发证日期
+                                //     abilityValidDay: '', //资质发证有效日期
+                                //     abilityPhoto: [], //资质附件
+                                if (ret.obj.abilityName) {
+                                    console.log('资质');
+                                    var abilityName_split = data.abilityName && data.abilityName.split('#');
+                                    var abilityNo_split = data.abilityNo && data.abilityNo.split('#');
+                                    var abilityTypeName_split = data.abilityTypeName && data.abilityTypeName.split('#');
+                                    var abilityLevelName_split = data.abilityLevelName && data.abilityLevelName.split('#');
+                                    var abilityIssueDay_split = data.abilityIssueDay && data.abilityIssueDay.split('#');
+                                    var abilityValidDay_split = data.abilityValidDay && data.abilityValidDay.split('#');
+                                    var abilityPhoto_split = data.abilityPhoto && data.abilityPhoto.split('#');
+                                    for (var i = 0; i < abilityName_split.length; i++) {
+                                        _this.abilityInfo.push({
+                                            abilityName: '', //资质名称
+                                            abilityNo: '', //资质编号
+                                            abilityTypeName: '', //资质类别
+                                            abilityLevelName: '', //资质级别
+                                            abilityIssueDay: '', //资质发证日期
+                                            abilityValidDay: '', //资质发证有效日期
+                                            abilityPhoto: [], //资质附件
+                                        })
+                                        _this.abilityInfo[i].abilityName = abilityName_split && abilityName_split[i];
+                                        _this.abilityInfo[i].abilityNo = abilityNo_split && abilityNo_split[i];
+                                        _this.abilityInfo[i].abilityTypeName = abilityTypeName_split && abilityTypeName_split[i];
+                                        _this.abilityInfo[i].abilityLevelName = abilityLevelName_split && abilityLevelName_split[i];
+                                        _this.abilityInfo[i].abilityIssueDay = abilityIssueDay_split && abilityIssueDay_split[i];
+                                        _this.abilityInfo[i].abilityValidDay = abilityValidDay_split && abilityValidDay_split[i];
+                                        _this.abilityInfo[i].abilityPhoto = abilityPhoto_split && abilityPhoto_split[i].split(',');
+                                    }
+                                    console.log($api.jsonToStr(_this.abilityInfo));
+                                }
+
+                                if (ret.obj.contractNo) {
+                                    console.log('合同');
+                                    //切割i合同个数
+                                    //     contractNo: '', //合同编号
+                                    //     contractStartDay: '', //合同开始时间
+                                    //     contractEndDay: '', //合同终止时间
+                                    //     contractType: '', //合同类型
+                                    //     contractPhoto: [], //合同附件
+                                    var contractNo_split = data.contractNo && data.contractNo.split('#');
+                                    var contractStartDay_split = data.contractStartDay && data.contractStartDay.split('#');
+                                    var contractEndDay_split = data.contractEndDay && data.contractEndDay.split('#');
+                                    var contractTypeName_split = data.contractTypeName && data.contractTypeName.split('#');
+                                    var contractPhoto_split = data.contractPhoto && data.contractPhoto.split('#');
+                                    //切割每项
+
+                                    for (var i = 0; i < contractNo_split.length; i++) {
+                                        _this.contractInfo.push({
+                                            contractNo: '', //合同编号
+                                            contractStartDay: '', //合同开始时间
+                                            contractEndDay: '', //合同终止时间
+                                            contractTypeName: '', //合同类型
+                                            contractPhoto: [], //合同附件
+                                        })
+                                        _this.contractInfo[i].contractNo = contractNo_split && contractNo_split[i];
+                                        _this.contractInfo[i].contractStartDay = contractStartDay_split && contractStartDay_split[i];
+                                        _this.contractInfo[i].contractEndDay = contractEndDay_split && contractEndDay_split[i];
+                                        _this.contractInfo[i].contractTypeName = contractTypeName_split && contractTypeName_split[i];
+                                        _this.contractInfo[i].contractPhoto = contractPhoto_split && contractPhoto_split[i].split(',');
+                                    }
+                                    console.log($api.jsonToStr(_this.contractInfo));
+                                }
+
+                            }
+                        )
+                    },
+                    ///打开评价详情
+                    pjDetail: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'evaluationdetails',
+                            url: './evaluationdetails.html',
+                            pageParam: {
+                                personInfo: _this.personInfo
+                            }
+                        });
+
+                    },
+                    //打开资料
+                    openpage: function () {
+                        var _this = this;
+                        api.openWin({
+                            name: 'person_data_detail',
+                            url: './person_data_detail.html',
+                            pageParam: {
+                                personInfo: _this.personInfo
+                            }
+                        });
+
+                    },
+
+                    actionSheetFn: function (title, state) {
+                        api.actionSheet({
+                            title: title,
+                            cancelTitle: '取消',
+                            // destructiveTitle: '红色警告按钮',
+                            buttons: vm.weatherAll
+                        }, function (ret, err) {
+                            if (ret) {
+
+                                if (ret.buttonIndex - 1 == vm.weatherAll.length) {
+                                    return
+                                }
+                                var currenText = vm.weatherAll[ret.buttonIndex - 1];
+                                state ? (vm.morningweather = currenText) : (vm.afternoonweather = currenText);
+
+                            } else {
+                                //  alert( JSON.stringify( err ) );
+                            }
+                        });
+                    },
+
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    // imgFilter: function(fncFN) {
+                    //     if (vm.serverImg) {
+                    //         vm.srcImgUrl = this.serverImg.map(function(item) {
+                    //             return item.srcPath
+                    //         })
+                    //         vm.compressImgUrl = this.serverImg.map(function(item) {
+                    //             return item.compressPath
+                    //         })
+                    //         fncFN()
+                    //     }
+                    // },
+                    // //图片上传服务器保存
+                    // saveImg: function(fncFN) {
+                    //     var compressImg = [];
+                    //     if (vm.imgSrc.length) {
+                    //         var imageFilter = api.require('imageFilter');
+                    //         for (var i = 0; i < vm.imgSrc.length; i++) {
+                    //             (function(index) {
+                    //                 var imageName = randomWord(false, 9, 12);
+                    //                 var imageCachePath = api.cacheDir;
+                    //                 imageFilter.compress({
+                    //                     img: vm.imgSrc[index],
+                    //                     quality: 0.3,
+                    //                     save: {
+                    //                         album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                    //                         imgPath: imageCachePath,
+                    //                         imgName: imageName + '.jpg'
+                    //                     }
+                    //                 }, function(ret, err) {
+                    //                     if (ret) {
+                    //                         var txt = imageCachePath + '/' + imageName + '.jpg';
+                    //                         compressImg.push(txt)
+                    //                     } else {
+                    //
+                    //                     }
+                    //                 });
+                    //             })(i);
+                    //         }
+                    //         var timer = setInterval(function() {
+                    //             if (compressImg.length) {
+                    //                 clearInterval(timer)
+                    //                 ajaxFile(
+                    //                     true,
+                    //                     '图片上传中...',
+                    //                     uplodeEnterpriseFileURL, {
+                    //                         enterpriseId: $api.getStorage('enterpriseId')
+                    //                     }, {
+                    //                         imgFile: compressImg
+                    //                     },
+                    //                     function(ret) {
+                    //                         vm.serverImg = ret.obj;
+                    //                         vm.imgFilter(fncFN)
+                    //                     }
+                    //                 )
+                    //             }
+                    //         }, 1000)
+                    //
+                    //     } else {
+                    //         fncFN()
+                    //     }
+                    // },
+                    //
+                    // //图片选择
+                    // uploadHeadPic: function() {
+                    //     confirmPer('camera,photos', function() {})
+                    //     var i = 0;
+                    //     var imgarr = [];
+                    //     UIAlbumBrowser_imagePicker();
+                    //     //打开图片选择器
+                    //     function UIAlbumBrowser_imagePicker() {
+                    //         UIAlbumBrowser.imagePicker({
+                    //             max: 3 - vm.imgSrc.length,
+                    //             styles: {
+                    //                 bg: '#000000',
+                    //                 //cameraImg: 'widget://res/cameraImg.png',
+                    //                 mark: {
+                    //                     position: 'top_right',
+                    //                     size: 20
+                    //                 },
+                    //                 nav: {
+                    //                     bg: '#000000',
+                    //                     cancelColor: '#fff',
+                    //                     cancelSize: 16,
+                    //                     nextStepColor: '#7fff00',
+                    //                     nextStepSize: 16
+                    //                 },
+                    //                 thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                    //                     w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                    //                     h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                    //                 }
+                    //             },
+                    //             animation: true,
+                    //         }, function(ret) {
+                    //             if (ret.eventType == 'nextStep') {
+                    //                 if (ret.list && ret.list.length > 0) {
+                    //                     imgarr = ret.list;
+                    //                     UIAlbumBrowser_transPath();
+                    //                 }
+                    //                 UIAlbumBrowser.closePicker();
+                    //             }
+                    //             if (ret.originalPath && ret.originalPath.length > 0) {
+                    //                 vm.imgSrc.push(ret.originalPath)
+                    //             }
+                    //         });
+                    //     }
+                    //
+                    //     function UIAlbumBrowser_transPath() {
+                    //         UIAlbumBrowser.transPath({
+                    //             path: imgarr[i].path
+                    //         }, function(ret, err) {
+                    //             if (ret) {
+                    //                 i++;
+                    //                 if (i < imgarr.length) {
+                    //                     UIAlbumBrowser_transPath();
+                    //                 } else {
+                    //                     i = 0;
+                    //                 }
+                    //                 vm.imgSrc.push(ret.path)
+                    //             } else {
+                    //             }
+                    //         });
+                    //     }
+                    // }
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

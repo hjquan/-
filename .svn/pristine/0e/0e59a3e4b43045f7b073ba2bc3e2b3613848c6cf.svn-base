@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        i {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #058FFD
+        }
+
+        .img_h {
+            width: 18px;
+            height: 18px;
+        }
+
+        .clocking-rule {
+            width: 100%;
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding-top: 0.8rem;
+            padding-left: 0.5rem;
+        }
+
+        .rule-title {
+            height: 1.2rem;
+            width: 100%;
+        }
+
+        .rule-title h3 {
+            font-weight: bold;
+            display: inline;
+            float: left;
+        }
+
+        .rule-title i {
+            float: right;
+            color: #C7C7CC;
+            margin-right: 1.5rem;
+        }
+
+        .rule-content div {
+            margin-top: 0.5rem;
+            margin-top: 0.5rem;
+            color: #909090;
+        }
+
+        .rule-content div img {
+            float: left;
+        }
+
+        .rule-content div:last-child {
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-content div img {
+            margin-right: 0.5rem;
+        }
+
+        .rule-footer {
+            height: 2rem;
+            width: 100%;
+            color: #058FFD;
+            border-top: 1px #F5F5F5 solid;
+        }
+
+        .rule-footer a {
+            float: right;
+            margin-right: 1.5rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container " id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">考勤设置</div>
+            <a class="aui-pull-right aui-btn">
+                <i class="aui-iconfont aui-icon-plus" tapmode @click="addRule()"></i>
+            </a>
+        </header>
+        <div class="content">
+            <div class="clocking-rule" v-for="(items,index) in ruleInfo" :key="index">
+                <div class="rule-title">
+                    <h3>{{items.rulesName}}</h3>
+                    <i class="aui-iconfont aui-icon-trash" @click="openDialog(items.rulesId)"></i>
+                </div>
+                <div class="rule-content">
+                    <div>
+                        <img src="../../../../image/clocking-in/kq_sz_icon_person.png" alt="">
+                        <div>{{items.attendanceRoleName}}</div>
+                    </div>
+                    <div>
+                        <img src="../../../../image/clocking-in/kq_sz_icon_time.png" alt="">
+                        <div>{{items.startWorkTime}}—{{items.endWorkTime}} 9小时 全年无休 </div>
+                    </div>
+                    <div>
+                        <img src="../../../../image/clocking-in/kq_sz_icon_place.png" alt="">
+                        <div>{{items.attendanceAddress}}</div>
+                    </div>
+                    <div>
+                        <img src="../../../../image/clocking-in/kq_sz_icon_wifi.png" alt="">
+                        <div>{{items.attendanceWifi}}</div>
+                    </div>
+                </div>
+                <div class="rule-footer" @click="lookRule(ruleInfo[index])">
+                    <a>修改考勤规则</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        var dialog = new auiDialog({})
+        apiready = function () {
+            $api.fixStatusBar($api.dom('.header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleInfo: {},//考勤规则对象
+                },
+                created: function () {
+                    this.getRuleListInfo();
+                },
+                methods: {
+                    //新增考勤规则
+                    addRule: function () {
+                        api.openWin({
+                            name: 'addRule',
+                            url: 'addRule.html',
+                        });
+                    },
+                    //获取考勤规则
+                    getRuleListInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            attendanceRuleListURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                        },
+                            function (ret) {
+                                // console.log("____" + JSON.stringify(ret));
+                                that.ruleInfo = ret.obj
+                            }
+                        )
+                    },
+                    //删除考勤规则
+                    deleteRule: function (rulesId) {
+                        var that = this;
+                        $app.post(
+                            true,
+                            delAttendanceRuleURL, {
+                            rulesId: rulesId,
+                        },
+                            function (ret) {
+                                that.getRuleListInfo();
+                            }
+                        )
+                    },
+                    //删除考勤弹框
+                    openDialog: function (rulesId) {
+                        var that = this;
+                        dialog.alert({
+                            title: "",
+                            msg: '您确定删除该考勤组吗？',
+                            buttons: ['取消', '删除']
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                            if (ret.buttonIndex == '2') {
+                                that.deleteRule(rulesId)
+                            }
+                        })
+                    },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //查看规则详细
+                    lookRule: function (ruleInfo) {
+                        api.openWin({
+                            name: 'lookRule',
+                            url: './lookRule.html',
+                            pageParam: {
+                                ruleInfo: ruleInfo,
+                            }
+                        });
+                    }
+                },
+            })
+        }
+    </script>
+</body>
+
+</html>

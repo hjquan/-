@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <style>
+        body,html{height: 100%}
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>姓名</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.name"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>身份证号</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.idcardNo">135419848< /span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>手机号</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.mobile">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>性别</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.sex">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>民族</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.nation">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>地址</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.address">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>生日</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.birthday">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>文化程度</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.educationName">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>政治面貌</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.politicName">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>婚姻状况</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.maritalName">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>紧急联系人</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.emergencyPerson">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>紧急联系人电话</p>
+                    <p tapmode ><span class="aui-ellipsis-1" v-text="pageParamInfo.emergencyPhone">54645464</span> </p>
+                </li>
+
+
+
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script> -->
+    <script src="../../../script/vue.js"></script>
+    <!-- <script src="../../../script/lunarcalendar.js"></script> -->
+    <!-- <script src="../../../script/permission.js"></script> -->
+    <!-- <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script> -->
+    <script>
+        var vm;
+        apiready = function() {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');;
+            //删除草稿
+
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    pageParamInfo:'',//接收跨页面参数
+
+                },
+                watch: {
+
+                },
+                computed: {
+
+
+
+                },
+                mounted: function() {
+
+
+                },
+                created: function() {
+                    this.pageParamInfo = api.pageParam.personInfo;
+                },
+                methods: {
+
+                    actionSheetFn: function(title, state) {
+                        api.actionSheet({
+                            title: title,
+                            cancelTitle: '取消',
+                            // destructiveTitle: '红色警告按钮',
+                            buttons: vm.weatherAll
+                        }, function(ret, err) {
+                            if (ret) {
+
+                                if (ret.buttonIndex - 1 == vm.weatherAll.length) {
+                                    return
+                                }
+                                var currenText = vm.weatherAll[ret.buttonIndex - 1];
+                                state ? (vm.morningweather = currenText) : (vm.afternoonweather = currenText);
+
+                            } else {
+                                //  alert( JSON.stringify( err ) );
+                            }
+                        });
+                    },
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

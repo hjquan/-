@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F7F4F8;
+            position: relative;
+            padding-bottom: 4rem;
+        }
+
+        .search {
+            height: 2rem;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search {
+            height: 1.5rem;
+            width: 90%;
+            background: #ffffff;
+            margin-top: 0.5rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-left: 5%;
+        }
+
+        .list-ojc {
+            width: 100%;
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+        }
+
+        .list-ojc-div {
+            width: 100%;
+            height: 1.5rem;
+            margin-top: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .radius-check {
+            width: 18px;
+            height: 18px;
+            border: 1px solid rgba(199, 199, 204, 1);
+            border-radius: 50%;
+            float: left;
+            margin-right: 0.5rem;
+            color: #ffffff;
+        }
+
+        .float-left {
+            float: left;
+            background-clip: padding-box;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .content {
+            padding-bottom: 4rem;
+        }
+
+        .footer {
+            height: 2rem;
+            width: 100%;
+            background-color: #ffffff;
+            border-top: 1px #B1B8BF solid;
+            position: fixed;
+            bottom: 0;
+            padding-top: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .footer-right {
+            float: right;
+        }
+
+        .footer-btn-right {
+            float: right;
+            height: 2rem;
+            width: 4rem;
+            background-color: #0590FF;
+            color: #ffffff;
+            margin-top: -0.5rem;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .add-btn {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .footer {
+            width: 100%;
+            height: 3rem;
+            position: fixed;
+            bottom: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -moz-box-shadow: 2px 2px 5px #333333;
+            -webkit-box-shadow: 2px 2px 5px #333333;
+            box-shadow: 2px 2px 5px #333333;
+        }
+
+        .examine {
+            width: 80%;
+            height: 2rem;
+            border-radius: 2px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #2a82e4;
+            line-height: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="content">
+            <div class="list-ojc">
+                <div class="list-ojc-div" v-for="(items,index) in ruleObjInfo" :key="index">
+                    <div class="aui-list-item-left">
+                        <label><input type="radio" class="aui-checkbox float-left" name="sex" value="男生"
+                                v-model="items.selectFlage" @click="changeValue(items)"></label>
+                    </div>
+                    <div class=" aui-list-item-title"><span v-text="items.name"></span></div>
+                </div>
+            </div>
+        </div>
+        <section class="footer">
+            <article class="examine" @click="submit()">
+                确认
+            </article>
+        </section>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleObjInfo: [],//考勤规则对象: null,//考勤规则对象
+                    ruleObj: [],
+                    obj: null,
+                    searchData: null,
+                    selectFlage: null,
+                },
+                created: function () {
+                    this.getRuleObjInfo();
+                },
+                methods: {
+                    //搜索数据
+                    getSearchData: function () {
+                        var newRuleObjInfo = this.ruleObj;
+                        var arr = [];
+                        var reg = new RegExp(this.searchData);
+                        if (!this.searchData) {
+                            this.ruleObjInfo = newRuleObjInfo;
+                        }
+                        for (var i = 0; i < newRuleObjInfo.length; i++) {
+                            //如果字符串中不包含目标字符会返回-1
+                            if (newRuleObjInfo[i].position.match(reg)) {
+                                arr.push(newRuleObjInfo[i]);
+                            }
+                        }
+                        this.ruleObjInfo = arr;
+                    },
+                    //获取对象
+                    getRuleObjInfo: function () {
+                        var that = this;
+                        // console.log("______" + $api.getStorage('enterpriseId'))
+                        $app.post(
+                            true,
+                            allgetUserList, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            areaId: "1",
+                            userType: "3"
+                        },
+                            function (ret) {
+                                console.log(JSON.stringify(ret));
+                                that.ruleObjInfo = ret.obj;
+                                that.ruleObj = ret.obj;
+                                that.ruleObjInfo.map(function (items) {
+                                    items.selectFlage = false;
+                                })
+                                console.log(JSON.stringify(that.ruleObjInfo));
+                            }
+                        )
+                    },
+                    //
+                    changeValue: function (items) {
+                        // console.log("选择标识：" + items.selectFlage)
+                        var that = this;
+                        this.ruleObjInfo.map(function (item) {
+                            items.selectFlage = false;
+                        });
+                        items.selectFlage = true;
+                    },
+                    //返回上一个页面
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //保存数据
+                    submit: function () {
+                        var that = this;
+                        var approvalUserId = "";
+                        var approvalUserName = "";
+                        this.ruleObjInfo.map(function (item) {
+                            if (item.selectFlage) {
+                                that.newRule = item
+                                approvalUserName = item.name;
+                                approvalUserId = item.userId;
+                            }
+                        });
+                        if (approvalUserId === $api.getStorage('userId')) {
+                            api.toast({
+                                msg: '不能选择自己',
+                                duration: 3000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        api.sendEvent({
+                            name: 'selectApproval',
+                            extra: {
+                                approvalUserName: approvalUserName,
+                                approvalUserId: approvalUserId,
+                            }
+                        });
+                        api.closeWin();
+                    },
+                },
+            })
+        } 
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,323 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family:PingFangSC-Regular,PingFang SC;
+    background-color: #fff;
+}
+bady{
+    background-color: #fff;
+}
+#app{
+    padding-bottom: 20px;
+}
+/*日历*/
+
+#calendar {
+    width: 98%;
+    border: 2px solid #A4A7B0;
+    height: 335px;
+    margin-left: 0.5%;
+}
+
+.month {
+    width: 92%;
+    height: 48px;
+    border: 2px solid #FFFFFF;
+    margin-left: 3%;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.month ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex: 2;
+}
+
+.year-month {
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.choose-year {
+    padding: 0 15px;
+    font-size: 16px;
+    font-weight: 200;
+}
+
+.choose-month {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 200;
+}
+
+.arrow {
+    width: 5%;
+    height: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.month ul li {
+    margin:0 2px;
+    height: 45px;
+    color: #999;
+    font-size: 20px;
+    text-transform: uppercase;
+    list-style: none;
+}
+
+.weekdays {
+    margin: 0;
+    color: #FFFFFF;
+    background: #fff;
+    margin-top: 10px;
+    height: 34px;
+    line-height: 34px;
+    display: flex;
+}
+
+.weekdays li {
+    display: inline-block;
+    text-align: center;
+    color: #555556;
+    font-size: 14px;
+    font-weight: 100;
+    flex: 1;
+    font-weight: 600;
+}
+
+.days {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.days li {
+    list-style-type: none;
+    display: inline-block;
+    width: 14.2%;
+    height: 45px;
+    text-align: center;
+    padding-bottom: 3px;
+    padding-top: 7px;
+    font-size: 14px;
+    color: #555556;
+    font-weight: 200;
+    box-sizing: border-box;
+    /*display: flex;
+    justify-content: center;
+    align-items: center;*/
+}
+
+.days li span span {
+    height: 25px;
+   width: 25px;
+   line-height: 25px;
+    display: inline-block;
+}
+
+.days li .class-30 {
+    background: url(bg_30.png) no-repeat 0 0 /100% 100%;
+}
+
+.days li .class-60 {
+    background: url(bg_60.png) no-repeat 0 0 /100% 100%;
+}
+
+.days li .class-3060 {
+    background: url(bg_3060.png) no-repeat 0 0 /100% 100%;
+}
+
+.days li .other-month {
+    padding: 5px;
+    color: #B7B7BC;
+    height: 45px;
+}
+
+.weekdaysColor{
+    color:#B7B7BC !important
+}
+
+.dateRaduis{
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #FFBB19;
+
+}
+.textcontent{
+    font-size: 10px;
+    color:#B9B9B9;
+    font-weight: 600;
+    background-color: #fff !important;
+}
+/* 打卡狀態 */
+.cancalClsBg{
+    background-color: #39E1CD;
+}
+.zcClsBg{
+    background-color: #39CF4A;
+}
+.currenBg{
+    background-color: #fff;
+}
+
+.dayBox{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+
+}
+.rt{
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+}
+.rtItem{
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background-color: #DEDEE5;
+    color:#fff;
+    font-size: 10px;
+    border-radius: 16px;
+    margin-left: 10px;
+
+}
+.rtItem_active{
+    background-color: #323233;
+}
+.active{
+    color:#fff;
+    background-color: #FE3824;
+    border-radius: 8px;
+    margin-bottom: 1px;
+
+}
+.nav{
+    height: 30px;
+    background:rgba(249,249,249,1);
+    opacity:0.5;
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+}
+.navItem{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:11px;
+    font-size:11px;
+    font-family:PingFangSC-Medium,PingFang SC;
+    font-weight:500;
+    color:rgba(183,183,188,1);
+    background:rgba(249,249,249,1);
+}
+.navItem div{
+    width:10px;
+    height:5px;
+    background:rgba(57,207,74,1);
+    border-radius:4px;
+    margin-right: 5px;
+
+}
+.navItem:nth-child(2) div{
+    background:rgba(57,225,205,1);
+}
+.navItem:last-child div{
+    background:rgba(255,187,25,1);
+}
+.line{
+    height:1px;
+    border-top:1px dotted rgba(199,199,204,1);
+    margin:30px 0;
+}
+.top{
+    height: 15px;
+    line-height: 15px;
+    color:rgba(50,50,51,1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 15px;
+}
+.f_lf,.f_rt{flex:1}
+.f_lf{
+    font-weight:400;
+    color:rgba(50,50,51,1);
+    line-height:13px;
+    font-size:13px;
+}
+.footer f_rt{
+    display: flex;
+    align-items: center;
+}
+.f_rt{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.rt_item p{
+    width:6px;
+    height:6px;
+    border-radius: 4px;
+    border:1px solid #39CF4A;
+    margin-right:3px;
+}
+.rt_item{
+    display:flex;
+    align-items: center;
+    font-size: 11px;
+    color:#B7B7BC;
+
+}
+.rt_item:last-child p{
+    background-color: #39E1CD;
+    margin-left: 20px;
+}
+.f_show{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.showItem{
+    width: 25%;
+    display:flex;
+    align-items: center;
+    font-size: 13px;
+    color:#323233;
+    justify-content: center;
+    margin-top:35px;
+    font-weight: 500;
+}
+.showItem p{
+    width:6px;
+    height:6px;
+    border-radius: 4px;
+    border:1px solid #39CF4A;
+    margin-right:5px;
+}
+.showItem p.active{
+    border:none;
+    background-color: #39E1CD
+}
+.currenDayIndex{
+    color:#fff !important;
+    background-color: #058FFD !important;
+    width: 25px;
+    line-height: 25px;
+    display: inline-block;
+    border-radius: 8px;
+
+}

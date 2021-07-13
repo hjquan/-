@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+            background-color: transparent;
+        }
+
+        .content-main {
+            min-height: 100%;
+            background-color: transparent;
+        }
+
+        .lay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            background-color: rgba(245, 245, 245, 0.95);
+        }
+
+        .content {
+            width: 100%;
+            /* background: #ffffff; */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .content article {
+            width: 50%;
+            height: 7rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content article img {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        .content article span {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #058FFD;
+        }
+
+        .rt {
+            margin-top: 70%;
+            width: 100%;
+            height: 50%;
+            /* background-color: #fff; */
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* background: #fff; */
+            padding: 10px 10px 10px 0px;
+            /* background: #fff; */
+            position: relative;
+            z-index: 100
+        }
+
+        .footer {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer img {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="content-main" id="app">
+        <div class="lay" @click="closeFn()"></div>
+        <section class="rt">
+            <section class="content">
+                <article @click="onTemporary()">
+                    <img style="width: 3.1rem; height: 3.1rem;" src="../../../image/temporaryWork/apply-img.png" alt="">
+                    <span>零星用工事前申请</span>
+                </article>
+                <article @click="onTemporaryAffirm()">
+                    <img style="width: 2.8rem; height: 2.8rem;" src="../../../image/temporaryWork/notarize.png" alt="">
+                    <span>零星用工使用确认</span>
+                </article>
+                <article @click="onAppliance()">
+                    <img style="width: 3.2rem; height: 3.2rem;" src="../../../image/temporaryWork/wrench.png" alt="">
+                    <span>零星机械事前申请</span>
+                </article>
+                <article @click="onApplianceAffirm()">
+                    <img style="width: 3.5rem; height: 3.5rem;" src="../../../image/temporaryWork/wrench-affirm.png"
+                        alt="">
+                    <span>零星机械使用确认</span>
+                </article>
+            </section>
+            <section class="footer">
+                <img @click="closeFn()" src="../../../image/temporaryWork/delete-img.png" alt="">
+            </section>
+        </section>
+    </section>
+</body>
+<script type="text/javascript" src="../../../script/api.js"></script>
+<script type="text/javascript" src="../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<!-- <script type="text/javascript" src="../../../script/common.js"></script> -->
+<script>
+    apiready = function () {
+        $api.fixStatusBar($api.dom('.rt'));
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            created: function () {
+
+            },
+            methods: {
+                closeFn: function () {
+                    api.closeFrame();
+                },
+                onTemporary: function () {
+                    api.openWin({
+                        name: 'temporary',
+                        url: 'temporary/temporary.html',
+                    });
+                },
+                onTemporaryAffirm: function () {
+                    api.openWin({
+                        name: 'temporary-affirm',
+                        url: 'temporary-affirm/temporary_affirm.html',
+                    });
+                },
+                onAppliance: function () {
+                    api.openWin({
+                        name: 'appliance',
+                        url: 'appliance/appliance.html',
+                    });
+                },
+                onApplianceAffirm: function () {
+                    api.openWin({
+                        name: 'appliance-affirm',
+                        url: 'appliance-affirm/appliance_affirm.html',
+                    });
+                },
+            }
+        })
+    }
+</script>
+
+</html>

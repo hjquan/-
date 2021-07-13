@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <title></title>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+        <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title header_title">塔机</div>
+        <a class="aui-pull-right aui-btn" tapmode onclick="fnOpenframesearListp()">
+            <span class="aui-iconfont aui-icon-search"></span>
+        </a>
+    </header>
+</body>
+<script src="../../script/sha1.js"></script>
+<script src="../../script/api.js"></script>
+<script src="../../script/common.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/permission.js"></script>
+<script>
+    var bMap,
+        towerBox = '', //塔机设备列表
+        AnnotationsBox = [], //气泡标注
+        beginPosition = '', //导航开始位置
+        endPosition = '' //导航结束位置
+    ;
+    apiready = function() {
+            confirmPer('location', function() {})
+            api.addEventListener({
+                name: 'detail'
+            }, function(ret, err) {
+                if (ret) {
+
+                }
+            });
+            $api.fixStatusBar($api.dom('header'));
+            bMap = api.require('bMap');
+
+            //监听detail传递过来的导航坐标
+            api.addEventListener({
+                name: 'watchPosition'
+            }, function(ret, err) {
+                if (ret) {
+                    navigationType()
+                } else {}
+            });
+            //监听回到当前位置
+            api.addEventListener({
+                name: 'towercranecurrentposFn'
+            }, function(ret, err) {
+                if (ret) {
+                    fnBmapShowUserLocation()
+                } else {}
+            });
+
+            //监听地图放大
+            api.addEventListener({
+                name: 'toweradd'
+            }, function(ret, err) {
+                if (ret) {
+                    enlargeFn()
+                } else {}
+            });
+
+            //监听地图缩小
+            api.addEventListener({
+                name: 'towercranereduce'
+            }, function(ret, err) {
+                if (ret) {
+                    narrowFn()
+                } else {}
+            });
+
+            //改变bottom页面展示位置
+            api.addEventListener({
+                name: 'buttonframe'
+            }, function(ret, err) {
+                if (ret) {
+                    var offset = $api.offset($api.byId('header'));
+                    if (ret.value.flag) {
+                        api.setFrameAttr({
+                            name: 'button',
+                            rect: {
+                                x: 0,
+                                y: offset.h + 100,
+                                w: 'auto', //宽度，若传'auto'，页面从x位置开始自动充满父页面宽度
+                                h: 'auto'
+                            },
+                            bounces: true,
+                            // bgColor: '#fff',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    } else {
+                        api.setFrameAttr({
+                            name: 'button',
+                            rect: {
+                                x: 0,
+                                y: api.winHeight - 49,
+                                h: 49,
+                                w: 'auto'
+                            },
+                            bounces: true,
+                            // bgColor: '#fff',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    }
+
+                }
+            });
+
+
+
+
+
+            $app.post(
+                'true',
+                getTowerDeviceListsURL, {
+                    'enterpriseId': $api.getStorage('enterpriseId')
+                },
+                function(ret) {
+                    towerBox = ret.obj;
+                    $api.setStorage('getTowerDeviceListsInfoURL', ret.obj); //企业
+
+                    ret.obj.forEach(function(item, index) {
+                        var items = {};
+                        items.id = '20191022' + index;
+                        items.lon = item.mapY;
+                        items.lat = item.mapX;
+                        AnnotationsBox.push(items)
+                    })
+                    if (api.systemType == 'ios') {
+
+                        // ios需要对模块初始化
+                        bMap.initMapSDK(function(ret) {
+                            if (ret.status) {
+                                fnOpenbMap(AnnotationsBox);
+                            }
+                        });
+                    } else {
+                        fnOpenbMap(AnnotationsBox);
+
+                    }
+
+
+                }
+            )
+
+
+        }
+        //地图放大
+    function enlargeFn() {
+        bMap.zoomIn();
+
+    }
+    // 地图缩小
+    function narrowFn() {
+        bMap.zoomOut();
+    }
+    // 当前位置标识
+    function currenAnnotation() {
+        bMap.addAnnotations({
+            annotations: [{
+                id: 99999999,
+                lon: beginPosition.lon,
+                lat: beginPosition.lat
+            }],
+            icon: 'widget://image/towercrane/location.png',
+            draggable: true
+        }, function(ret) {
+            if (ret) {}
+        });
+    }
+    //打开地图
+    function fnOpenbMap(AnnotationsBox) {
+        var offset = $api.offset($api.byId('header'));
+        currentPositionFn();
+        bMap.open({
+            rect: {
+                x: offset.l,
+                y: offset.h,
+                w: api.frameWidth,
+                h: api.frameHeight - offset.h
+            },
+            center: {
+                // lon: 106.577833,
+                // lat: 29.650189
+                lon: beginPosition.lon,
+                lat: beginPosition.lat
+            },
+            zoomLevel: 1,
+            // showUserLocation: true,
+            // fixedOn: api.frameName,
+            fixed: true
+        }, function(ret) {
+            if (ret.status) {
+                // 自动定位到用户中心点
+                setCenterFn();
+                fnBmapShowUserLocation();
+                openmapFn()
+                api.openFrame({
+                    name: 'button',
+                    url: './buttons.html',
+                    bgColor: "rgba(0,0,0,0.0)",
+                    rect: {
+                        x: 0,
+                        y: api.winHeight - 49,
+                        h: 49,
+                        w: 'auto'
+
+                    },
+                    pageParam: {
+                        buttonInfo: towerBox
+                    }
+                });
+                for (var i = 0; i < towerBox.length; i++) {
+                    addBillboardFn(i, towerBox[i]);
+                }
+                fnBmapaddAnnotations(AnnotationsBox);
+
+
+
+            }
+        });
+
+    }
+    //广告布
+    function addBillboardFn(i, item) {
+        bMap.addBillboard({
+            id: i,
+            coords: {
+                // lon : 106.57801055569028,
+                // lat : 29.650305195144135
+                lon: item.mapY,
+                lat: item.mapX
+            },
+            bgImg: 'widget://image/towercrane/bgmap.png',
+            content: {
+                title: item.projectName,
+                // subTitle : '岛爱oiajsd家婆',
+                //illus : 'http://ico.ooopic.com/ajax/iconpng/?id=145044.png'//配图
+            },
+            styles: {
+                titleColor: '#323233',
+                titleSize: 14,
+                // subTitleColor : '#323232',
+                // subTitleSize : 14,
+                // illusAlign: 'left',
+                w: 160,
+                h: 55,
+            }
+        }, function(ret) {
+            if (ret) {
+                openDetail(item)
+            }
+        });
+    }
+    //获取当前坐标
+    function currentPositionFn() {
+        bMap.getLocation({
+            accuracy: '10m',
+            autoStop: true,
+            filter: 1
+        }, function(ret, err) {
+            if (ret.status) {
+                beginPosition = ret;
+            } else {}
+        });
+    }
+
+    //打开详情
+    function openDetail(content) {
+        endPosition = content; //导航结束坐标
+        currentPositionFn();
+        api.openFrame({
+            name: 'detail',
+            url: './detail.html',
+            rect: {
+                x: 0,
+                y: api.frameHeight - 238,
+                w: 'auto',
+                h: 238
+            },
+            pageParam: {
+                'content': content
+            },
+            bounces: false,
+            bgColor: "rgba(0,0,0,0.0)",
+        });
+
+    }
+
+    //地图标注
+    function fnBmapaddAnnotations(AnnotationsBox) {
+        bMap.addAnnotations({
+            annotations: AnnotationsBox,
+            icon: 'widget://image/towerCrane.png',
+            draggable: true
+        }, function(ret) {
+            if (ret) {
+                openDetail(towerBox[ret.id - 1]);
+                addBillboard(ret.id-1,towerBox[ret.id - 1])
+
+            }
+        });
+    }
+    //选择导航方式
+    function navigationType() {
+        api.actionSheet({
+            title: '选择导航方式',
+            cancelTitle: '取消',
+            buttons: ['步行导航', '骑行导航']
+        }, function(ret, err) {
+            if (ret) {
+                var btnIndex = ret.buttonIndex;
+                switch (btnIndex) {
+                    case 1:
+                        openwalkNaviFn(beginPosition, endPosition)
+                        break;
+                    case 2:
+                        opencyclingNaviFn(beginPosition, endPosition)
+                        break;
+                    default:
+
+                }
+            } else {}
+        });
+
+
+    }
+    //步行导航
+    function openwalkNaviFn(start, end) {
+        openaddTTSListeningFn();
+        bMap.walkNavi({
+            currentPosition: {
+                latitude: start.lat, //纬度
+                longitude: start.lon //经度
+
+            },
+            destination: {
+                latitude: end.mapX, //纬度
+                longitude: end.mapY //经度
+            }
+        }, function(ret) {
+            if (ret.status) {
+                // api.toast({
+                //     msg: '导航结束',
+                //     duration: 2000,
+                //     location: 'bottom'
+                // });
+            }
+        });
+    }
+
+    //骑行导航
+    function opencyclingNaviFn(start, end) {
+        openaddTTSListeningFn();
+        bMap.cyclingNavi({
+            currentPosition: {
+                latitude: start.lat, //纬度
+                longitude: start.lon //经度
+
+            },
+            destination: {
+                latitude: end.mapX, //纬度
+                longitude: end.mapY //经度
+            }
+        }, function(ret) {
+
+            if (ret.status) {
+                // api.toast({
+                //     msg: '导航结束',
+                //     duration: 2000,
+                //     location: 'bottom'
+                // });
+
+            }
+        });
+    }
+
+    //语音播报
+    function openaddTTSListeningFn() {
+        bMap.addTTSListening({}, function(ret) {});
+    }
+    //当前位置
+    function fnBmapShowUserLocation() {
+        bMap.showUserLocation({
+            isShow: true,
+            trackingMode: 'none'
+        });
+
+    }
+    //设置地图中心
+    function setCenterFn() {
+
+        bMap.getLocation({
+            accuracy: '100m',
+            autoStop: true,
+            filter: 1
+        }, function(ret, err) {
+            if (ret.status) {
+                bMap.setCenter({
+                    coords: {
+                        lon: ret.lon, //纬度
+                        lat: ret.lat, //经度
+                    },
+                    animation: true
+                });
+            }
+        });
+    }
+    //跳转searchlist Page
+    function fnOpenframesearListp() {
+        api.openWin({
+            name: 'searchlist',
+            url: './searchlist.html',
+            rect: {
+                x: 0,
+                y: 0,
+                h: 'auto',
+                w: 'auto'
+            },
+            bounces: false,
+            bgColor: 'rgba(255,255,255,1)',
+            vScrollBarEnabled: false,
+            hScrollBarEnabled: false
+        });
+    }
+    //加载map fn Page
+    function openmapFn() {
+        var offset = $api.offset($api.byId('header'));
+        api.openFrame({
+            name: 'mapfn',
+            url: './mapfn.html',
+            rect: {
+                x: offset.l,
+                y: offset.h,
+                w: 'auto',
+                h: '100'
+            },
+            pageParam: {
+                name: 'test'
+            },
+            bounces: false,
+            bgColor: 'rgba(0,0,0,0)',
+            vScrollBarEnabled: true,
+            hScrollBarEnabled: true
+        });
+
+    }
+
+
+    function closeWin() {
+        api.closeWin();
+
+    }
+</script>
+
+</html>

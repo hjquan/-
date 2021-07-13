@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>云API</title>
+    <link rel="stylesheet" href="../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../css/frame0.css">
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css" /> -->
+    <style>
+        html,body{
+            background-color: #fff;
+        }
+        .jia{
+            color:#058FFD;
+            font-size: 25px;
+        }
+        .title_txt{
+            font-size: 17px;
+            color:#333;
+        }
+        .fnc_box img{
+            width: 55px;
+            height:55px;
+        }
+        [v-cloak]{
+            display: none
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="supervise_box" id="app">
+        <div class="supervise_show" v-cloak>
+            <ul class="supervise_data">
+                <li onclick="openMyExamination()" tapmode>
+                    <p v-cloak> {{listNuumber.myCheckTotal > 999 ? '999+':listNuumber.myCheckTotal}}</p>
+                    <p>我的检查</p>
+                </li>
+                <li onclick="openDisoverProblems()" tapmode>
+                    <p v-cloak>{{listNuumber.problemTotal}}<span class="jia"  v-if="listNuumber.problemTotal > 999">+</span></p>
+                    <p>发现问题</p>
+                </li>
+                <li onclick="openProblem()" tapmode>
+                    <p v-cloak>{{listNuumber.noCloseProblemTotal}}<span class="jia"  v-if="listNuumber.noCloseProblemTotal > 999">+</span></p>
+                    <p>未封闭</p>
+                </li>
+
+            </ul>
+        </div>
+        <!-- <div class="Approval_box">
+            <div onclick="" class="flex">
+                <p>待我审批 <span class="Approval_txt">99<b>+</b></span></p>
+            </div>
+            <div onclick="">
+                <p>消息中心<span class="Approval_txt">99<b>+</b></span></p>
+            </div>
+        </div> -->
+        <div class="fnc_box">
+            <ul id="" v-cloak>
+                <li class="fnc_item"  v-if="isShowMenu">
+                    <h2 class="title_txt">安全管理</h2>
+                    <div>
+                        <ul>
+                            <li @click="openCamera()" tapmode>
+                                <img src="../image/menu/menu_01.png" alt="">
+                                <p>随机检查</p>
+                            </li>
+                            <li @click="openSubItem()" tapmode>
+                                <img src="../image/menu/menu_02.png" alt="">
+                                <p>分项检查</p>
+                            </li>
+                        </ul>
+
+                    </div>
+                </li>
+                <li class="fnc_item" v-if="isCheckMenu">
+                    <h2 class="title_txt">安全台账</h2>
+                    <div>
+                        <ul>
+                            <li onclick="openLenger()" tapmode>
+                                <img src="../image/menu/02_05.png" alt="">
+                                <p>检查台账</p>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="../script/sha1.js"></script>
+    <script src="../script/api.js"></script>
+    <script src="../script/vue.js"></script>
+    <script src="../script/common.js"></script>
+    <script src="../script/permission.js"></script>
+    <script src="../script/commonJs/frame0.js"></script>
+
+</body>
+</html>

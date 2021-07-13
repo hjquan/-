@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+    <link rel="stylesheet" href="./libs/iosselect.css">
+    <style media="screen">
+        *{ margin: 0; padding: 0; }
+        html,body{ height: 100%; display: flex; justify-content: center; align-items: center;}
+        span{ align-items: center; }
+
+        /*控制选择器标题样式*/
+        #iosSelectTitle{ color: #000; font-size: 16px; }
+        /*控制选择器头部样式*/
+        .ios-select-widget-box header.iosselect-header{ background-color: white; height: 50px; line-height: 50px; }
+        /*控制确定按钮样式*/
+        .ios-select-widget-box header.iosselect-header a{ color: #EF5B23; }
+        /*控制取消按钮样式*/
+        .ios-select-widget-box header.iosselect-header a.close{ color: #999999;  }
+    </style>
+</head>
+<body >
+    <span tapmode onclick="fnOpenSelector()">打开一个时间选择器</span>
+</body>
+<script type="text/javascript" src="./libs/iosselect.js"></script>
+<script type="text/javascript" src="./timeselector.js"></script>
+<script type="text/javascript">
+    function fnOpenSelector(){
+        timeSelector.fnOpenSelector({
+            title: '时间选择',                          //选填 |  '时间选择'    |  String         |  选择器标题文案
+            sureText: '完成',                          //选填 |    '完成'      |  String        |   确定按钮文案
+            isShowUnit: true,                         //选填 |     true      |  Boolean        |  是否显示中文单位名称
+            itemShowCount: 5,                         //选填 |      5        |  Number         |  显示的行数
+            itemHeight: 55,                           //选填 |      55       |  Number         |  行高度（单位px）
+            date: '2018/12'                          //选填 |   new Date    |  Date/String     |  默认选中的时间
+                                                      //                       new Date()、'1541224673842'    展示年月日时分秒
+                                                      //                       '2018/12'                      展示年月
+                                                      //                       '2018/12/12'                   展示年月日
+                                                      //                       '2018/12/12 12'                展示年月日时
+                                                      //                       '2018/12/12 12:12'             展示年月日时分
+                                                      //                       '2018/12/12 12:12:12'          展示年月日时分秒
+        }, function(ret){
+            //ret.date                                //非必返     |          |  Date            |  如果点击确定则返回选中的时间，否则返回空
+        })
+    }
+</script>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+
+        .img_h {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height">
+        <header class="aui-bar aui-bar-nav bg_f " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <section class="aui-title">零星机械使用确认</section>
+            <a class="aui-pull-right aui-btn">
+                <!-- <i class="aui-iconfont aui-icon-menu" tapmode onclick="openquelity(1)"></i> -->
+                <img class="img_h" src="../../../../image/temporaryWork/screen.png" tapmode onclick="openquelity(1)"
+                    alt="">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="aui-iconfont aui-icon-plus add-ico" style="font-weight: bold;" tapmode
+                    onclick="addInfo()"></i>
+            </a>
+        </header>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            api.openFrame({
+                name: 'appliance_affirm_list_frame',
+                url: './appliance_affirm_list_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                },
+                bounces: true,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+        function addInfo() {
+            api.openWin({
+                name: 'appliance_affirm',
+                url: 'appliance_affirm.html',
+            });
+        }
+        function openquelity() {
+            api.openFrame({
+                name: 'screen',
+                url: 'screen.html',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                },
+                bounces: false,
+                bgColor: 'transparent',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

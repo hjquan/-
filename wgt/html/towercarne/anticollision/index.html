@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+        .btn{
+            color:#c7c7c7;
+            font-size: 14px;
+        }
+        .color_d5{
+            color:#058FFD
+        }
+        .navbar{
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 0;
+        }
+        .nav_item{
+            width:75px;
+            height:25px;
+            line-height: 25px;
+            background:rgba(255,255,255,1);
+            border:1px solid rgba(5,143,253,1);
+            text-align: center;
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(5,143,253,1);
+        }
+        .nav_item:first-child{
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        .nav_item:last-child{
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 5px;
+
+        }
+        .active{
+            background-color: #058FFD;
+            color: #fff
+        }
+        #header *{
+            background-color: #058FFD;
+            color: #fff
+        }
+        #header .btn{
+            background-color: #fff;
+            padding:0  5px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title" >防撞监控</div>
+            </header>
+
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+
+            var offset = $api.offset($api.byId('header'));
+
+
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+
+                },
+                created:function(){
+                    this.openFrame()
+                },
+                methods: {
+
+                    //打开frame
+                    openFrame:function(){
+                        api.openFrame({
+                            name: 'anticollision_index',
+                            url: './index_frame.html',
+                            rect: {
+                                x: offset.l,
+                                y: offset.h,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+
+
+                }
+            })
+
+
+
+        }
+        function openLeft(){
+            api.openWin({
+                name: 'addlog_frame',
+                url: './left.html',
+                pageParam: {
+                    name: 'test'
+                }
+            });
+        }
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../../css/voice.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .content {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .askForLeave-name {
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+        }
+
+        .text-left {
+            float: left;
+        }
+
+        .text-right {
+            float: right;
+            color: #909090;
+        }
+
+        .askForLeave-content {
+            width: 100%;
+            margin-top: 0.5rem;
+            background: #ffffff;
+
+        }
+
+        .name-right {
+            margin-left: 6rem;
+            color: #909090;
+            height: 1.5rem;
+        }
+
+        .askForLeave-content ul li {
+            width: 100%;
+            height: 2rem;
+            padding: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .askForLeave-wifi {
+            width: 100%;
+            height: 2rem;
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .add-btn {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .name-right input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left img {
+            display: inline;
+            width: 1rem;
+            margin-left: -0.3rem;
+        }
+
+        .text-right img {
+            float: right;
+            width: 1rem;
+        }
+
+        .xiujia div {
+            float: right;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">补卡申请</div>
+            <a class="aui-pull-right" tapmode @click="openaddtask()">
+                <div class="add-btn" @click="addRule()">保存</div>
+            </a>
+        </header>
+        <div class="content">
+            <div class="askForLeave-content">
+                <ul>
+                    <li @click="reissueCardTime()">
+                        <div class="text-left">补卡时间
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            {{applyStartTime}}
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">缺卡原因
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="name-right">
+                            <input type="text" placeholder="请输入内容" v-model="applyCauser">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="askForLeave-name">
+                <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                    <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                        <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                            tapmode="hover"></i>
+                        <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                    </div>
+                    <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+                </div>
+            </div>
+            <div class="askForLeave-content">
+                <ul>
+                    <li>
+                        <div class="text-left">审批人员
+                            <img src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">抄送人员</div>
+                        <div class="text-right">
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/lunarcalendar.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../../script/commonJS/voiceinput.js"></script>
+    <script>
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            $api.fixStatusBar($api.dom('.header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleInfo: api.pageParam.ruleInfo || null,//考勤规则对象
+                    applyStartTime: api.pageParam.applyStartTime || null,  //补卡时间
+                    applyCauser: null,//缺卡原因
+                    imgSrc: [],
+                    isCloseBtn: true,//是否显示删除图片icon
+                },
+                created: function () {
+                    //格式化数据
+                    this.layoutData();
+                },
+                methods: {
+                    //格式化数据
+                    layoutData: function () { },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeFrame({
+                            name: 'reissueCard'
+                        });
+                    },
+                    //
+                    addRule: function () {
+
+                    },
+                    //选择请假类型
+                    openAsk: function () {
+                        var that = this
+                        api.actionSheet({
+                            title: '选择请假类型',
+                            cancelTitle: '取消',
+                            buttons: ['事假', '产假', '病假', '调休']
+                        }, function (ret, err) {
+                            var index = ret.buttonIndex;
+                        });
+                    },
+                    //选择开始时间
+                    startTime: function () {
+
+                    },
+                    //选择结束时间
+                    endTime: function () {
+
+                    },
+                    //选择补卡时间
+                    reissueCardTime() {
+                        api.openFrame({
+                            name: 'lackCardRecord',
+                            url: 'lackCardRecord.html',
+                            bounces: true,
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                        });
+                    },
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - vm.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function (fncFN) {
+                        if (vm.serverImg) {
+                            var src_join = this.serverImg.map(function (item) {
+                                return item.srcPath
+                            })
+                            var compress_join = this.serverImg.map(function (item) {
+                                return item.compressPath
+                            })
+                            vm.srcImgUrl = src_join.join(',');
+                            vm.compressImgUrl = compress_join.join(',');
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function (fncFN) {
+                        var compressImg = [];
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: vm.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            var timer = setInterval(function () {
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                        enterpriseId: $api.getStorage('enterpriseId')
+                                    }, {
+                                        imgFile: compressImg
+                                    },
+                                        function (ret) {
+                                            vm.isCloseBtn = false;
+                                            var data = ret.obj;
+                                            vm.serverImg = data;
+                                            vm.imgFilter(fncFN)
+
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+                },
+            })
+        }
+    </script>
+</body>
+
+</html>

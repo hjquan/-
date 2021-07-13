@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/sendObj.css"/>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+</head>
+
+<body>
+    <div class="container" id='app'>
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">选择处理人</div>
+            <a class="aui-pull-right aui-btn">
+
+            </a>
+        </header>
+        <div class="main_box ">
+            <!-- <div onclick="addCs()" class="select tri_bottom border_bottom_after aui-ellipsis-1">
+                <i class="aui-iconfont aui-icon-top aui-icon-down"></i>
+                </div> -->
+            <ul class="active">
+                <li class="border_bottom_after" v-for="item in  personInfo" tapmode @click="openHandle(item)">
+                    <span class="txt_333" v-text="item.name"></span>
+                    <span class="txt_999" v-text="item.position"></span>
+                </li>
+                <!--<li class="border_bottom_after ">
+                    <span class="txt_333">张三(副经理)</span>
+                    <span class="txt_999">已读</span>
+                </li> -->
+
+            </ul>
+        </div>
+    </div>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            apiready = function(){
+                //侵入式导航栏
+                $api.fixStatusBar( $api.dom('header') );
+                var vm = new Vue({
+                    el:'#app',
+                    data:{
+                        personInfo:'',
+                        currenEnterprice:''
+                    },
+                    methods:{
+                        init:function(info){
+                            if (info.isRectification == 1 && info.isStart == 0 && $api.getStorage('userId') == info.personliableId) {
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getProjectUserList, {
+                                        projectId: $api.getStorage('enterpriseId')
+                                    },
+                                    function(ret) {
+                                        vm.sendObjInfo = ret.obj.projectUserList;
+                                    }
+                                );
+                            } else if ($api.getStorage('userId') == info.handleUserId && $api.getStorage('userId') == info.rectificationId) {
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getUserListURL, {
+                                        enterpriseId: api.pageParam.checkDetail.supervisorUnitId,
+                                        isJob: '1'
+                                    },
+                                    function(ret) {
+                                        vm.personInfo = ret.obj.users;
+                                    }
+                                )
+                            } else if ($api.getStorage('userId') == info.handleUserId && $api.getStorage('enterpriseType') == 3) {
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getUserListURL,
+                                    {
+                                        enterpriseId: api.pageParam.checkDetail.partyAUnitId,
+                                        isJob: '1'
+                                    },
+                                    function(ret){
+                                        vm.personInfo = ret.obj.users;
+                                    }
+                                )
+                            } else if ($api.getStorage('userId') == info.handleUserId && $api.getStorage('enterpriseType') == 2) {
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getUserListURL,
+                                    {
+                                        enterpriseId: api.pageParam.checkDetail.partyAUnitId,
+                                        isJob: '1'
+                                    },
+                                    function(ret){
+                                        vm.personInfo = ret.obj.users;
+                                    }
+                                )
+                            }
+                        },
+                        openHandle:function(item){
+                            api.sendEvent({
+                                name: 'openHandleInfo',
+                                extra: {
+                                    personInfoItem: item
+                                }
+                            });
+                            setTimeout(function(){
+                                api.closeWin();
+                            },1000)
+
+
+                        }
+                    }
+                })
+                vm.init(api.pageParam.checkDetail)
+                vm.currenEnterprice = $api.getStorage('currentProject');
+                console.log($api.getStorage('currentProject'));
+
+            }
+            function closeWin(){
+                api.closeWin();
+
+            }
+
+            function addCs(){
+                $api.toggleCls($api.dom('.main_box ul'), 'active');
+                $api.toggleCls($api.dom('.select i'), 'aui-icon-down');
+            }
+        </script>
+</body>
+
+</html>

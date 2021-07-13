@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+
+        .content {
+            width: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .content article {
+            width: 50%;
+            height: 7rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content article img {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        .content article span {
+            margin-top: 1rem;
+            font-size: 0.7rem;
+        }
+
+        .add-img {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .add-img img {
+            width: 3rem;
+        }
+
+        .add-section {
+            width: 100%;
+            margin-top: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-temporary img {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .add-temporary {
+            width: 3rem;
+            height: 3rem;
+            border: 2px #058FFD solid;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-transition: all .5s ease-in;
+            -moz-transition: all .5s ease-in;
+            opacity: 0;
+            transition: all .5s ease-in;
+        }
+
+        .add-temporary:nth-child(2) {
+            position: absolute;
+            top: -0.5rem;
+            left: -5rem;
+        }
+
+        .add-temporary:nth-child(3) {
+            position: absolute;
+            top: -5rem;
+            left: -3rem;
+        }
+
+        .add-temporary:nth-child(4) {
+            position: absolute;
+            top: -5rem;
+            left: 2.5rem;
+        }
+
+        .add-temporary:nth-child(5) {
+            position: absolute;
+            top: -0.5rem;
+            left: 4.5rem;
+
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height" @change="removeImg()">
+        <header class="aui-bar aui-bar-nav bg_f " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" @click="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <section class="aui-title color_3">零星用工</section>
+        </header>
+        <section class="content">
+            <article @click="onTemporary()">
+                <img style="width: 2.1rem; height: 2.1rem;" src="../../../image/temporaryWork/apply-img.png" alt="">
+                <span>零星用工事前申请</span>
+            </article>
+            <article @click="onTemporaryAffirm()">
+                <img style="width: 1.8rem; height: 1.8rem;" src="../../../image/temporaryWork/notarize.png" alt="">
+                <span>零星用工使用确认</span>
+            </article>
+            <article @click="onAppliance()">
+                <img style="width: 2.2rem; height: 2.2rem;" src="../../../image/temporaryWork/wrench.png" alt="">
+                <span>零星机械事前申请</span>
+            </article>
+            <article @click="onApplianceAffirm()">
+                <img src="../../../image/temporaryWork/wrench-affirm.png" alt="">
+                <span>零星机械使用确认</span>
+            </article>
+        </section>
+        <section class="add-section">
+            <article class="add-img">
+                <img @click="addImg()" src="../../../image/temporaryWork/add-ioc.png" alt="">
+                <article class="add-temporary">
+                    <img src="../../../image/temporaryWork/apply-img.png" alt="">
+                </article>
+                <article class="add-temporary">
+                    <img src="../../../image/temporaryWork/notarize.png" alt="">
+                </article>
+                <article class="add-temporary">
+                    <img src="../../../image/temporaryWork/wrench.png" alt="">
+                </article>
+                <article class="add-temporary">
+                    <img src="../../../image/temporaryWork/wrench-affirm.png" alt="">
+                </article>
+            </article>
+        </section>
+    </section>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/aui-dialog.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script//jquery-3.0.0.min.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    flage: false
+                },
+                created: function () {
+
+                },
+                methods: {
+                    addImg: function () {
+                        api.openFrame({
+                            name: 'add_temporary',
+                            url: 'add_temporary.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                            },
+                            bounces: false,
+                            bgColor: 'transparent',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    // addImg: function () {
+                    //     this.flage = !this.flage
+                    //     if (this.flage) {
+                    //         document.getElementsByClassName("add-temporary")[0].style.opacity = 1;
+                    //         document.getElementsByClassName("add-temporary")[1].style.opacity = 1;
+                    //         document.getElementsByClassName("add-temporary")[2].style.opacity = 1;
+                    //         document.getElementsByClassName("add-temporary")[3].style.opacity = 1;
+                    //         console.log("1");
+                    //     } else {
+                    //         this.removeImg();
+                    //     }
+                    // },
+                    // removeImg: function () {
+                    //     document.getElementsByClassName("add-temporary")[0].style.opacity = 0;
+                    //     document.getElementsByClassName("add-temporary")[1].style.opacity = 0;
+                    //     document.getElementsByClassName("add-temporary")[2].style.opacity = 0;
+                    //     document.getElementsByClassName("add-temporary")[3].style.opacity = 0;
+                    // },
+                    closeWin: function () {
+                        api.closeWin()
+                    },
+                    //
+                    onTemporary: function () {
+                        api.openWin({
+                            name: 'temporary_list',
+                            url: 'temporary/temporary_list.html',
+                            bounces: false
+                        });
+                    },
+                    //
+                    onTemporaryAffirm: function () {
+                        api.openWin({
+                            name: 'temporary_affirm_list',
+                            url: 'temporary-affirm/temporary_affirm_list.html',
+                            bounces: false
+                        });
+                    },
+                    //
+                    onAppliance: function () {
+                        api.openWin({
+                            name: 'appliance_list',
+                            url: 'appliance/appliance_list.html',
+                            bounces: false
+                        });
+                    },
+                    //
+                    onApplianceAffirm: function () {
+                        api.openWin({
+                            name: 'appliance_affirm_list',
+                            url: 'appliance-affirm/appliance_affirm_list.html',
+                            bounces: false
+                        });
+                    },
+                }
+            });
+        }
+    </script>
+    <script>
+    </script>
+</body>
+
+</html>

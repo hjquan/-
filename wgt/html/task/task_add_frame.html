@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../css/voice.css">
+    <style>
+        html,body{height:100%}
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .mian_item{margin: 10px 0}
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+        .bg_trsn{background-color: transparent}
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+        .mian_item .inputPosition{padding-right: 10px}
+        .last-txt{
+            font-size:11px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(185,185,185,1);
+            /*height:30px;
+            line-height: 30px;*/
+            padding: 8px 10px;
+        }
+        .btnActive{
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+        .title{padding:0 10px}
+        .title h2{
+            font-size: 16px;
+            color: #323233;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+        .title textarea{
+            font-size: 14px;
+            color: #7E7E80;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box ">
+            <div class="title">
+                <h2>任务描述</h2>
+                <textarea name="name" rows="8" v-model="content" placeholder="请输入描述信息" cols="80"></textarea>
+            </div>
+          <div class="imgUpdate "  style="padding:10px 15px;">
+              <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                  <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index) tapmode="hover"></i>
+                  <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+              </div>
+              <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+          </div>
+            <ul class="bg_trsn">
+                <li class="mian_item border_bottom_after" tapmode  @click="clicklogTimeFn()">
+                    <p>截止时间<span class="requid">*</span></p>
+                    <p ><span v-text="deadline ? deadline : '必选'"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="openurgencyDegree()">
+                    <p>紧急程度</p>
+                    <p  ><span v-text="urgencyDegreeName"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode  @click="openliableFn()">
+                    <p>责任人<span class="requid">*</span></p>
+                    <p ><span v-text="personliableName ? personliableName : '必选'"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="opeparticipantFn()">
+                    <p>参与人</p>
+                    <p  ><span v-text="totalparticipant ? totalparticipant : '选填'"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+
+            </ul>
+            <div class="" style="background-color:#f5f5f5;">
+                <div style="margin-top:10px;" class="cancelBtn" :class="{'btnActive':isSubmitActive}" tapmode="hover" @click="submitFn()">发布</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/lunarcalendar.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <!-- <script src="../../../script/commonJS/voiceinput.js"></script> -->
+    <script>
+        // var vm;
+        apiready = function() {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            //监听责任人事件
+            api.addEventListener({
+                name: 'task_personliable_event'
+            }, function(ret, err){
+                if( ret ){
+                    var data = ret.value.personliableinfo;
+                    vm.personliableId = data.userId;
+                    vm.personliableName = data.name;
+                    // vm.personliablebox = ret.value.personliableinfo;
+                    // var txt = $api.strToJson(ret.value.personliableinfo);
+                    //
+                    // var name_join = '';
+                    // var id_join = '';
+                    // vm.totalPerson = 0;
+                    // txt.forEach(function(items){
+                    //     items.children.forEach(function(item,i){
+                    //         if(item.checked){
+                    //             name_join += item.name + ',';
+                    //             id_join += item.userId + ',';
+                    //             vm.totalPerson++;
+                    //         }
+                    //     })
+                    //
+                    // })
+                    // vm.totalPerson = name_join.substr(0,7) + '   等'+ vm.totalPerson + '人';
+                    // vm.personliableName = name_join.substr(0,name_join.length-1);
+                    // vm.personliableId = id_join.substr(0,id_join.length-1);
+                    console.log($api.jsonToStr(ret.value.personliableinfo));
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+            //监听参与人事件
+            api.addEventListener({
+                name: 'taskpersonparticipant_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.participantbox = ret.value.personliableinfo;
+                    var txt = $api.strToJson(ret.value.personliableinfo);
+
+                    var name_join = '';
+                    var id_join = '';
+                    vm.totalparticipant = 0;
+                    txt.forEach(function(items){
+                        items.children.forEach(function(item,i){
+                            if(item.checked){
+                                name_join += item.name + ',';
+                                id_join += item.userId + ',';
+                                vm.totalparticipant++;
+                            }
+                        })
+
+                    })
+
+                    vm.totalparticipant = name_join.substr(0,7) + '   等'+ vm.totalparticipant + '人';
+                    vm.participantName = name_join.substr(0,name_join.length-1);
+                    vm.participantId = id_join.substr(0,id_join.length-1);
+                    console.log(vm.participantName);
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+            //删除草稿
+            api.addEventListener({
+                name: 'task_del_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.deldrafFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            //保存草稿
+            api.addEventListener({
+                name: 'task_save_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.savedraftFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+            //监听返回事件是否保存草稿
+            api.addEventListener({
+                name: 'task_back_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.isDraftSaveFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    "totalparticipant":0,//参与人人数统计
+                    // "totalPerson":0,//责任人数统计
+                    "isCloseBtn":true,//是否显示删除图片icon
+                    "imgSrc":[],
+                    "personliablebox":'',//选中的责任人集合用于匹配是否选中
+                    "participantbox":'',//参与人集合用于匹配是否选中
+                    "serverImg":'',//服务器返回图片地址
+                    "urgencyDegreeName":'一般',//紧急程度名称
+
+                    "personliableId": "",//责任人ID
+                    "personliableName": "",//责任人名称
+                    "participantId":'',//参与人id
+                    "participantName":'',//参与人名称
+
+
+                    "deadline": '',//整改到期日期
+                    "createUserId":'',//创建人ID
+                    "createUserName":'',//创建人名称
+                    "projectId":'',//项目ID
+                    'urgencyDegree':'0',//紧急程度
+
+
+                    "srcImgUrl":'',//原图片地址（多张逗号分隔）
+                    "compressImgUrl":'',//压缩图片地址（多张逗号分隔）
+                    "content":'',//问题描述
+                    'isDraf':false,//是否是草稿
+
+                },
+                watch: {
+
+                },
+                computed: {
+
+                    // 控制提交按钮状态
+                    isSubmitActive: function() {
+                        if (!this.personliableName || !this.deadline) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+
+                },
+                mounted: function() {
+
+
+                },
+                created: function() {
+                    // this.init();
+                    // var d= new Date();
+                    // var m = (d.getMonth() + 1)+'',day = d.getDate()+'';
+                    // var time = d.getFullYear() + '-' + (m.length >1 ? m : ('0'+m)) + '-' + (day.length>1 ? day :('0'+day) );
+                    this.deadline = $app.formDate(false,'-',true);
+                    this.createUserId=$api.getStorage('userId');//创建人ID
+                    this.createUserName= $api.getStorage('enterLoginInfo').name;//创建人名称
+                    this.projectId= $api.getStorage('enterpriseId');//项目ID
+                    this.initPrefsFn()
+                },
+                methods: {
+                    //是否保存草稿
+                    isDraftSaveFn:function(){
+                        var _this = this;
+                        api.getPrefs({
+                            key: 'task_draf_save'
+                        }, function(ret, err) {
+                            if (ret.value) {
+                                var item = $api.strToJson(ret.value);
+                                var isFlag = $api.jsonToStr(_this.imgSrc) == $api.jsonToStr(item.imgSrc) &&
+                                            _this.urgencyDegreeName == item.urgencyDegreeName && //,//紧急程度名称
+
+                                            _this.personliableId ==item.personliableId && //,//责任人ID
+                                            _this.personliableName == item.personliableName && //,//责任人名称
+                                            _this.participantId == item.participantId && //,//参与人id
+                                            _this.participantName == item.participantName && //,//参与人名称
+
+                                            // _this.deadline == item.deadline && //,//整改到期日期
+                                            _this.urgencyDegree == item.urgencyDegree && //,//紧急程度
+
+                                            _this.content == item.content && //,//问题描述
+                                            _this.totalparticipant == item.totalparticipant; //,//参与人人数统计
+
+                                    console.log(isFlag);
+                                    if(isFlag){
+                                        api.closeWin();
+                                    }else{
+                                        api.confirm({
+                                            title: '是否保存草稿',
+                                            // msg: '',
+                                            buttons: ['确定', '取消']
+                                        }, function(ret, err){
+                                            if( ret ){
+                                                if(ret.buttonIndex == 1){
+                                                    _this.savedraftFn()
+
+                                                }else{
+                                                    api.closeWin();
+                                                }
+                                            }else{
+
+                                            }
+                                        });
+
+                                    }
+
+                                // _this.imgSrc = item.imgSrc; //本地图片地址
+                            }else{
+                                api.confirm({
+                                    title: '是否保存草稿',
+                                    // msg: '',
+                                    buttons: ['确定', '取消']
+                                }, function(ret, err){
+                                    if( ret ){
+                                        if(ret.buttonIndex == 1){
+                                            _this.savedraftFn()
+
+                                        }else{
+                                            api.closeWin();
+                                        }
+                                    }else{
+
+                                    }
+                                });
+                            }
+                        })
+                    },
+
+                    //初始化缓存赋值
+                    initPrefsFn: function() {
+                        var _this = this
+                        api.getPrefs({
+                            key: 'task_draf_save'
+                        }, function(ret, err) {
+                            if (ret.value) {
+                                console.log(ret.value);
+                                var item = $api.strToJson(ret.value);
+
+                                // if (item.deadline == _this.deadline) {
+                                    _this.imgSrc = item.imgSrc,
+                                    _this.urgencyDegreeName = item.urgencyDegreeName,//紧急程度名称
+
+                                     _this.personliableId = item.personliableId,//责任人ID
+                                     _this.personliableName = item.personliableName,//责任人名称
+                                    _this.participantId = item.participantId,//参与人id
+                                    _this.participantName = item.participantName,//参与人名称
+                                    // _this.deadline = item.deadline,//整改到期日期
+                                    _this.urgencyDegree = item.urgencyDegree,//紧急程度
+
+                                    _this.content = item.content,//问题描述
+                                    _this.totalparticipant = item.totalparticipant//参与人人数统计
+                                    api.sendEvent({
+                                        name: 'btn_del_task_event',
+                                        extra: {
+                                        }
+                                    });
+                                    _this.isDraf = true;
+
+
+                                // }
+
+
+
+                            }else{
+                            };
+                        });
+                    },
+                    //草稿删除
+                    deldrafFn: function() {
+                        var _this = this;
+                        api.confirm({
+                            title: '提示',
+                            msg: '是否删除草稿',
+                            buttons: ['取消', '删除']
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == 2) {
+                                    api.removePrefs({
+                                        key: 'task_draf_save'
+                                    });
+
+                                    api.toast({
+                                        msg: '删除成功',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    setTimeout(function(){api.closeWin()},200)
+
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+
+                    },
+                    //草稿保存
+                    savedraftFn: function() {
+                        var _this = this;
+                        var params = {
+                            "imgSrc":_this.imgSrc,
+                            "urgencyDegreeName":_this.urgencyDegreeName,//紧急程度名称
+
+                            "personliableId": _this.personliableId,//责任人ID
+                            "personliableName": _this.personliableName,//责任人名称
+                            "participantId":_this.participantId,//参与人id
+                            "participantName":_this.participantName,//参与人名称
+
+
+                            // "deadline": _this.deadline,//整改到期日期
+                            'urgencyDegree':_this.urgencyDegree,//紧急程度
+
+                            "content":_this.content,//问题描述
+                            'totalparticipant':_this.totalparticipant,//参与人人数统计
+                            'totalPerson':_this.totalPerson//责任人数统计
+
+                        }
+                        console.log($api.jsonToStr(params));
+                        api.setPrefs({
+                            key: 'task_draf_save',
+                            value: $api.jsonToStr(params)
+                        });
+                        api.getPrefs({
+                            key: 'task_draf_save'
+                        }, function(ret, err){
+                            if( ret ){
+                                if(ret.value){
+                                    api.toast({
+                                        msg: '保存成功',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    setTimeout(function(){api.closeWin();},500)
+                                }
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+
+
+                    },
+                    //选择紧急状态
+                    openurgencyDegree:function(){
+                        var data = ['特急','紧急','一般'];
+                        api.actionSheet({
+                            title: '紧急程度',
+                            cancelTitle: '取消',
+                            buttons: data
+                        }, function(ret, err){
+                            if( ret ){
+                                console.log(ret.buttonIndex);
+                                vm.urgencyDegreeName = data[ret.buttonIndex-1];
+                                switch (data[ret.buttonIndex-1]) {
+                                    case '特急':
+                                        vm.urgencyDegree = '2'
+                                        break;
+                                    case '紧急':
+                                        vm.urgencyDegree = '1'
+                                        break;
+                                    case '一般':
+                                        vm.urgencyDegree = '0'
+                                        break;
+                                    default:
+
+                                }
+
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    //打开参与人
+                    opeparticipantFn:function(){
+                        api.openWin({
+                            name: 'taskpersonparticipant',
+                            url: './taskpersonparticipant.html',
+                            pageParam: {
+                                "defalutcheck":vm.participantbox
+                            }
+                        });
+
+                    },
+
+
+                    //打开责任人
+                    openliableFn:function(){
+
+                        api.openWin({
+                            name: 'taskpersonliable',
+                            url: './taskpersonliable.html',
+                            pageParam: {
+                                // name: 'test'
+                                "defalutcheck":vm.personliablebox
+                            }
+                        });
+                    },
+
+
+
+
+
+                    //获取日期
+                    clicklogTimeFn: function() {
+                        var timeDate = new Date(vm.logTime)
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            // date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function(ret) {
+                            if(!ret){return }
+                            var date = new Date(ret.date)
+                            var split_line = api.systemType === 'ios' ? '/' : '-';
+
+                            var selectDate = new Date(date.getFullYear() + split_line + (date.getMonth()+1)+ split_line + date.getDate() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + split_line + (currenDateTime.getMonth()+1) + split_line + currenDateTime.getDate()+ '  ' + currenDateTime.getHours() + ':' + currenDateTime.getMinutes() + ':' + currenDateTime.getSeconds()).getTime();//当前时间年月日
+
+                            if(selectDate < curenDate){
+                                api.toast({
+                                    msg: '不能选择小于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+
+                            }
+
+                            var time = $app.formDate(date,'-')+ '  ' + $app.fillDate(date.getHours()) + ':' + $app.fillDate(date.getMinutes()) + ':' + $app.fillDate(date.getSeconds());
+                            vm.deadline= time;
+                        })
+                    },
+
+
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function(fncFN) {
+                        if (vm.serverImg) {
+                            var src_join = this.serverImg.map(function(item) {
+                                return item.srcPath
+                            })
+                            var compress_join = this.serverImg.map(function(item) {
+                                return item.compressPath
+                            })
+                            vm.srcImgUrl = src_join.join(',');
+                            vm.compressImgUrl = compress_join.join(',');
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function(fncFN) {
+                        var compressImg = [];
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                (function(index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: vm.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            // album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function(ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            api.showProgress({
+                                style: 'default',
+                                animationType: 'fade',
+                                title: '新增中...',
+                                text: '先喝杯茶...',
+                                modal: true
+                            });
+
+                            var timer = setInterval(function() {
+
+
+                                if (compressImg.length == vm.imgSrc.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        false,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                            enterpriseId: $api.getStorage('enterpriseId')
+                                        }, {
+                                            imgFile: compressImg
+                                        },
+                                        function(ret) {
+                                            vm.isCloseBtn = false;
+                                            var data = ret.obj;
+                                            vm.serverImg = data;
+                                            vm.imgFilter(fncFN)
+
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    // // 图片选择
+                    uploadHeadPic: function() {
+                        confirmPer('camera,photos', function() {})
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - vm.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function(ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function(ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    submitFn: function() {
+                        var _this = this;
+                        if (!this.personliableName || !this.deadline) {
+
+                            api.toast({
+                                msg: "带 '*' 为必填项",
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+                        function fnc(){
+                            var params = {
+                                "createrUserId": vm.createUserId,
+                                "createrUserName":vm.createUserName,
+                                "projectId":vm.projectId ,
+                                "deadline": vm.deadline,
+                                "urgencyDegree":vm.urgencyDegree,// "'(0是一般，1是紧急，2是特急)'"
+                                "personliableId": vm.personliableId,
+                                "personliableName": vm.personliableName,
+                                "participantId": vm.participantId,
+                                "participantName": vm.participantName,
+                                "content": vm.content,
+                                "srcImgUrl": vm.srcImgUrl,
+                                "compressImgUrl": vm.compressImgUrl
+                            }
+
+                            console.log($api.jsonToStr(params));
+                            $app.post(
+                                false,
+                                submitTask,
+                                params,
+                                function(ret){
+                                    api.hideProgress();
+
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    //触发任务列表刷新
+                                    api.sendEvent({
+                                        name: 'refsh_task_list_event',
+                                        extra: {
+                                        }
+                                    });
+                                    //触发首页刷新
+                                    api.sendEvent({
+                                        name: 'enterpriseIndexList',
+                                        extra: {
+                                        }
+                                    });
+                                    if(_this.isDraf){
+                                        api.removePrefs({
+                                            key: 'task_draf_save'
+                                        });
+
+                                    }
+
+                                    setTimeout(function(){
+                                        api.closeWin();
+                                    },100)
+
+                                }
+                            )
+                        }
+                        this.saveImg(fnc)
+                    },
+
+                }
+            })
+            //
+
+        };
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .txtbasis{
+            color:#333;
+            /*font-size: 14px;*/
+        }
+        .navbar{
+            display: flex;
+            height: 30px;
+            line-height: 30px;
+            color:#058FFD;
+            font-size: 15px;
+            padding-left: .75rem;
+            background: #ccc;
+        }
+        .headerPosition{
+            width: 100%;
+            position: fixed;
+            top:0;
+            left:0;
+            z-index: 1000;
+        }
+        .app{position: relative;}
+        .main{
+            width: 100%;
+            position: absolute;
+            top:75px;
+            left: 0;
+            margin-bottom:20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="app">
+        <div class="headerPosition">
+            <header class="aui-bar aui-bar-nav aui-bar-light " id="header">
+                <div class="aui-pull-left aui-btn">
+                    <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                        <span class="aui-iconfont aui-icon-left"></span>
+                    </a>
+                    <!-- <a class="aui-pull-right aui-btn" tapmode @click="backIndex()">
+                        <span class="aui-iconfont aui-icon-close"></span>
+                    </a> -->
+                </div>
+                <div class="aui-title header_title"  v-text="checkType == 1?'分项检查':'随机检查'"></div>
+                <!-- <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfont aui-icon-close"></span>
+                </a> -->
+
+            </header>
+            <ul class="navbar aui-ellipsis-1" v-if="basisData.name">
+                <li v-cloak>{{basisData.name}}<span> &nbsp;/ &nbsp;</span></li>
+            </ul>
+        </div>
+        <div class="main" id="">
+
+            <div class="aui-card-list-content">
+               <ul class="aui-list aui-media-list" v-if="basisData.subdict">
+                   <li class="aui-list-item aui-list-item-middle" tapmode v-for="(item) in basisData.subdict" @click="openBasis03(item)">
+                       <div class="aui-media-list-item-inner">
+                           <div class="aui-list-item-inner aui-list-item-arrow txtbasis" v-cloak>
+                               {{item.name}}
+                           </div>
+                       </div>
+                   </li>
+               </ul>
+           </div>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/vue.js"></script>
+
+    <script>
+        apiready = function(){
+            //侵入式导航栏
+            $api.fixIos7Bar( $api.dom('.headerPosition'));
+            $api.fixIos7Bar( $api.dom('.main'));
+            $api.fixTabBar($api.dom('.main'));
+            vm.basisData= api.pageParam.lastBsis;
+            vm.checkType = $api.getStorage('checkType');
+            vm.navigationBar =api.pageParam.navigationBar;
+            api.addEventListener({
+                name: 'removeNavBar1'
+            }, function(ret, err){
+                if( ret ){
+                    vm.navigationBar.pop()
+                }
+            });
+
+            ///监听菜单切换
+            api.addEventListener({
+                name: 'keyback'
+            }, function(ret, err) {
+                // vm.navigationBar.pop()
+            });
+
+        }
+        function closeWin(){
+            api.closeWin();
+
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                basisData:'',
+                checkType:'',
+                navigationBar:''
+            },
+            methods: {
+                backIndex:function(){
+                    api.closeToWin({
+                        name: 'Index'
+                    });
+                },
+                openBasis03:function(item){
+                    if(item.name_en == 'end'){  //判断当前是否是最后一项
+                        api.sendEvent({
+                            name: 'basisEvent',
+                            extra: {
+                                lastBsis:item
+                            }
+                        });
+                        api.openWin({
+                            name: 'randomCheck',
+                            url: './randomCheck.html',
+                            pageParam: {
+                                'lastBsis':item
+                            }
+                        });
+                    }else{
+                        var navigationBar = api.pageParam.navigationBar;
+                        navigationBar.push(item.name);
+                        api.openWin({
+                            name: 'bsis03',
+                            url: './basis_03.html',
+                            reload:true,
+                            pageParam: {
+                                'lastBsis': item,
+                                navigationBar:navigationBar
+                            }
+                        });
+                    }
+
+
+                }
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>

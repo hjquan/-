@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/randomCheck.css" />
+    <style>
+        .titleTxt{
+          background-color: #fff;
+          height:100px;
+          font-size:15px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:#323233;
+          line-height:25px;
+          padding:10px 15px;
+        }
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+        .imgUpdate div:last-child{
+            width: 52px;
+            height:52px;
+            line-height: 52px;
+          }
+        .imgUpdate img{
+          width: 52px;
+          height: 52px;
+
+        }
+        .cancelBtn{
+          margin-top: 20px;
+          background:rgba(199,199,204,1);
+        }
+        .footTile{position: relative;}
+        .footTile i{
+          background-color: #C7C7CC;
+          width: 16px;
+          height: 16px;
+          line-height: 16px;
+          text-align: center;
+          border-radius: 50%;
+          position: absolute;
+          right: 10px;
+          bottom: 10px;
+          color:#fff;
+          font-weight: 600;
+          font-size: 10px;
+        }
+        .active{
+            background:rgba(5,143,253,1);
+        }
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 100%;
+          height: 1px;
+          background-color: #F5F5F5;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <div class="aui-pull-left aui-btn">
+                <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <!-- <a class="aui-pull-right aui-btn" tapmode @click="backIndex()">
+                    <span class="aui-iconfont aui-icon-close"></span>
+                </a> -->
+            </div>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);" v-text="title_h"></div>
+        </header>
+        <div class="main_box">
+            <div class="footTile bottom_before_line">
+                <textarea name="name" class="titleTxt" rows="8" v-model="content" :placeholder="title_h == '复查退回'?'必填':'选填'"  cols="80"></textarea>
+                <i class="aui-iconfont aui-icon-close" v-show="content" @click="clearIconFn('1')"></i>
+            </div>
+            <div class="imgUpdate border_bottom_after">
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                    <i class="aui-iconfont aui-icon-close del_close" v-if="isBtn" @click=removeImage(index) tapmode="hover"></i>
+                    <img :src="item" alt=""  tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+            </div>
+
+
+            <div>
+
+                <div class="cancelBtn"  tapmode="hover" :class="{'active':isBgCo}"  @click="submit()">提交</div>
+            </div >
+            <div class="footTile" v-if="title_h == '整改'">
+
+              <textarea name="name" v-model="taskAssess"  class="titleTxt" rows="8" placeholder="选填" cols="80" style="margin-top:90px;"></textarea>
+              <i class="aui-iconfont aui-icon-close" v-show="taskAssess" @click="clearIconFn('2')"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var photoBrowser = api.require('photoBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    title_h:'',// 标题文本(判断提交类型)
+                    content:'',//处理意见
+                    taskAssess:'',//任务评价
+                    isBtn:true,//控制删除按钮状态
+                    imgSrc: [], //图片地址
+                    serverImg: '', //服务器返回图片地址
+                    srcImgUrl: '', //数据库图片地址
+                    compressImgUrl: '', //数据库压缩图片地址
+                },
+                created:function(){
+                    console.log(api.pageParam.btnType);
+                    this.title_h = api.pageParam.btnType;
+
+                },
+                computed: {
+                    //判断按钮是否高亮
+                    isBgCo: function() {
+                        if (this.title_h == '复查退回' && !this.content) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    },
+
+                },
+                methods: {
+                    // 清除输入内容
+                    clearIconFn:function(data){
+                        if(data == '1'){
+                            vm.content = ''
+                        }else{
+                            vm.taskAssess = ''
+                        }
+
+                    },
+                    closeWin: function() {
+                        api.closeWin();
+                    },
+                    // //图片查看
+                    imgSee: function(url,index) {
+
+                        photoBrowser.open({
+                            images:url,
+                            activeIndex:index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function(fncFN) {
+                        if (vm.serverImg) {
+                            var srcImgUrl = this.serverImg.map(function(item) {
+                                return item.srcPath
+                            })
+                            var compressImgUrl = this.serverImg.map(function(item) {
+                                return item.compressPath
+                            })
+                            vm.srcImgUrl = srcImgUrl.join(',');
+                            vm.compressImgUrl = compressImgUrl.join(',');
+                            vm.isBtn = false;
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function(fncFN) {
+                        var compressImg = [];
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                    (function(index){
+                                        var imageName = randomWord(false,9, 12);
+                                        var imageCachePath = api.cacheDir;
+                                        imageFilter.compress({
+                    						img : vm.imgSrc[index],
+                    						quality:0.3,
+                    						save : {
+                    							album : true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                                imgPath: imageCachePath,
+                                                imgName: imageName + '.jpg'
+                    						}
+                    					}, function(ret, err) {
+                    						if (ret) {
+                                                var txt = imageCachePath + '/' + imageName + '.jpg';
+                                                compressImg.push(txt)
+                    						} else {
+
+                    						}
+                    					});
+                                    })(i);
+                            }
+                            var timer = setInterval(function(){
+                                if(compressImg.length){
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                            enterpriseId: $api.getStorage('enterpriseId')
+                                        }, {
+                                            imgFile:compressImg
+                                        },
+                                        function(ret) {
+                                            vm.isBtn = false;
+                                            vm.serverImg = ret.obj;
+                                            vm.imgFilter(fncFN)
+                                        }
+                                    )
+                                }
+                            },1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    //图片选择
+                    uploadHeadPic: function() {
+                        confirmPer('camera,photos', function() {})
+                        var UIAlbumBrowser = api.require('UIAlbumBrowser');;
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3-vm.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 100, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 100 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function(ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function(ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //提交合格安全检查
+                    submit: function() {
+                        if(this.title_h == '复查退回' && !this.content){
+                            api.toast({
+                               msg: '请填写相应资料',
+                               duration: 2000,
+                               location: 'bottom'
+                           });
+                           return false
+                        }
+                        var data = $api.strToJson(api.pageParam.detailInfo);
+
+                        function nozgFn(){//整改不进入流程
+                            var params = {
+                                "flowStatus": "0",//0表示通过
+                                "businessId": data.qualityId,//业务主键id
+                                "userId": $api.getStorage('userId'),//当前用户id
+                                "userName": $api.getStorage('enterLoginInfo').name,//当前用户姓名
+                                "content": vm.content,//处理意见
+                                "flowId":data.flowId,//流程id
+                                "pictureUrls": {//图片列表
+                                    "srcPath":vm.srcImgUrl,
+                                    "compressPath": vm.compressImgUrl
+                                },
+                                "companyId": ""//企业id
+                            }
+                            console.log($api.jsonToStr(params));
+
+                            $app.post(
+                                true,
+                                freeFlowDeal,
+                                params,
+                                function(ret){
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    //监听刷新详情
+                                    api.sendEvent({
+                                        name: 'refsh_quelity_detail_event',
+                                        extra: {
+                                        }
+                                    });
+                                    //提交刷新首页列表
+                                    api.sendEvent({
+                                        name: 'enterpriseIndexList',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){
+                                        api.closeWin();
+                                    },100)
+
+                                }
+                            )
+                        };
+                        function zgFn() { //整改进入流程
+                            var params = {
+                                "businessId": data.qualityId,//业务ID == 问题ID
+                                "flowId": data.flowId,//流程ID
+                                "projectId": data.projectId,//项目ID
+                                "srcImgUrl": vm.srcImgUrl,//原图片地址
+                                "compressImgUrl": vm.compressImgUrl,//压缩图片地址
+                                "voiceUrl": "",
+                                "content": vm.content,//处理意见
+                                "createUserId": data.createUserId,//流程创建人ID == 流程发起人ID
+                                "userId": $api.getStorage('userId'),//当前处理人得ID == 当前用户
+                                "nextGroup": '',//流程下一步处理人
+                                "voiceLong": "",
+                                "isExposure": "0",//
+                                "problemType": "1",
+                                "taskAssess": vm.taskAssess,//任务评价
+                                "currentFlowStepName": data.currentFlowStepName//当前流程节点名称
+                            }
+                            console.log($api.jsonToStr(params));
+                            $app.post(
+                                true,
+                                nextFlow,
+                                params,
+                                function(ret){
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    api.sendEvent({
+                                        name: 'refsh_quelity_detail_event',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){
+                                        api.closeWin();
+                                    },100)
+                                }
+                            )
+                        };
+
+                        function backFn(){//退回进入流程
+                            var params = {
+                                "businessId": data.qualityId,//业务ID == 问题ID
+                                "flowId": data.flowId,//流程ID
+                                "projectId": data.projectId,//项目ID
+                                "srcImgUrl": vm.srcImgUrl,//原图片地址
+                                "compressImgUrl": vm.compressImgUrl,//压缩图片地址
+                                "voiceUrl": "",
+                                "content": vm.content,//处理意见
+                                "userId": $api.getStorage('userId'),//当前处理人得ID == 当前用户
+                                "voiceLong": "",
+                                "problemType": "1",//问题类型（1、质量问题2、安全问题3、隐蔽工程验收4、安全验收）
+                                "currentFlowStepName":data.currentFlowStepName//当前流程节点名称
+                            }
+                            $app.post(
+                                true,
+                                backFlow,
+                                params,
+                                function(ret){
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    api.sendEvent({
+                                        name: 'refsh_quelity_detail_event',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){
+                                        api.closeWin();
+                                    },100)
+                                }
+                            )
+                        }
+                        // vm.saveImg(backFn);
+                        switch (this.title_h) {
+                            case '整改':
+                            case '复查通过':
+                                data.isFlow == 1 ? vm.saveImg(zgFn) :vm.saveImg(nozgFn)
+                                break;
+                            case '复查退回':
+                                vm.saveImg(backFn)
+                                break;
+                            default:
+
+
+
+
+                        }
+
+                    },
+
+                },
+
+            })
+
+
+        };
+
+    </script>
+</body>
+
+</html>

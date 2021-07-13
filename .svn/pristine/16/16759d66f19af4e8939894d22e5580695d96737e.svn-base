@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 1000
+        }
+
+        .main_box {
+            margin-top: 85px;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .noData img{
+            width: 50px;
+            height:50px;
+        }
+        /*.aui-list label {
+            line-height: 1.3rem;
+            display: block;
+        }*/
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="openWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">施工部位</div>
+                <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfont" tapmode @click="selectFn()">确定</span>
+                </a>
+            </header>
+
+        </div>
+        <div class="main_box">
+            <ul class="aui-list aui-select-list" v-if="selctList.length">
+
+                <li class="aui-list-item" v-for="(item,index) in selctList" :key="item.area_id" >
+                    <div class="aui-list-item-inner" tapmode>
+                        <label  @click="currenFn(item)"><input class="aui-checkbox ischecked" :checked="filterFn(item) == 1" type="checkbox" for="" >{{item.area_name}} </label>
+                    </div>
+                </li>
+
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    selctList: [], //拉取的列表数据
+                    currentInfo:[] //当前选中的数据
+                },
+                computed: {
+
+                },
+                created: function() {
+                    this.init()
+                },
+                mounted:function(){
+
+                },
+                methods: {
+                    init: function() {
+                        this.selctList = api.pageParam.personpositionInfo;
+                        this.currentInfo = api.pageParam.currentpersonpositionInfo;
+                    },
+                    currenFn: function(item) {
+                        var copy = this.currentInfo.map(function(item){
+                            return $api.jsonToStr(item);
+
+                        })
+                        var indexItem = copy.indexOf(JSON.stringify(item));
+                        if(indexItem != -1){
+                            this.currentInfo.splice(indexItem,1);
+                        }else{
+                            this.currentInfo.push(item)
+                        }
+
+                    },
+                    filterFn:function(data){
+                        var isState = null;
+                        this.currentInfo.forEach(function(item){
+                            if(item.area_id == data.area_id){
+                                return isState = 1;
+                            }
+                        })
+                        return isState
+                    },
+                    //确认传参
+                    selectFn:function(){
+                        api.sendEvent({
+                            name: 'logListPerson',
+                            extra: {
+                                'logListPerson':vm.currentInfo
+                            }
+                        });
+                        setTimeout(function(){
+                            api.closeWin()
+                        },500);
+
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+<!-- ["9e99e86c788b4b59a24f370675475fff","58e6066ef9274e1fbdf99d85190cefec","07562eca5a3e485aa87fe3f069cac84a","c9bf7a3621b443b49dfd891a6bf445c9"]  -->
+</html>

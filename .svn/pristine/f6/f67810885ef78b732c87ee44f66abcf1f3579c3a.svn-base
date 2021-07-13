@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/sendObj.css" />
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding-right: 15px;
+        }
+
+        .main_box {
+            background-color: #fff;
+            margin-bottom: 55px;
+            margin-top: 95px;
+        }
+
+        .main_box .aui-checkbox {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .main_box li {
+            padding-left: 15px;
+        }
+
+        body {
+            min-height: 100vh
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .bottomBox {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F0F0F0;
+            padding-left: 15px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .check_box .list {
+            padding-left: 15px;
+        }
+
+        .submitBtn {
+            width: 100px;
+            height: 45px;
+            line-height: 45px;
+            color: #fff;
+            text-align: center;
+            background: rgba(5, 144, 255, 1);
+        }
+
+        .active {
+            display: none;
+        }
+
+        .listShow {
+            display: none;
+        }
+
+        .parentactive {
+            display: block;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id='app'>
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">人员选择</div>
+            <a class="aui-pull-right aui-btn">
+
+            </a>
+        </header>
+        <div class="main_box ">
+            <div class="check_box" v-for="(parentItem,parentIndex) in personInfo">
+                <div class="parentselect tri_bottom border_bottom_after aui-ellipsis-1 flex">
+                    <div>
+                        <label><input class="aui-checkbox" :class="'parentChecktitle' + parentIndex" type="checkbox" name="checkbox" @click="parentInput(parentIndex)" v-cloak>{{parentItem.projectName}} </label>
+                    </div>
+                    <i class="aui-iconfont aui-icon-top aui-icon-down" @click="toggle(parentIndex)"></i>
+                </div>
+                <div :class="'listBox'+parentIndex" class="listShow">
+                    <div class="list" v-for="(item,index) in parentItem.companyInfos">
+                        <div class="select tri_bottom border_bottom_after aui-ellipsis-1 flex" @click="clickPersonItem(item,index)">
+                            <div>
+                                <label><input class="aui-checkbox" :class="['parentCheck' + parentIndex + '' +  index,'parentCheck' + parentIndex]" type="checkbox" name="checkbox" @change="parentCheck(parentIndex,index)" v-cloak>{{item.companyName}} </label>
+                            </div>
+                            <i class="aui-iconfont aui-icon-top aui-icon-down " @click="addCs(parentIndex,index)"></i>
+                        </div>
+                        <ul id="personItemShow" :class="'childItem' + parentIndex">
+                            <li class="border_bottom_after" tapmode v-for="(item_o,index_o) in  item.userInfos">
+                                <div>
+                                    <label v-cloak>
+                                        <input class="aui-checkbox childSelect" :class="'childCheck' + parentIndex + '' +  index" type="checkbox" name="checkbox" :value="item_o">
+                                        {{item_o.name}}
+                                    </label>
+                                </div>
+                                <span class="txt_999" v-cloak>{{item_o.roleName}}</span>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="bottomBox" class="bottomBox">
+            <label><input class="aui-checkbox" type="checkbox" name="checkbox" ref="checkAll" id="checkAll" @click="checkAll()"> 全选</label>
+            <div id="submit" class="submitBtn" @click="submit()">确定</div>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    personInfo: '',
+                    currenEnterprice: '',
+                    personInfoItem: '',
+                    curren: 0,
+                    selectObj: [] //选中发送消息的对象
+                },
+                methods: {
+                    init: function() {
+                        // if(!$api.getStorage('msgPerson')){
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getPEUserInfoArraysURL, {
+                                enterpriseId: $api.getStorage('enterpriseId')
+                            },
+                            function(ret) {
+                                $api.setStorage('msgPerson', ret.obj);
+                                vm.personInfo = ret.obj;
+                                vm.$nextTick(function() {
+                                    var el = document.getElementsByClassName('childSelect');
+                                    var selctcheck = $api.getStorage('msgSelectPerson');
+                                    if (selctcheck) {
+                                        for (var j = 0; j < el.length; j++) {
+                                            var objItem = el[j]._value;
+                                            for (var i = 0; i < selctcheck.length; i++) {
+                                                if ((objItem.companyId == selctcheck[i].companyId) && (objItem.userId == selctcheck[i].userId) && objItem.roleId == selctcheck[i].roleId) {
+                                                    el[j].checked = true
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        );
+                        // }
+                        // else{
+                        // 	vm.personInfo = $api.getStorage('msgPerson');
+                        //
+                        // }
+                    },
+                    // 项目选项
+                    parentInput: function(parentIndex) {
+                        var parentInput = document.getElementsByClassName('parentChecktitle' + parentIndex);
+                        var isParentCheck = document.getElementsByClassName('parentCheck' + parentIndex);
+                        var allcheck = document.querySelectorAll('.listBox' + parentIndex + ' ' + '.childSelect');
+                        if (parentInput[0].checked == true) {
+                            for (var item in isParentCheck) {
+
+                                isParentCheck[item].checked = true;
+
+                            }
+                            for (var item in allcheck) {
+                                allcheck[item].checked = true;
+                            }
+                        } else {
+                            for (var item in isParentCheck) {
+                                isParentCheck[item].checked = false;
+                            }
+                            for (var item in allcheck) {
+                                allcheck[item].checked = false;
+                            }
+                        }
+
+
+                    },
+                    //点击当前项
+                    clickPersonItem: function(item, index) {
+                        vm.curren = index;
+                        vm.personInfoItem = '';
+                        vm.personInfoItem = item;
+                    },
+
+                    //确定按钮
+                    submit: function() {
+                        api.showProgress({
+                            style: 'default',
+                            animationType: 'fade',
+                            title: '努力加载中...',
+                            text: '先喝杯茶...',
+                            modal: false
+                        });
+                        vm.selectObj = [];
+
+                        var el = document.getElementsByClassName('childSelect');
+                        for (var i = 0; i < el.length; i++) {
+                            if (el[i].checked === true) {
+                                var objItem = el[i]._value;
+                                delete objItem['nameInitial'];
+                                delete objItem['namePinyin'];
+                                vm.selectObj.push(objItem);
+                            }
+                        }
+                        var timer = setInterval(function() {
+                            if (vm.selectObj.length) {
+                                $api.setStorage('msgSelectPerson', vm.selectObj);
+
+                                api.hideProgress();
+                                api.sendEvent({
+                                    name: 'selectPersonObj',
+                                    extra: {
+                                        selectObj: vm.selectObj
+                                    }
+                                })
+                                clearInterval(timer)
+                                setTimeout(function() {
+                                    api.closeWin()
+                                }, 500)
+                            } else {
+                                clearInterval(timer);
+                                api.hideProgress();
+                                api.toast({
+                                    msg: '人员选择不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                })
+                            }
+                        }, 500)
+
+
+
+                    },
+                    //选择当前一组
+                    parentCheck: function(parentIndex, index) {
+                        var isParentCheck = document.getElementsByClassName('parentCheck' + parentIndex + '' + index);
+                        var isChildCheck = document.getElementsByClassName('childCheck' + parentIndex + '' + index);
+                        for (var item_t in isParentCheck) {
+                            if (isParentCheck[0].checked == true) {
+                                for (var item in isChildCheck) {
+                                    isChildCheck[item].checked = true;
+                                }
+                            } else {
+                                for (var item in isChildCheck) {
+                                    isChildCheck[item].checked = false;
+                                }
+                            }
+                        }
+                    },
+                    //全选
+                    checkAll: function() {
+                        var allcheck = document.getElementsByClassName('aui-checkbox');
+
+                        if (this.$refs.checkAll.checked === true) {
+                            for (var item in allcheck) {
+                                allcheck[item].checked = true;
+                            }
+
+                        } else {
+                            for (var item in allcheck) {
+                                allcheck[item].checked = false;
+                            }
+                        }
+                    },
+                    // 第二级展开
+                    addCs: function(parentIndex, index) {
+
+                        var el = $api.domAll('.listBox' + parentIndex + ' ' + 'i');
+                        $api.toggleCls($api.domAll('.childItem' + parentIndex)[index], 'active');
+                        $api.toggleCls(el[index], 'aui-icon-down')
+
+
+                    },
+                    // 第一级展开？
+                    toggle: function(parentIndex) {
+                        var el = document.getElementsByClassName('listShow');
+                        $api.toggleCls(el[parentIndex], 'parentactive');
+                        $api.toggleCls($api.domAll('.parentselect i')[parentIndex], 'aui-icon-down');
+
+                    }
+                }
+            })
+            vm.init(api.pageParam.checkDetail)
+            vm.currenEnterprice = $api.getStorage('currentProject');
+
+        }
+
+        function closeWin() {
+            api.closeWin()
+        }
+    </script>
+</body>
+
+</html>

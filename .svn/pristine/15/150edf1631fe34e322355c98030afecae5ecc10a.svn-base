@@ -1,0 +1,361 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+
+</head>
+<style>
+    .content-header {
+        width: 100%;
+        height: 3rem;
+        background-color: #FFFFFF;
+        display: flex;
+        justify-content: center;
+        padding-top: 0.5rem;
+        /* border-bottom: 1px #e3e4e5 solid; */
+    }
+
+    .content-header-li {
+        width: 25%;
+        height: 1.5rem;
+        border: 1px #058FFD solid;
+        border-radius: 4px;
+        text-align: center;
+        line-height: 1.5rem;
+        color: #058FFD;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+
+    .active {
+        background: #058FFD;
+        color: #FFFFFF;
+    }
+
+    .content-statistical {
+        width: 94%;
+        height: 20rem;
+        margin-left: 3%;
+        border: 1.5px #058FFD solid;
+        border-radius: 0.5rem;
+    }
+
+    .statistical-header {
+        width: 100%;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-direction: inherit;
+        justify-content: center;
+    }
+
+    .select-chart {
+        width: 5.5rem;
+        padding-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .linear {
+        width: 2rem;
+        height: 3px;
+        border: 2px #B5B5B5 solid;
+        margin-right: 0.5rem;
+    }
+
+    .activeChart {
+        border-color: #B5B5B5;
+        color: #000000;
+    }
+
+    .activeChart0 {
+        border-color: #2a82e4;
+        color: #2a82e4;
+    }
+
+    .activeChart1 {
+        border-color: #ff8d1a;
+        color: #ff8d1a;
+    }
+
+    .activeChart2 {
+        border-color: #7948ea;
+        color: #7948ea;
+    }
+
+    .activeChart3 {
+        border-color: #00ae0a;
+        color: #00ae0a;
+    }
+
+    .activeChart4 {
+        border-color: #00baad;
+        color: #00baad;
+    }
+
+    .activeChart5 {
+        border-color: #f35d81;
+        color: #f35d81;
+    }
+
+    .lineChart {
+        width: 100%;
+        height: 15rem;
+    }
+</style>
+
+<body>
+
+    <div id="app">
+        <div class="content-header">
+            <li class="content-header-li active" @click="randomSwitchBtn(0)">近一天</li>
+            <li class="content-header-li " @click="randomSwitchBtn(1)">近一周</li>
+            <li class="content-header-li " @click="randomSwitchBtn(2)">近一月</li>
+        </div>
+        <div class="content-statistical">
+            <div class="statistical-header">
+                <li class="select-chart" @click="selectChart(0)">
+                    <div class="linear activeChart"></div> <span class="linear-text activeChart">温度</span>
+                </li>
+                <li class="select-chart" @click="selectChart(1)">
+                    <div class="linear"></div> <span class="linear-text">PM 2.5</span>
+                </li>
+                <li class="select-chart" @click="selectChart(2)">
+                    <div class="linear"></div> <span class="linear-text">PM 10</span>
+                </li>
+                <li class="select-chart" @click="selectChart(3)">
+                    <div class="linear"></div> <span class="linear-text">风速</span>
+                </li>
+                <li class="select-chart" @click="selectChart(4)">
+                    <div class="linear"></div> <span class="linear-text">噪声</span>
+                </li>
+                <li class="select-chart" @click="selectChart(5)">
+                    <div class="linear"></div> <span class="linear-text">湿度</span>
+                </li>
+            </div>
+            <div class="lineChart" id="main">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/echarts.min.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    deviceInfoList: [],
+                    selectFlage: api.pageParam.selectFlage,
+                    deviceId: api.pageParam.deviceId,
+                    markerFlage: 0
+                },
+                created: function () {
+                    this.selectChart(this.selectFlage);
+                },
+                methods: {
+                    //获取环境监测趋势图
+                    getTrendChartListInfo: function () {
+                        var that = this;
+                        var prame = {
+                            deviceId: this.deviceId,
+                            marker: this.markerFlage,
+                            tab: this.selectFlage + 1 + "",
+                        }
+                        console.log("请求参数:" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            getTrendChartListInfoURL,
+                            prame,
+                            function (ret) {
+                                console.log("获取环境监测趋势图:" + JSON.stringify(ret))
+                                if (ret.obj) {
+                                    that.deviceInfoList = ret.obj;
+                                    var colorvelue = null;
+                                    var timeData = [];
+                                    var dataInfo = [];
+                                    switch (that.selectFlage) {
+                                        case 0:
+                                            colorvelue = "#2a82e4";
+                                            break;
+                                        case 1:
+                                            colorvelue = "#ff8d1a";
+                                            break;
+                                        case 2:
+                                            colorvelue = "#7948ea";
+                                            break;
+                                        case 3:
+                                            colorvelue = "#00ae0a";
+                                            break;
+                                        case 4:
+                                            colorvelue = "#00baad";
+                                            break;
+                                        case 5:
+                                            colorvelue = "#f35d81";
+                                            break;
+                                    };
+                                    that.deviceInfoList.map(function (item) {
+                                        timeData.push(item.time);
+                                        dataInfo.push(item.param);
+                                    });
+                                    hungupUI(colorvelue, timeData, dataInfo);
+                                }
+                            }
+                        )
+                    },
+                    // 随意切换状态按钮
+                    selectChart: function (flage) {
+                        var btnObj = $api.domAll('.linear');
+                        var btnText = $api.domAll('.linear-text');
+                        for (var i = 0; i < btnObj.length; i++) {
+                            $api.removeCls(btnObj[i], 'activeChart' + this.selectFlage);
+                            $api.removeCls(btnText[i], 'activeChart' + this.selectFlage);
+                        }
+                        switch (flage) {
+                            case 0:
+                                $api.addCls(btnObj[flage], 'activeChart0');
+                                $api.addCls(btnText[flage], 'activeChart0');
+                                this.selectFlage = flage;
+                                break;
+                            case 1:
+                                $api.addCls(btnObj[flage], 'activeChart1');
+                                $api.addCls(btnText[flage], 'activeChart1');
+                                this.selectFlage = flage;
+                                break;
+                            case 2:
+                                $api.addCls(btnObj[flage], 'activeChart2');
+                                $api.addCls(btnText[flage], 'activeChart2');
+                                this.selectFlage = flage;
+                                break;
+                            case 3:
+                                $api.addCls(btnObj[flage], 'activeChart3');
+                                $api.addCls(btnText[flage], 'activeChart3');
+                                this.selectFlage = flage;
+                                break;
+                            case 4:
+                                $api.addCls(btnObj[flage], 'activeChart4');
+                                $api.addCls(btnText[flage], 'activeChart4');
+                                this.selectFlage = flage;
+                                break;
+                            case 5:
+                                $api.addCls(btnObj[flage], 'activeChart5');
+                                $api.addCls(btnText[flage], 'activeChart5');
+                                this.selectFlage = flage;
+                                break;
+                        }
+                        this.getTrendChartListInfo();
+                    },
+                    randomSwitchBtn: function (flage) {
+                        var btnObj = $api.domAll('.content-header-li');
+                        for (var i = 0; i < btnObj.length; i++) {
+                            $api.removeCls(btnObj[i], 'active');
+                        }
+                        $api.addCls(btnObj[flage], 'active');
+                        this.markerFlage = flage;
+                        this.getTrendChartListInfo();
+                    }
+                }
+            })
+        }
+        function hungupUI(colorvelue, timeData, dataInfo) {
+            var myChart = echarts.init(document.getElementById('main'));
+            var eCharts;
+
+            //定义图表options  
+            var options = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['实时风速(m/s)']
+                },
+                toolbox: {//工具栏
+                    show: true,
+                    feature: {
+                        restore: { show: true },
+                        saveAsImage: { show: true }
+                    }
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: timeData
+                    }
+                ],
+                dataZoom: [
+                    {   // 这个dataZoom组件，默认控制x轴。
+                        type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                        start: 0,      // 左边在 10% 的位置。
+                        end: 20          // 右边在 60% 的位置。
+
+                    }
+                ],
+                yAxis: [
+                    {
+                        name: '流量(m^3/s)',
+                        type: 'value',
+                    },
+                    {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    }
+                ],
+                color: colorvelue,
+                series: [
+                    {
+                        name: '风速(m/s)',
+                        type: 'line',
+                        data: dataInfo,
+                        markPoint: {
+                            data: [
+                                { type: 'max', name: '最大值' },
+                                { type: 'min', name: '最小值' }
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                { type: 'average', name: '平均值' }
+                            ]
+                        },
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: false,
+                                    position: 'top',
+                                    textStyle: {
+                                        color: 'black'
+                                    },
+                                    formatter: function (params) {
+                                        return params.value + 'm/s';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(options);
+        };
+
+    </script>
+
+</body>
+
+</html>

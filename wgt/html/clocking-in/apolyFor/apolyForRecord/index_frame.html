@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../../commonUi/aui/css/aui.css">
+    <style>
+        .main_box {
+            padding: 10px 15px;
+            background-color: #FFFFFF;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .box {
+            width: 100%;
+            padding: 0 15px;
+        }
+
+        .box-header {
+            width: 100%;
+            height: 1.5rem;
+        }
+
+        .box li {
+            border-bottom: 1px #F7F6F9 solid;
+            margin-top: 0.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .box li h3 {
+            float: left;
+        }
+
+        .box li a:nth-child(2) {
+            float: right;
+            color: #B9B9B9;
+            margin-left: 1rem;
+            display: none;
+        }
+
+        .box li a:nth-child(3) {
+            float: right;
+            color: #67BAFB;
+        }
+
+        .box li a:nth-child(4) {
+            float: right;
+            color: #56C3B6;
+        }
+
+        .box li a:nth-child(5) {
+            float: right;
+            color: #F47575;
+        }
+
+        .box li a:nth-child(6) {
+            float: right;
+            color: #FFAE44;
+            display: none;
+        }
+
+        .box-content {
+            padding-left: 0.3rem;
+            color: #909090;
+        }
+
+        .box-content div {
+            margin-bottom: 0.3rem;
+        }
+
+        .box-content div:nth-child(4) {
+            float: right;
+            margin-right: 0.2rem;
+            height: 1rem;
+        }
+
+        .float-right {
+            float: right;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box">
+            <ul class="box" v-if="allApply.length">
+                <li v-for="(items,index) in allApply" :key="index" @click="checkRecord(items)">
+                    <div class="box-header">
+                        <h3>{{items.applyUserName}}的<span v-if="items.applyType =='1'">补卡</span><span
+                                v-if="items.applyType =='2'">出差</span><span v-if="items.applyType =='3'">请假</span>
+                        </h3>
+                        <a>已撤销</a>
+                        <a v-if="items.flowStatus == '1'">待审批</a>
+                        <a v-if="items.flowStatus == '0'" style="color: #56C3B6;">通过</a>
+                        <a v-if="items.flowStatus == '2'" style="color: #F47575;">拒绝</a>
+                        <a href="" style="display: none;">删除</a>
+                    </div>
+                    <div class="box-content">
+                        <div v-cloak v-if="items.applyStartTime">开始时间：{{items.applyStartTime}} </div>
+                        <div v-cloak v-if="items.applyEndTime">结束时间：{{items.applyEndTime}} </div>
+                        <div v-cloak v-if="items.applyType =='3'">请假时长：{{items.duration}} 天</div>
+                        <div v-cloak v-if="items.applyType =='2'">出差时长：{{items.duration}} 天</div>
+                        <div v-cloak v-if="items.applyType =='1'">补卡时间：{{items.applyDate}} </div>
+                        <div v-cloak v-if="items.applyType =='1'">缺卡原因：{{items.applyCauser}} </div>
+                        <div class="float-right" v-cloak v-if="items.createTime">{{items.createTime}}
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="../../../../../script/api.js"></script>
+    <script src="../../../../../script/sha1.js"></script>
+    <script src="../../../../../script/common.js"></script>
+    <script src="../../../../../script/vue.js"></script>
+    <script>
+        // var vm;
+        apiready = function () {
+            var vm = new Vue({
+                el: "#app",
+                data: {
+                    allApply: [],  //全部的申请
+                },
+                created: function () {
+                    //获取全部的申请数据
+                    this.getAllApply();
+                },
+                methods: {
+                    //获取全部的申请数据
+                    getAllApply: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            applyListInfoURL, {
+                            showCount: '10',
+                            currentPage: "1",
+                            userId: $api.getStorage('userId'),
+                            projectId: $api.getStorage('enterpriseId'),
+                            flowStatus: "",
+                            applyType: "",
+                            startDate: "",
+                            endDate: "",
+                            createUserName: "",
+                        },
+                            function (ret) {
+                                console.log("申请记录：" + JSON.stringify(ret));
+                                that.allApply = ret.obj
+                            }
+                        );
+                    },
+                    //获取全部的申请数据
+                    searchAllApply: function(searchInfo) {
+                        var that = this;
+                        $app.post(
+                            true,
+                            applyListInfoURL, {
+                            showCount: '10',
+                            currentPage: "1",
+                            userId: $api.getStorage('userId'),
+                            projectId: $api.getStorage('enterpriseId'),
+                            flowStatus: searchInfo.flowStatus,
+                            applyType: searchInfo.applyType,
+                            startDate: searchInfo.startTime,
+                            endDate: searchInfo.endTime,
+                            createUserName: searchInfo.applyUserName,
+                        },
+                            function (ret) {
+                                that.allApply = ret.obj
+                            }
+                        );
+                    },
+
+                    //查看申请记录
+                    checkRecord: function(items) {
+                        console.log(JSON.stringify(items));
+                        switch (items.applyType) {
+                            case '1':
+                                //1：补卡申请 
+                                api.openFrame({
+                                    name: 'reissueCardApoly',
+                                    url: 'reissueCardApoly.html',
+                                    pageParam: {
+                                        reissueCardApolyInfo: items
+                                    }
+                                });
+                                break;
+                            case '2':
+                                //2：出差申请
+                                api.openFrame({
+                                    name: 'evectionApoly',
+                                    url: 'evectionApoly.html',
+                                    pageParam: {
+                                        evectionApolyInfo: items
+                                    }
+                                });
+                                break;
+                            case '3':
+                                //3：请假申请 
+                                api.openFrame({
+                                    name: 'approveApoly',
+                                    url: 'approveApoly.html',
+                                    pageParam: {
+                                        approveApolyInfo: items
+                                    }
+                                });
+                                break;
+                        }
+                    },
+                },
+            });
+            //监听值的变化
+            api.addEventListener({
+                name: 'searchInfo'
+            }, function (ret, err) {
+                console.log(JSON.stringify(ret.value.searchInfo));
+                vm.searchAllApply(ret.value.searchInfo)
+            });
+        };
+    </script>
+</body>
+
+</html>

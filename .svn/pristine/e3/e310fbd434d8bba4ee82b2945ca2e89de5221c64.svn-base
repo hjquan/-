@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../../../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .color_999 {
+            color: #999;
+        }
+        .txt_t{color: #323233;}
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+        .aui-content .aui-list-item-inner .txt_t_r{
+            font-size: 14px;
+            color: #B4B4B4;
+        }
+        .aui-content .aui-list-item-inner .txt_b{
+            color: #7E7E80;
+        }
+        .w_80{width: 70%}
+
+        .txt_b_l{color: #7E7E80;font-size: 14px;}
+        .color_ec{color:#EC4031}
+        .list_item{
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            margin-top: 1px;
+            padding: 0 15px;
+        }
+        .list_item .input_t{
+            max-width: 250px;
+            text-align: right;
+        }
+        .list_item i{
+            color:#058FFD;
+        }
+        .list_item i.active{
+            color:#058FFD
+        }
+        .addBtn{
+            /*position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50% );*/
+            margin: 10px auto;
+            width:80%;
+            height:40px;
+            line-height: 40px;
+            background-color:#C7C7CC;
+            border-radius:6px;
+            color:#fff;
+            text-align: center;
+            font-family:PingFangSC-Semibold,PingFang SC;
+            font-weight:600;
+            color:rgba(255,255,255,1);
+        }
+        .addBtn.active{background:rgba(5,143,253,1); }
+        .add_btn_value{
+            width:51px;
+            height:25px;
+            line-height: 25px;
+            background:rgba(5,143,253,0.1);
+            border-radius:4px;
+            border:1px solid rgba(5,143,253,0.6);
+            text-align: center;
+        }
+        .add_btn_value p{
+            color: rgba(5,143,253,0.6) !important;
+        }
+        .txt_show_list{
+            display: flex;
+            justify-content: flex-start;
+            align-content: center;
+            flex-wrap: wrap;
+            background-color: #fff;
+        }
+        .txt_list_item{
+            width: 33.3%;
+            display: flex;
+            justify-content: center;;
+            padding: 16px 0;
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(69,73,86,1);
+        }
+        .txt_list_item p{margin-right: 10px;}
+        .lf_txt{
+            font-size:15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+        }
+        .color_c7c7{
+            font-size:15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(199,199,204,1);
+        }
+        .color_active{
+            color:#323233;
+        }
+        .local_box{
+            display: flex;
+            align-items: center;
+
+        }
+        .local_box input{flex: 0 0 80px}
+        .list_item .txt_r{
+            height: 30px;
+            line-height: 30px;
+            text-align: right;
+            border: 1px solid #eee;
+            border-radius: 3px;
+            /*padding-right: 10px;*/
+            text-align: center;
+            font-size: 12px;
+        }
+        .img_box{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 195px;
+            overflow: hidden;
+            width: 100%;
+
+        }
+        .icon_box {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 35px;
+            height: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .color-suc{
+            color:#15BC83
+        }
+        .color-er{
+            color:#F47575;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="img_box" v-if="datapage.builontentds[0].drawingPath">
+            <div id="image_box" style="position: relative">
+                <img :src="datapage.builontentds[0].drawingPath" alt="">
+                <div class="icon_box" :style="{'top': detailsMap.locY + 'px','left': detailsMap.locX + 'px'}" >
+                    <i class="aui-iconfont aui-icon-location color-suc" ></i>
+                    <p class="bor-b color-suc"  v-text="list_index" ></p>
+                </div>
+            </div>
+        </div>
+        <ul class="conten_box">
+            <li class="list_item">
+                <div class="local_box">
+                    <i class="aui-iconfont aui-icon-location active">&nbsp;</i>
+                    <input class="color-suc " type="Number"  disabled v-model="list_index">
+                </div>
+                <div> <i tapmode class=" aui-iconfont aui-icon-trash" @click="delactualFn"></i></div>
+            </li>
+            <li class="list_item local_box" v-if="datapage.builontentds[0].isDesign === '1'">
+                <div class="lf_txt">设计值(mm)</div>
+                <input type="Number" class="txt_r" placeholder="请输入"  @input="verificationDesin" v-model.trim="design_value" ref="desin">
+
+            </li>
+        </ul>
+        <ul class="conten_box" style="margin-top:10px;">
+            <li class="list_item">
+                <div >实测值</div>
+                <div class="add_btn_value" tapmode @click="addData()"><p>+</p></div>
+            </li>
+            <li class="txt_show_list" v-if="datapage.builontentds && datapage.builontentds[0].uperLimit == 0 && datapage.builontentds[0].lowerLimit == 0">
+                <div class="txt_list_item" v-for="(item,i) in dataBox">
+                    <p class="" v-text="item == 0 ? '合格' : '不合格' " @click="edixt(item,i)"></p>
+                    <i class="aui-iconfont aui-icon-close" @click="delData(i)"></i>
+                </div>
+            </li>
+            <li class="txt_show_list" v-else>
+                <div class="txt_list_item" v-for="(item,i) in dataBox">
+                    <p class="" v-text="item" @click="edixt(item,i)"></p>
+                    <i class="aui-iconfont aui-icon-close" @click="delData(i)"></i>
+                </div>
+            </li>
+        </ul>
+
+        <div class="addBtn " :class="{'active':dataBox.length}" @click="submit()">保存</div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/aui-dialog.js"></script>
+    <script src="../../../script/hammer.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            var dialogBox = api.require('dialogBox');
+            api.parseTapmode();
+
+            //监听返回上一级事件
+            api.addEventListener({
+                name: 'actual_back_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.backFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            // //监听任务新增提交刷新事件
+            api.addEventListener({
+                name: 'refsh_document_list_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.init(false)
+                }else{
+                    alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    dataBox:[],//增加数据集合
+                    datapage:'',//接收其他页面的参数
+                    list_index:1,//列表索引
+                    design_value:'',//设计值
+                    detailsMap:{}//坐标
+                },
+                created:function(){
+                    var _this = this;
+                    var data = api.pageParam.actual_info;
+                    this.datapage = data;
+                    console.log($api.jsonToStr(api.pageParam.detailMap));
+                    if(data.itemDetail){
+                        //修改
+                        console.log('修改');
+                        _this.detailsMap.locX = data.itemDetail.locX;
+                        _this.detailsMap.locY = data.itemDetail.locY;
+                        _this.design_value = data.itemDetail.design;
+                        _this.list_index = data.itemDetail.describe;
+                        this.dataBox = data.itemDetail.datas.map(function(item){
+                            return item.metricalData
+                        })
+
+                    }else{
+                        //新增
+                        console.log('新增');
+                        data.contents.forEach(function(items){
+                            items.areas.forEach(function(item){
+                                _this.list_index = item.describe ? parseInt(item.describe)+1 : 1;
+                            })
+                        })
+                        _this.detailsMap = api.pageParam.detailMap;
+
+                    }
+                    this.$nextTick(function(){
+                        if(this.datapage.builontentds[0].drawingPath){
+                            _this.initHammer()
+                        }
+                    })
+
+                },
+                methods:{
+                    //约束设计值保留五位
+                    verificationDesin:function(){
+                        console.log(typeof(this.design_value));
+                        if(!this.design_value)return false;
+                        if(!/^\d{1,}/ig.test(this.design_value)){
+                            this.design_value = '0'+this.design_value;
+                        }
+                        if (! /^\d{1,}\.{0,1}(\d{1,5})?$/ig.test(this.design_value)){
+                            api.toast({
+                                msg: '设计值最大保留五位小数',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            console.log(this.design_value.indexOf('.'));
+                            this.design_value = this.design_value.substring(0,this.design_value.indexOf('.')+6);
+                        }
+                    },
+                    // 缩放
+                    initHammer: function() {
+                        var _this = this;
+                        var elm = document.getElementById('image_box');
+                        const hammertime = new Hammer(elm, {});
+                        hammertime.get('pinch').set({
+                            enable: true
+                        });
+                        var posX = 0,
+                            posY = 0,
+                            scale = 1,
+                            last_scale = 1,
+                            last_posX = 0,
+                            last_posY = 0,
+                            max_pos_x = 0,
+                            max_pos_y = 0,
+                            transform = '';
+                        const el = elm;
+
+                        hammertime.on('doubletap pan pinch panend pinchend pinchin pinchout', function(ev) {
+                            // console.log($api.jsonToStr(ev));
+                            if (ev.type === 'doubletap') {
+                                transform = 'translate3d(0, 0, 0) ' + 'scale3d(2, 2, 1) ';
+                                scale = 2;
+                                last_scale = 2;
+                                try {
+                                    if (window.getComputedStyle(el, null).getPropertyValue('-webkit-transform').toString() !== 'matrix(1, 0, 0, 1, 0, 0)') {
+                                        transform =
+                                            'translate3d(0, 0, 0) ' +
+                                            'scale3d(1, 1, 1) ';
+                                        scale = 1;
+                                        last_scale = 1;
+                                    }
+                                } catch (err) {}
+                                el.style.webkitTransform = transform;
+                                transform = '';
+                            }
+
+                            // pan
+                            if (scale !== 1) {
+                                posX = last_posX + ev.deltaX;
+                                posY = last_posY + ev.deltaY;
+                                max_pos_x = Math.ceil((scale - 1) * el.clientWidth / 2);
+                                max_pos_y = Math.ceil((scale - 1) * el.clientHeight / 2);
+                                // if (posX > max_pos_x) {
+                                //     posX = max_pos_x;
+                                // }
+                                // if (posX < -max_pos_x) {
+                                //     posX = -max_pos_x;
+                                // }
+                                // if (posY > max_pos_y) {
+                                //     posY = max_pos_y;
+                                // }
+                                // if (posY < -max_pos_y) {
+                                //     posY = -max_pos_y;
+                                // }
+                            }
+
+
+                            // // pinch
+                            // if (ev.type === 'press') {
+                            //     console.log('点击事件');
+                            //     console.log($api.jsonToStr(ev));
+                            // }
+                            // if (ev.type === 'pressup') {
+                            //     console.log('点击离开事件');
+                            //     console.log($api.jsonToStr(ev));
+                            // }
+                            if (ev.type === 'pinch') {
+                                scale = Math.max(.999, Math.min(last_scale * (ev.scale), 4));
+                            }
+                            if (ev.type === 'pinchend') {
+                                last_scale = scale;
+                            }
+
+                            // panend
+                            if (ev.type === 'panend') {
+                                last_posX = posX < max_pos_x ? posX : max_pos_x;
+                                last_posY = posY < max_pos_y ? posY : max_pos_y;
+                            }
+
+                            if (scale !== 1) {
+                                transform =
+                                    'translate3d(' + posX + 'px,' + posY + 'px, 0) ' +
+                                    'scale3d(' + scale + ', ' + scale + ', 1)';
+                            }
+
+                            if (transform) {
+                                el.style.webkitTransform = transform;
+                            }
+                        });
+                    },
+                    //删除实测区
+                    delactualFn:function(){
+                        var _this = this;
+                        if(this.datapage.itemDetail){
+                            api.confirm({
+                                title: '提示',
+                                msg: '是否删除该实测区',
+                                buttons: ['确定', '取消']
+                            }, function(ret, err){
+                                if( ret ){
+                                    if(ret.buttonIndex == '1'){
+                                        var data = api.pageParam.actual_info.itemDetail;
+                                        var params = {
+                                            "dareaId": data.dareaId,
+                                            "projectId":data.projectId
+                                        }
+                                        $app.post(
+                                            true,
+                                            deleteAera,
+                                            params,
+                                            function(ret){
+                                                api.toast({
+                                                    msg: ret.msg,
+                                                    duration: 2000,
+                                                    location: 'bottom'
+                                                });
+                                                api.sendEvent({
+                                                    name: 'actual_refsh_list_event',
+                                                    extra: {
+                                                    }
+                                                });
+                                                api.sendEvent({
+                                                    name: 'actul_update_list_envet',
+                                                    extra: {
+                                                    }
+                                                });
+
+                                                if(_this.datapage.jumpListPage){
+                                                    console.log('返回列表首页');
+                                                    api.getPrefs({
+                                                        key: 'statistic_entry_type'
+                                                    }, function(ret, err){
+                                                        if( ret ){
+                                                            api.sendEvent({
+                                                                name: 'statics_index_event',
+                                                                extra: {
+                                                                }
+                                                            });
+
+                                                            if(ret.value){
+
+                                                                api.sendEvent({
+                                                                    name: 'statistics_index_item_enevt',
+                                                                    extra: {
+                                                                    }
+                                                                });
+                                                                api.removePrefs({
+                                                                    key: 'statistic_entry_type'
+                                                                });
+
+                                                                setTimeout(function(){
+                                                                    api.closeToWin({
+                                                                        name: 'statistics_index_item'
+                                                                    });
+                                                                },200)
+
+                                                            }else{
+                                                                api.closeToWin({
+                                                                    name: './actualmeasurement/index.html'
+                                                                });
+                                                            }
+
+                                                        }else{
+                                                            // api.alert({
+                                                            //     title: '提示',
+                                                            //     msg: err.msg,
+                                                            // }, function(ret, err){
+                                                            //     if( ret ){
+                                                            //          alert( JSON.stringify( ret ) );
+                                                            //     }else{
+                                                            //          alert( JSON.stringify( err ) );
+                                                            //     }
+                                                            // });
+
+                                                        }
+                                                    });
+
+
+
+                                                }else {
+                                                    console.log('返回新增列表');
+
+                                                    setTimeout(function(){
+                                                        api.closeToWin({
+                                                            name: 'actualmeasurement_add'
+                                                        });
+
+                                                    })
+                                                }
+
+
+                                            }
+                                        )
+
+                                    }
+                                }else{
+                                     alert( JSON.stringify( err ) );
+                                }
+                            });
+
+                        }else{
+                            this.backFn()
+                        }
+                    },
+                    //带输入框弹窗
+                    inputComfig:function(params){
+                        dialogBox.input({
+                            keyboardType: 'number',
+                            tapClose:true,
+                            texts: {
+                                title: params.title,
+                                placeholder: '请输入',
+                                leftBtnTitle: '取消',
+                                rightBtnTitle: '确定'
+                            },
+                            styles: {
+                                bg: 'rgba(252,252,252,0.8)',
+                                corner: 2,
+                                w: 270,
+                                h: 180,
+                                title: {
+                                    h: 60,
+                                    alignment: 'center',
+                                    size: 14,
+                                    color: '#000',
+                                    // marginT:30,
+                                },
+                                input: {
+                                    h: 40,                  //（可选项）数字类型；输入框区域高度；默认：20
+                                   alignment: 'center',    //（可选项）字符串类型；输入框文字显示位置；取值范围：center、left、right ；默认：居中
+                                   marginT: 6,             //（可选项）数字类型；输入框顶端与标题栏底端的距离，如果标题栏不存在，则是到窗口顶端的距离；默认：居中显示
+                                   marginLeft: 10,             //（可选项）数字类型；输入框的左边距；默认：10
+                                   marginRight: 10,             //（可选项）数字类型；输入框的右边距；默认：10
+                                   textSize: 14,           //（可选项）数字类型；输入文本框文本字体大小；默认：14
+                                   verticalCenter:true,         //（可选项）布尔类型；是否上下居中；默认：false；该参数暂仅支持 android
+                                   textColor: '#000' ,      //（可选项）字符串类型；输入文本框文本字体颜色，支持#、rgb、rgba；默认：#000
+                                   borderColor:'#4D4D4D', //（可选项）字符串类型；输入文本框的边框颜色，支持#、rgb、rgba；默认：#000
+                                   borderWidth:1 ,//（可选项）数字类型；输入文本框的边框宽度；默认：0
+                                  corner:5,
+
+                                },
+                                dividingLine: {
+                                    width: 0,
+                                    color: '#f00'
+                                },
+                                left: {
+                                    bg: 'rgba(0,0,0,0)',
+                                    color: '#007FFF',
+                                    size: 12,
+                                    h: 40,                //(可选项) 数字类型；右边按钮的高度；默认：40
+                                    // w:60,                   //(可选项) 数字类型；左边按钮的宽度；默认：提示框的宽度的一半
+                                    // marginB:10,            //(可选项) 数字类型；左边按离底部的边距；默认：0
+                                    corner:5,              //(可选项) 数字类型；左边按钮的圆角；默认：0
+                                    widhtBorder:0,         //(可选项) 数字类型；左边按钮的边宽；默认：0
+                                    normalBorderColor:'#778899', //(可选项) 数字类型；左边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                    activeBorderColor:'#0000CD', //(可选项) 数字类型；左边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                    activeColor:'#006400', //(可选项) 数字类型；左边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                    activeBg:'#6B8E23'   //(可选项) 数字类型；左边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+                                },
+                                right: {
+                                    bg: 'rgba(0,0,0,0)',
+                                    color: '#007FFF',
+                                    size: 12,                   //(可选项) 数字类型；右边按钮的宽度；默认：提示框的宽度的一半
+                                    h: 40,
+                                    // marginB:10,            //(可选项) 数字类型；右边按离底部的边距；默认：0
+                                    corner:5,              //(可选项) 数字类型；右边按钮的圆角；默认：0
+                                    widhtBorder:0,         //(可选项) 数字类型；右边按钮的边宽；默认：0
+                                    normalBorderColor:'#778899', //(可选项) 数字类型；右边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                    activeBorderColor:'#0000CD', //(可选项) 数字类型；右边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                    activeColor:'#006400', //(可选项) 数字类型；右边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                    activeBg:'#6B8E23'   //(可选项) 数字类型；右边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+                                },
+                                verticalLine:{
+                                    color:'#ccc', //（可选项）字符串类型；左右按钮中间竖线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                    width:0    //（可选项）数字类型；左右边按钮竖线的高度；默认：0
+
+                                },
+                            }
+                        }, function(ret) {
+                            if (ret.eventType == 'left') {
+                                dialogBox.close({
+                                    dialogName: 'input'
+                                });
+                            }else{
+                                params.callback(ret)
+                                setTimeout(function(){
+                                    dialogBox.close({
+                                        dialogName: 'input'
+                                    });
+                                },500)
+                            }
+                        });
+                    },
+                    //返回上一级页面 ||删除
+                    backFn:function(){
+                        if(this.dataBox.length){
+                            api.confirm({
+                                title: '提示',
+                                msg: '是否放弃此次编辑',
+                                buttons: ['放弃', '取消']
+                            }, function(ret, err){
+                                if( ret ){
+                                    if(ret.buttonIndex == 1){
+                                        api.closeWin();
+                                    }
+                                }else{
+                                    //  alert( JSON.stringify( err ) );
+                                }
+                            });
+
+                        }else{
+                            api.closeWin();
+                        }
+                    },
+                    //普通计算方法
+                    // 合格区间为[X,Y]
+                    algorithm:function(curdata,x,y){
+                        var curdata = Number(curdata),
+                        x = Number(x),
+                        y= Number(y);
+                        if(x <= curdata && curdata <= y){
+                            //合格
+                            return '0'
+                        }else{
+                            //不合格
+                            return '1'
+                        }
+                    },
+                    //极差算法
+                    /*
+                         ：A,B,C,D,E ; 合格区间为[X,Y] ， 设计值S ， 爆板值Z(Z 必须大于Y) data当前数据
+                    */
+                    rangeAlgorithm:function(data,curdata,x,y,s,z){
+                        var curdata = Number(curdata),
+                        x = Number(x),
+                        y = Number(y),
+                        s = s ? Number(s) : 0,
+                        z = Number(z);
+                        var dataMax = Math.max.apply(null, data),
+                        dataMin = Math.min.apply(null,data);
+                        console.log(dataMax);
+                        console.log(dataMin);
+                        if(dataMax -  dataMin > z){//所有实测点不合格
+                            return '1'
+                        }else{
+                            if( ((x+s) <=  Math.abs(curdata-dataMin)) && (Math.abs(curdata-dataMin) <= (y+s)) ){
+                                return '0'
+                            }else{
+                                return '1'
+                            }
+                        }
+                    },
+                    //偏差计算
+                    /*
+                        合格标准判定区间[X,Y],偏差[M,N], M＜X, N＞Y ，设计值S；data当前数据
+                    */
+                    deviationAlgorithm:function(data,curdata,x,y,m,n,s){
+                        var curdata = Number(curdata),
+                        x = Number(x),
+                        y = Number(y),
+                        n = Number(n),
+                        m = Number(m),
+                        s = s ? Number(s) : 0;
+                        if((curdata < m+s) || (curdata > n+s) ){
+                            console.log('第一不合格');
+                            return '1'
+                        }
+                        if(((m+s <= curdata) && (curdata < x+s)) || (y+s <curdata) && curdata <= n+s){
+                            console.log('第二不合格');
+                            return '1'
+                        }
+                        if(x+s <= curdata && curdata <= y+s){
+                            console.log('合格');
+                            return '0'
+                        }
+
+                    },
+
+                    //编辑数据
+                    edixt:function(data,i){
+                        var _this = this;
+                        var  params = {
+                            title:'新增数据',
+                            callback:function(ret){
+                                 _this.dataBox.splice(i,1,ret.text)
+                            }
+                        }
+                        this.inputComfig(params)
+
+                    },
+                    // 删除数据
+                    delData:function(i){
+                        this.dataBox.splice(i,1)
+                    },
+                    //新增数据提交
+                    submit:function(){
+                        api.showProgress({
+                            style: 'default',
+                            animationType: 'fade',
+                            title: '保存中...',
+                            text: '先喝杯茶...',
+                            modal: false
+                        });
+
+                        var _this = this;
+                        //实测点是否合格集合
+                        var data_filter = [],
+                        content_p = this.datapage.builontentds[0];
+                        if(content_p.isDesign === '1' && !_this.design_value){
+                            api.alert({
+                                title: '提示',
+                                msg: '必须填写设计值',
+                            }, function(ret, err){
+                                if( ret ){
+
+                                }else{
+                                     alert( JSON.stringify( err ) );
+                                }
+                            });
+                            return false;
+
+                        }
+                        if(!this.dataBox.length){
+                            return false;
+                        }
+
+                        // console.log(content_p);
+                        if(content_p.lowerLimit == 0 && content_p.uperLimit == 0){ //判断弹出框类型
+                            for(var i =0 ;i < this.dataBox.length;i++){
+                                var flag_value = this.algorithm(
+                                    this.dataBox[i],
+                                    content_p.lowerLimit,
+                                    content_p.uperLimit
+                                )
+                                var cur_box = {
+                                    'isQualified':flag_value,
+                                    'metricalData':this.dataBox[i]
+                                };
+                                data_filter.push(cur_box);
+                            }
+                        }else{
+                            switch (content_p.calculatePoor) {
+                                case '0':
+                                    //一般计算
+                                    console.log('一般计算');
+
+                                    for(var i =0 ;i < this.dataBox.length;i++){
+                                        var flag_value = this.algorithm(
+                                            this.dataBox[i],
+                                            content_p.lowerLimit,
+                                            content_p.uperLimit
+                                        )
+                                        var cur_box = {
+                                            'isQualified':flag_value,
+                                            'metricalData':this.dataBox[i]
+                                        };
+                                        data_filter.push(cur_box);
+                                    }
+                                    break;
+                                case '1':
+                                    //极差
+                                    console.log('极差计算');
+
+                                    for(var i =0 ;i < this.dataBox.length;i++){
+                                        var flag_value = this.rangeAlgorithm(
+                                            this.dataBox,
+                                            this.dataBox[i],
+                                            content_p.lowerLimit,
+                                            content_p.uperLimit,
+                                            this.design_value,
+                                            content_p.plateValue
+                                        )
+                                        var cur_box = {
+                                            'isQualified':flag_value,
+                                            'metricalData':this.dataBox[i]
+                                        };
+                                        data_filter.push(cur_box);
+                                    }
+                                    break;
+                                case '2':
+                                    //偏差计算
+                                    console.log('偏差计算');
+
+                                    for(var i =0 ;i < this.dataBox.length;i++){
+                                        var flag_value = this.deviationAlgorithm(
+                                            this.dataBox,
+                                            this.dataBox[i],
+                                            content_p.lowerLimit,
+                                            content_p.uperLimit,
+                                            content_p.lowerDeviation,
+                                            content_p.uperDeviation,
+                                            this.design_value
+                                        )
+                                        var cur_box = {
+                                            'isQualified':flag_value,
+                                            'metricalData':this.dataBox[i]
+                                        };
+                                        data_filter.push(cur_box);
+                                    }
+                                    break;
+                                default:
+                                    //一般计算
+                                    console.log('一般计算');
+
+                                    for(var i =0 ;i < this.dataBox.length;i++){
+                                        var flag_value = this.algorithm(
+                                            this.dataBox[i],
+                                            content_p.lowerLimit,
+                                            content_p.uperLimit
+                                        )
+                                        var cur_box = {
+                                            'isQualified':flag_value,
+                                            'metricalData':this.dataBox[i]
+                                        };
+                                        data_filter.push(cur_box);
+                                    }
+                                    break;
+
+
+
+                            }
+                        }
+                        var isQualified = data_filter.every(function(item){
+                            return item.isQualified == '0'
+                        })
+                        var params_detail = this.datapage;
+                        if(params_detail.itemDetail){ //修改
+                            console.log('update');
+                            var contents = [
+                                    {
+                                        "contentId":params_detail.contents[0].contentId,
+                                        "gaugeItemId":params_detail.contents[0].gaugeItemId,
+                                        "gaugeItemName":params_detail.contents[0].gaugeItemName,
+                                        "drawingId":params_detail.builontentds[0].drawingId,
+                                        "areas": {
+                                            "dareaId":params_detail.itemDetail.dareaId,
+                                            "locX": params_detail.itemDetail.locX,
+                                            "locY": params_detail.itemDetail.locY,
+                                            "describe":params_detail.itemDetail.describe,
+                                            "createUserId": $api.getStorage('userId'),
+                                            "createUserName": $api.getStorage('enterLoginInfo').name,
+                                            "projectId":params_detail.itemDetail.projectId,
+                                            "isQualified": isQualified ? '0' :'1' ,
+                                            "datas": data_filter,
+                                            "design": _this.design_value || "",
+                                        },
+
+                                    }
+                                ]
+                            var params ={
+                                "measureId":params_detail.measureId,
+                                "projectId":params_detail.projectId,
+                                "areaId": params_detail.location ? (params_detail.location.parent_id+','+params_detail.location.area_id) : params_detail.areaId,
+                                "areaName": params_detail.areaName,
+                                "componentId": params_detail.componentId,
+                                "componentName": params_detail.componentName,
+                                "parentareaId":params_detail.parentareaId,
+                                "userId": $api.getStorage('userId'),
+                                "contents":contents
+                            }
+
+
+                        }else{ //新增实测区
+                            console.log('新增');
+                            var contents = [
+                                    {
+                                        "gaugeItemId": params_detail.builontentds[0].gaugeitemId,
+                                        "gaugeItemName":params_detail.builontentds[0].name,
+                                        "areas": {
+                                            "locX":_this.detailsMap ?  _this.detailsMap.locX : '',
+                                            "locY": _this.detailsMap ? _this.detailsMap.locY : '',
+                                            "createUserId": $api.getStorage('userId'),
+                                            "projectId":$api.getStorage('enterpriseId'),
+                                            "datas": data_filter,
+                                            "isQualified": isQualified ? '0' :'1' ,
+                                            "createUserName": $api.getStorage('enterLoginInfo').name,
+                                            "design": _this.design_value || ""
+                                        },
+                                        "drawingId": params_detail.builontentds[0].drawingId
+                                    }
+                                ]
+                            var params ={
+                                "projectId":$api.getStorage('enterpriseId'),
+                                "areaId": params_detail.location.parent_id+','+params_detail.location.area_id,
+                                "areaName": params_detail.location_name,
+                                "componentId": params_detail.builontentds[0].componentId,
+                                "componentName": params_detail.checkContentname.split('_')[0],
+                                "userId":$api.getStorage('userId'),
+                                "parentareaId": params_detail.location.parent_id,
+                                "contents":contents
+                            }
+
+                        }
+                        console.log($api.jsonToStr(params));
+                        var url = this.datapage.itemDetail ? updateMeasure : actualmeasurementnewMeasure;//判断是修改还是新增
+                        $app.post(
+                            false,
+                            url,
+                            params,
+                            function(ret){
+                                api.hideProgress();
+                                
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+
+                                api.sendEvent({
+                                    name: 'actual_refsh_list_event',
+                                    extra: {
+                                    }
+                                });
+
+                                api.sendEvent({
+                                    name: 'actul_update_list_envet',
+                                    extra: {
+                                    }
+                                });
+
+
+                                if(_this.datapage.jumpListPage){
+                                    console.log('返回列表首页');
+                                    api.getPrefs({
+                                        key: 'statistic_entry_type'
+                                    }, function(ret, err){
+                                        if( ret ){
+                                            api.sendEvent({
+                                                name: 'statics_index_event',
+                                                extra: {
+                                                }
+                                            });
+                                            if(ret.value){
+
+                                                api.sendEvent({
+                                                    name: 'statistics_index_item_enevt',
+                                                    extra: {
+                                                    }
+                                                });
+                                                api.removePrefs({
+                                                    key: 'statistic_entry_type'
+                                                });
+
+                                                setTimeout(function(){
+                                                    api.closeToWin({
+                                                        name: 'statistics_index_item'
+                                                    });
+                                                },200)
+
+                                            }else{
+                                                api.closeToWin({
+                                                    name: './actualmeasurement/index.html'
+                                                });
+                                            }
+
+                                        }else{
+                                            api.alert({
+                                                title: '提示',
+                                                msg: err.msg,
+                                            }, function(ret, err){
+                                                if( ret ){
+                                                     alert( JSON.stringify( ret ) );
+                                                }else{
+                                                     alert( JSON.stringify( err ) );
+                                                }
+                                            });
+
+                                        }
+                                    });
+
+
+
+                                }else {
+                                    console.log('返回新增列表');
+
+                                    setTimeout(function(){
+                                        api.closeToWin({
+                                            name: 'actualmeasurement_add'
+                                        });
+
+                                    })
+                                }
+
+
+
+
+                            }
+                        )
+                    },
+
+                    //add数据
+                    addData:function(){
+                        var _this = this;
+                        var content_limmit = this.datapage.builontentds[0];
+                        if(content_limmit.lowerLimit == 0 && content_limmit.uperLimit == 0){
+                            var dialogLimit = new auiDialog();
+
+                            dialogLimit.alert({
+                                title:"新增数据",
+                                // msg:'这里是内容',
+                                buttons:['不合格','合格']
+                            },function(ret){
+                                if(ret.buttonIndex == 1){
+                                    _this.dataBox.push('1')
+                                }else{
+                                    _this.dataBox.push('0')
+                                }
+                            })
+
+                        }else{
+                            var dialog = new auiDialog();
+                            var _this = this;
+                            if(this.datapage.builontentds[0].isDesign === '1' && !this.design_value){
+                                api.alert({
+                                    title: '提示',
+                                    msg: '请先输入构建设计值',
+                                }, function(ret, err){
+                                    if( ret ){
+                                    }else{
+                                    }
+                                });
+                                return false
+
+                            }else{
+                                var  params = {
+                                    title:'新增数据',
+                                    callback:function(ret){
+                                        console.log(typeof(ret.text));
+                                        if (! /^\d{1,}\.{0,1}(\d{1,5})?$/ig.test(ret.text)){
+                                            api.toast({
+                                                msg: '测量值值最大保留五位小数',
+                                                duration: 2000,
+                                                location: 'bottom'
+                                            });
+
+                                        }else {
+                                            _this.dataBox.push(Number(ret.text))
+
+                                        }
+
+                                    }
+                                }
+                                this.inputComfig(params)
+                            }
+                        }
+
+
+
+                    },
+
+
+                },
+
+            })
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <style>
+    .main_box {
+
+      background-color: #F3F3F6;
+    }
+
+    .mian_item {
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+      padding: 10px 15px;
+    }
+
+    .mian_item p {
+      font-size: 17px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(54, 54, 57, 1);
+      flex: 2
+    }
+
+    .mian_item div {
+      flex: 5
+    }
+
+    .active {
+      background-color: rgba(5, 143, 253, 1) !important;
+    }
+
+    .bottom_before_line::before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background-color: #F3F3F6;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .footTile {
+      position: relative;
+    }
+
+    .footTile i {
+      background-color: #C7C7CC;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      border-radius: 50%;
+      position: absolute;
+      right: 5px;
+      bottom: 50%;
+      transform: translateY(50%);
+    }
+
+    .requid {
+      color: #EC4031;
+    }
+
+    .mt_10 {
+      margin-top: 10px;
+    }
+
+    .imgUpdate {
+      display: flex;
+      height: 100%;
+      padding: 18px 15px;
+      background-color: #fff;
+      position: relative;
+    }
+
+    .imgUpdate img {
+      width: 52px;
+      height: 52px;
+
+    }
+
+    .imgUpdate div:last-child {
+      width: 52px;
+      height: 52px;
+      background-color: #F0F0F2;
+      font-size: 60px;
+      color: #C7C7CC;
+      border-radius: 3px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+
+    }
+
+    .imgItem {
+      position: relative;
+      margin-right: 15px;
+    }
+
+    .imgItem .del_close {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      top: -7px;
+      right: -7px;
+      line-height: 15px;
+      text-align: center;
+      color: #fff;
+      background: #FF1414;
+      font-size: 12px;
+    }
+
+    .mt_1 {
+      margin-top: 1px;
+    }
+
+    .title {
+      font-size: 17px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(68, 94, 150, 1);
+    }
+
+    .sub_til {
+      font-size: 15px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(150, 150, 155, 1);
+    }
+
+    .sub-btn {
+      background: #058FFD;
+      color: #fff;
+      border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+      <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title header_title" id="header_title">租赁</div>
+      <a class="aui-pull-right aui-btn">
+        <p>
+          <button class="sub-btn" style="background: #058FFD;">提交</button>
+        </p>
+      </a>
+    </header>
+    <div class="main_box mb_25">
+      <ul class="bottom_before_line">
+        <li class="mian_item title">水泥管 &nbsp;&nbsp<span class="sub_til">(25)</span></li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>数量<span class="requid">*</span></p>
+          <div>
+            <input type="text" v-model="" placeholder="请输入" class="inputPosition" tapmode>
+
+          </div>
+        </li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>单价<span class="requid">*</span></p>
+          <div class="footTile">
+            <input type="text" v-model="temperature" placeholder="请输入" class="inputPosition" tapmode>
+            <i class="aui-iconfont aui-icon-close"></i>
+          </div>
+        </li>
+        <li class="mian_item bottom_before_line" tapmode>
+          <p>起租日期<span class="requid">*</span></p>
+          <div class="footTile">
+            <input type="text" disable placeholder="请输入" class="inputPosition" tapmode>
+            <i class="aui-iconfont aui-icon-right"></i>
+          </div>
+        </li>
+
+      </ul>
+      <ul class="">
+        <li class="mian_item title">水泥管 &nbsp;&nbsp<span class="sub_til">(25)</span></li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>数量<span class="requid">*</span></p>
+          <div>
+            <input type="text" v-model="" placeholder="请输入" class="inputPosition" tapmode>
+
+          </div>
+        </li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>单价<span class="requid">*</span></p>
+          <div class="footTile">
+            <input type="text" v-model="temperature" placeholder="请输入" class="inputPosition" tapmode>
+            <i class="aui-iconfont aui-icon-close"></i>
+          </div>
+        </li>
+        <li class="mian_item bottom_before_line" tapmode>
+          <p>起租日期<span class="requid">*</span></p>
+          <div class="footTile">
+            <input type="text" disable placeholder="请输入" class="inputPosition" tapmode>
+            <i class="aui-iconfont aui-icon-right"></i>
+          </div>
+        </li>
+
+      </ul>
+      <ul class="mt_10">
+        <li class="mian_item title">租赁信息</li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>租赁商<span class="requid">*</span></p>
+          <div>
+            <input type="text" v-model="" placeholder="请输入" class="inputPosition" tapmode>
+
+          </div>
+        </li>
+        <li class="mian_item border_bottom_after bottom_before_line" tapmode>
+          <p>备注<span class="requid">*</span></p>
+          <div class="footTile">
+            <input type="text" v-model="temperature" placeholder="请输入" class="inputPosition" tapmode>
+            <!-- <i class="aui-iconfont aui-icon-close"></i> -->
+          </div>
+        </li>
+
+
+      </ul>
+      <div class="imgUpdate border_bottom_after">
+        <div class="imgItem" tapmode="hover">
+          <i class="aui-iconfont aui-icon-close del_close" @click=removeImage(index) tapmode="hover"></i>
+          <img src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+        </div>
+        <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+      </div>
+
+
+    </div>
+
+  </div>
+
+  <script src="../../../../script/api.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script src="../../../../script/vue.js"></script>
+  <script src="../../../../script/lunarcalendar.js"></script>
+  <script src="../../../../script/permission.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+  <script src="../../../../script/commonJS/voiceinput.js"></script>
+  <script>
+    // var vm;
+    apiready = function () {
+      //侵入式导航栏
+      $api.fixStatusBar($api.dom('.header'));
+    };
+  </script>
+</body>
+
+</html>

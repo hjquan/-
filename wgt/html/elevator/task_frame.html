@@ -1,0 +1,502 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>升降机</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+
+</head>
+<style>
+    .app {
+        width: 100%;
+        height: 100%;
+    }
+
+    .top-div {
+        width: 100%;
+        height: 13rem;
+        /* background-color: #ffffff; */
+        border-bottom: 2px #e3e4e5 solid;
+    }
+
+    .top-div-title {
+        font-weight: bold;
+        padding-top: 0.5rem;
+        padding-left: 0.5rem;
+        position: relative;
+    }
+
+    .top-ui {
+        width: 100%;
+        height: 85%;
+        margin-top: 1%;
+        position: relative;
+    }
+
+    .bottom-div {
+        width: 100%;
+        height: 15rem;
+        /* background-color: #ffffff; */
+    }
+
+    .select-data {
+        float: right;
+        height: 1.5rem;
+        width: 8rem;
+        background-color: #ffffff;
+        margin-right: 0.5rem;
+        color: #888888;
+        font-size: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .radiu-text {
+        position: absolute;
+        top: 20%;
+        left: 42%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .unit1 {
+        position: absolute;
+        top: 35.5%;
+        left: 93%;
+        font-size: 0.5rem;
+    }
+
+    .unit2 {
+        position: absolute;
+        top: 76%;
+        left: 93%;
+        font-size: 0.5rem;
+    }
+
+    .unit3 {
+        position: absolute;
+        top: 88%;
+        left: 91%;
+        font-size: 0.5rem;
+    }
+
+    .title-size {
+        font-size: 0.7rem;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="top-div">
+            <div class="top-div-title">
+                <span class="title-size">设备在线时长统计(小时)</span>
+                <div class="select-data">
+                    <div @click="clicklogTimeFn()" v-text="onLineStart">2020-02-01</div>
+                    <div style="margin: 0 0.3rem;">~</div>
+                    <div @click="getRadiusUIEnd()" v-text="onLineEnd">2020-06-01</div>
+                </div>
+            </div>
+            <div class="top-ui" id="main">
+            </div>
+            <!-- <span class="unit1">小时</span> -->
+        </div>
+        <div class="top-div">
+            <div class="top-div-title">
+                <span class="title-size">升降机吊重次数统计(次数)</span>
+                <div class="select-data">
+                    <div @click="getShutdownEnd()" v-text="hungupStart"></div>
+                    <div style="margin: 0 0.3rem;">~</div>
+                    <div @click="getHungupEnd()" v-text="hungupEnd"></div>
+                </div>
+            </div>
+            <div class="top-ui" id="main2">
+                <!-- <span class="unit3">次数</span> -->
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/echarts.min.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+
+
+    <script type="text/javascript">
+
+        apiready = function () {
+            //条形统计图,在线时长
+            var onLineName = ['', '', '', '', '', '',];
+            var onLineData = [];
+            //条形统计图，吊中
+            var hungupName = ['', '', '', '', '', '',];
+            var hungupData = [];
+
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    onLineStart: null, //条形统计图,在线时长 开始时间
+                    onLineEnd: null, //条形统计图,在线时长 结束时间
+                    hungupStart: null, //条形统计图,吊重次数 开始时间
+                    hungupEnd: null, //条形统计图,吊重次数 结束时间
+                },
+                created: function () {
+                    //初始化数据
+                    this.init();
+                },
+                methods: {
+                    //初始化数据
+                    init: function () {
+                        this.onLineEnd = $app.formDate(false, '-');
+                        this.onLineStart = $app.addDate(this.onLineEnd, -7).slice(0, 10);
+                        this.shutdownTime = $app.formDate(false, '-');
+                        this.hungupEnd = $app.formDate(false, '-');
+                        this.hungupStart = $app.addDate(this.onLineEnd, -7).slice(0, 10);
+                        this.getOnline();
+                        this.getHungup();
+                    },
+                    //获取在线时长统计数据
+                    getOnline: function () {
+                        var that = this;
+                        var prame = {
+                            type: "2",
+                            startDate: this.onLineStart,
+                            endDate: this.onLineEnd,
+                            projectId: $api.getStorage('enterpriseId'),
+                        };
+                        that.radiusCount = 0;
+                        $app.post(
+                            true,
+                            getJobAccountURL,
+                            prame,
+                            function (ret) {
+                                radiusUI = ret.obj;
+                                var i = 0;
+                                var j = 0;
+                                var k = 0;
+                                onLineData = [];
+                                shutdownData = [];
+                                hungupData = [];
+                                // 在线
+                                ret.obj.online.map(function (item) {
+                                    onLineName[i] = item.number;
+                                    i++;
+                                    onLineData.push(
+                                        item.counts
+                                    );
+                                });
+                                onlineUi(onLineName, onLineData);
+                            }
+                        )
+                    },
+                    //获取吊重次数统计数据
+                    getHungup: function () {
+                        var that = this;
+                        var prame = {
+                            type: "2",
+                            startDate: this.hungupStart,
+                            endDate: this.hungupEnd,
+                            projectId: $api.getStorage('enterpriseId'),
+                        };
+                        that.radiusCount = 0;
+                        $app.post(
+                            true,
+                            getJobAccountURL,
+                            prame,
+                            function (ret) {
+                                console.log("吊重次数" + JSON.stringify(prame))
+                                console.log("吊重次数" + JSON.stringify(ret))
+                                radiusUI = ret.obj;
+                                var i = 0;
+                                var j = 0;
+                                var k = 0;
+                                onLineData = [];
+                                shutdownData = [];
+                                hungupData = [];
+                                // 吊重
+                                ret.obj.hungup.map(function (item) {
+                                    hungupName[k] = item.number;
+                                    k++;
+                                    hungupData.push(
+                                        item.times
+                                    );
+                                });
+                                hungupUI(hungupName, hungupData);
+                            }
+                        )
+                    },
+                    //减价日期
+                    addMonths: function (yearMonthDay, monthNum) {
+                        var arr = yearMonthDay.split('-');//2020-08-19或2020-08
+                        var year = parseInt(arr[0]);
+                        var month = parseInt(arr[1]);
+                        var day = parseInt(arr[2]);
+                        month = month + monthNum;
+                        if (month > 12) {//月份加
+                            var yearNum = parseInt((month - 1) / 12);
+                            month = month % 12 == 0 ? 12 : month % 12;
+                            year += yearNum;
+                        } else if (month <= 0) {//月份减
+                            month = Math.abs(month);
+                            var yearNum = parseInt((month + 12) / 12);
+                            year -= yearNum;
+                            if (month == 0) {
+                                month = 12
+                            }
+                        }
+                        month = month < 10 ? "0" + month : month;
+                        day = day < 10 ? "0" + day : day;
+                        return year + "-" + month + "-" + day;
+                    },
+                    //补充o
+                    addZero: function (s) {
+                        return s < 10 ? '0' + s : s
+                    },
+                    //获取日志日期
+                    clicklogTimeFn: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (new Date(selectDate) >= new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于结束日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) >= new Date(that.barTypeUIEnd)) {
+                                api.toast({
+                                    msg: '不能选择大于结束日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.onLineStart = time;
+                            that.getOnline();
+                        })
+                    },
+                    //获取结束日期
+                    getRadiusUIEnd: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+                            if (new Date(selectDate) <= new Date(that.onLineStart)) {
+                                api.toast({
+                                    msg: '不能选择小于开始日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) >= new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.onLineEnd = time;
+                            that.getOnline();
+                        })
+                    },
+                    //获取结束日期
+                    getHungupEnd: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (new Date(selectDate) <= new Date(that.hungupStart)) {
+                                api.toast({
+                                    msg: '不能选择小于开始日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) >= new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.hungupEnd = time;
+                            that.getHungup();
+                        })
+                    },
+                    getShutdownEnd: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (new Date(selectDate) >= new Date(that.hungupEnd)) {
+                                api.toast({
+                                    msg: '不能选择大于结束日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) >= new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.hungupStart = time;
+                            that.getHungup();
+                        })
+                    },
+                }
+            });
+            function onlineUi(onlineName, onLineData) {
+                var myChart = echarts.init(document.getElementById('main'));
+                option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    grid: {
+                        top: '5%',
+                        left: '5%',
+                        right: '15%',
+                        bottom: '8%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value',
+                        boundaryGap: [0, 0.01]
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: onlineName
+                    },
+                    series: [
+                        {
+                            name: '升降机在线时长',
+                            type: 'bar',
+                            data: onLineData
+                        }
+                    ],
+                    color: "#3C90F7"
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            };
+            function hungupUI(hungupName, hungupData) {
+                var myChart = echarts.init(document.getElementById('main2'));
+                option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    grid: {
+                        top: '15%',
+                        left: '5%',
+                        right: '15%',
+                        bottom: '8%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value',
+                        boundaryGap: [0, 0.01]
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: hungupName
+                    },
+                    series: [
+                        {
+                            name: '吊重数统计',
+                            type: 'bar',
+                            data: hungupData
+                        }
+                    ],
+                    color: '#00BAAD'
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            };
+        }
+    </script>
+</body>
+
+</html>

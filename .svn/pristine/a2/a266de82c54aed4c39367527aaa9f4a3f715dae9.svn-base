@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/about.css">
+    <style>
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .txt {
+            font-size: 17px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(150, 150, 155, 1);
+        }
+
+        .content {
+            padding: 28px 0;
+            background-color: #fff
+        }
+
+        .content>* {
+            padding: 5px 0
+        }
+
+        .txt-a {
+            color: rgba(54, 54, 57, 1);
+            font-weight: 500;
+        }
+
+        .strong {
+            font-size: 21px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(54, 54, 57, 1);
+            line-height: 21px;
+        }
+
+        .wirte {
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        #smsValue {
+            width: 200px;
+            height: 45px;
+            border: 1px solid #C7C7CC;
+            border-radius: 3px;
+            box-shadow: 1px 1px 1px #f5f5f5;
+            text-align: center;
+            letter-spacing:10px;
+        }
+
+        .food {
+            margin-top: 25px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .btn {
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(5, 143, 253, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode @click="close()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">电子签名</div>
+
+
+        </header>
+        <div class="content">
+            <p class="txt">为保证签名安全</p>
+            <p class="txt">我们已发送&nbsp;<span class="txt-a">验证码&nbsp;</span>短信到您的手机：</p>
+            <div class="strong" id="phone">17823395184</div>
+        </div>
+        <div class="wirte">
+            <input type="tel" id="smsValue" v-model="inputSms"  maxlength="6">
+            <!-- <input type="Number" :class="{'input_active':i === curIput_i}" ref="input_ref"  class="input_item" v-for="(item , i) in inputs"> -->
+        </div>
+        <div class="food txt">
+            <p class="aui-text-danger" v-if="smsFlag">验证码错误，请重新输入</p>
+            <div>没有收到验证码信息？<span class="btn" tapmode @click="resetCount()">重新获取&nbsp;<span v-show="count" v-text=" '(' +count + ')'"></span>&nbsp;</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.text($api.byId('phone'), $api.getStorage('loginPhone').replace(/(\d{3})\d{5}(\d{3})/, '$1****$2'));
+            api.addEventListener({
+                name: 'refsh_sign_event'
+            }, function(ret, err){
+                if( ret ){
+                    api.closeToWin({
+                        name: 'projectIndex'
+                    });
+                    api.closeToWin({
+                        name: 'Index'
+                    });
+
+
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    count: 60, //倒计时
+                    sms: '', //验证码
+                    inputSms: '', //输入框验证码
+                    smsFlag:false//输入验证码是否匹配
+                },
+                created: function() {
+
+                },
+
+                watch:{
+                    inputSms:function(){
+                        if(this.inputSms.length === 6){
+                            if(this.inputSms == this.sms){
+                                api.sendEvent({
+                                    name: 'sign_save_enevt',
+                                    extra: {
+                                    }
+                                });
+                            }else{
+                                this.smsFlag = true;
+                                this.inputSms = '';
+                                $api.byId('smsValue').focus()
+                            }
+
+                        }
+                    }
+                },
+                computed:{
+
+                },
+                mounted: function() {
+                    this.sendSms()
+                    this.getCod()
+                    $api.byId('smsValue').focus()
+                },
+                methods: {
+                    //重新获取验证码
+                    resetCount: function() {
+                        if(this.count){
+                            return false;
+                        }
+                        this.count = 60;
+                        this.sendSms();
+                        this.getCod()
+                    },
+                    getCod: function() { //点击验证码倒计时
+                        var that = this;
+                        var timer = setInterval(function() {
+                            if (that.count <= 0) {
+                                that.count = '';
+                                clearInterval(timer);
+                                return false
+                            }
+                            --that.count;
+                        }, 1000)
+                    },
+                    //获取验证码
+                    sendSms: function() {
+                        var validateCode = randomNumber(false, 6); //验证码生成6位
+                        this.sms = validateCode;
+                        console.log(this.sms);
+                        var params = {
+                            phone: $api.getStorage('loginPhone'),
+                            validateCode: validateCode
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            smsValidateURL,
+                            params,
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+
+                            }
+                        )
+                    },
+                    //关闭
+                    close:function(){
+                        api.closeWin()
+                    }
+
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>

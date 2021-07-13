@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_tem {
+            height: 45px;
+            line-height: 45px;
+            background: rgba(255, 255, 255, 1);
+            font-family: PingFang SC;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .list_tem span:first-child {
+            color: rgba(85, 85, 85, 1)
+        }
+
+        .list_tem span:last-child {
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .pd_15 {
+            padding: 15px;
+            background-color: #fff;
+            font-size: 14px;
+            color: rgba(85, 85, 85, 1);
+            position: relative;
+        }
+
+        .tile {
+            font-size: 14px;
+            color: rgba(85, 85, 85, 1);
+            margin-bottom: 15px;
+        }
+
+        .content {
+            font-size: 12px;
+            line-height: 15px;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        .delBtn {
+            width: 202px;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            background: rgba(5, 143, 253, 1);
+            border-radius: 3px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list">
+            <li class="list_tem line_after_1">
+                <span>设备名称</span>
+                <span v-text="enevtinfo.cameraName">设备一</span>
+            </li>
+            <li class="list_tem line_after_1">
+                <span>抓拍类型</span>
+                <span v-text="enevtinfo.eventText">未戴安全帽</span>
+            </li>
+            <!-- <li class="list_tem line_after_1">
+                <span>抓拍事件名称</span>
+                <span v-text="enevtinfo.eventText">抓拍事件一</span>
+            </li> -->
+            <li class="list_tem line_after_1">
+                <span>时间</span>
+                <span v-text="enevtinfo.eventTime">2020-07-21 20:30:45</span>
+            </li>
+            <li class="list_tem line_after_1">
+                <span>查看原图</span>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li class="pd_15 line_after_1">
+                <h2 class="tile">抓拍事件原因</h2>
+                <textarea name="name" placeholder="请输入" rows="8" cols="80" v-model="eventReason" maxlength="50"
+                    v-if="enevtinfo.status == 0"></textarea>
+                <textarea name="name" rows="8" cols="80" v-text="enevtinfo.eventReason" maxlength="50"
+                    v-if="enevtinfo.status == 1" readonly></textarea>
+            </li>
+            <li class="pd_15 line_after_1">
+                <h2 class="tile">处理结果</h2>
+                <textarea name="name" placeholder="请输入" rows="8" cols="80" v-model="dealResult" maxlength="50"
+                    v-if="enevtinfo.status == 0"></textarea>
+                <textarea name="name" rows="8" cols="80" v-text="enevtinfo.dealResult" maxlength="50"
+                    v-if="enevtinfo.status == 1" readonly></textarea>
+            </li>
+            <li class="pd_15 line_after_1" v-if="enevtinfo.status == 1">
+                <h2 class="tile">处理人</h2>
+                <textarea name="name" placeholder="请简要概述设备问题(50字以内)" rows="8" cols="80" v-model="description"
+                    maxlength="50"></textarea>
+            </li>
+            <li>
+                <div class="delBtn" @click="submitFn()" v-if="enevtinfo.status == 0">处理</div>
+            </li>
+        </ul>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: '../../../../image/err.jpg',
+            loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    enevtinfo: api.pageParam.enevtinfo,
+                    // enevtinfo: { "id": "1", "cameraId": "5", "eventType": "8", "eventTime": "2020-07-04 10:11:11", "imgAddr": "http://www.winrect.com/attendacefile/012383-6BDB2C-6D8CEE/20200703/1593728102172.jpg", "projectId": "e76a19cf18f2498c99f66017c05f07d6", "eventReason": "抓拍", "dealResult": "抓拍", "dealAccount": "yf", "cameraName": "真实2#塔机", "status": "1", "urlPrefix": "http://47.92.149.108/SmartSite", "eventText": "未带安全帽" },
+                    eventReason: null,
+                    dealResult: null
+                },
+                created: function () {
+
+                },
+                methods: {
+                    //提交函数
+                    submitFn: function () {
+                        if (!this.eventReason) {
+                            api.toast({
+                                msg: '事件原因必填',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        if (!this.dealResult) {
+                            api.toast({
+                                msg: '处理结果为必填',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        var prame = {
+                            id: this.enevtinfo.id,
+                            eventReason: this.eventReason,
+                            dealResult: this.dealResult,
+                            dealAccount: $api.getStorage('userId')
+                        }
+                        $app.post(
+                            true,
+                            captureEventEditURL,
+                            prame,
+                            function (ret) {
+                                console.log(JSON.stringify(ret));
+                                // api.sendEvent({
+                                //     name: 'captureEventEditURL'
+                                // });
+                                // api.closeWin();
+                            }
+                        )
+                    },
+                    //打开详情
+                    openlistdeatil: function () {
+                        api.openWin({
+                            name: 'list_detail',
+                            url: './list_detail.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //打开新页面
+                    deviceInfoFn: function (data) {
+                        api.openWin({
+                            name: 'deviceInfo',
+                            url: './deviceInfo.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //初始化数据
+                    init: function (loadMore) {
+                        var _this = this;
+                        if (loadMore) {
+                            this.pageNo++
+                        } else {
+                            this.pageNo = 1
+                        }
+                        var params = {
+                            idcardNo: '',// 身份证号码
+                            name: '',//姓名
+                            teamId: this.pageParam.teamId,//班组ID
+                            projectId: this.pageParam.projectId,//项目ID
+                            category: api.pageParam.subcontractor.category,//人员类别
+                            id: '',//主键ID
+                            pageNo: this.pageNo,//当前页
+                            pageSize: '2',//每页显示条数
+                            station: this.pageParam.station,//项目岗位
+                            status: this.status,//查询人员状态（0入场 1立场）
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            realNameList,
+                            params,
+                            function (ret) {
+                                api.refreshHeaderLoadDone();
+                                console.log($api.jsonToStr(ret));
+                                if (!ret.obj.list) {
+                                    _this.personList = [];
+                                }
+                                if (loadMore) {
+                                    if (_this.personList.length < ret.obj.count) {
+                                        _this.personList = _this.personList.concat(ret.obj.list)
+                                    } else {
+                                        api.toast({
+                                            msg: '暂无更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                } else {
+                                    _this.personList = ret.obj.list;
+                                }
+                                _this.copyPersonList = $api.strToJson($api.jsonToStr(_this.personList));
+
+                            }
+                        )
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

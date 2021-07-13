@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+
+        .hover {
+            opacity: 0.6;
+        }
+        #header header{background:rgba(5,143,253,1 )}
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+
+        }
+        .aui-bar-nav.aui-bar-light .aui-iconfont{color:#fff}
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title" id="title">
+                    出勤-水泥工
+                </div>
+                <!-- <a class="aui-pull-right aui-btn" tapmode onclick="openLeft()">
+                    <i class="aui-iconfont aui-icon-plus"></i>
+                </a> -->
+            </header>
+
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script type="text/javascript">
+
+        apiready = function() {
+            console.log($api.jsonToStr(api.pageParam.personalclockinrecord));
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            $api.text($api.byId('title'),api.pageParam.personalclockinrecord.groupName || api.pageParam.personalclockinrecord.name);
+            api.openFrame({
+                name: 'attendance_list_frame',
+                url: './attendance_list_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    personalclockinrecord:api.pageParam.personalclockinrecord,
+                    category:api.pageParam.category
+                },
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+
+
+        }
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

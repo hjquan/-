@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+  <style>
+    html,
+    body {
+      font-family: PingFang SC;
+      font-weight: 500;
+      background-color: #fff
+    }
+
+    .top {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .top img {
+      width: 100px;
+      height: 100px;
+      margin-right: 20px;
+    }
+
+    .t_rt {
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .fs_li {
+      font-size: 15px;
+      color: rgba(51, 51, 51, 1);
+    }
+
+    .fs_li2 {
+      font-size: 15px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .fs_li3 {
+      font-size: 12px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .list_item {
+      font-size: 14px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(85, 85, 85, 1);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-start;
+      ;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .list_item span {
+      color: rgba(85, 85, 85, 1);
+    }
+
+    .list_item p {
+      margin-left: 20px;
+      font-size: 14px;
+      color: rgba(102, 102, 102, 1);
+    }
+
+    .ft_box {
+      background-color: #008EFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .raduis {
+      width: 95%;
+      margin: 12px 0 12px 0;
+
+      background: rgba(255, 255, 255, 1);
+      border-radius: 10px;
+    }
+
+    .ft_box h2 {
+      font-size: 14px;
+      font-family: SimHei;
+      font-weight: 400;
+      color: rgba(0, 142, 255, 1);
+      text-align: center;
+      padding: 20px 0 15px 0;
+    }
+
+    .date {
+      margin: 10px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 45px;
+      background: rgba(0, 142, 255, 0.2);
+      font-size: 12px;
+      padding: 0 12px;
+      ;
+
+
+    }
+
+    .date p {
+      color: #008EFF
+    }
+
+    .date i {
+      width: 17px;
+      height: 17px;
+      color: #008EFF
+    }
+
+    .ft_box textarea {
+      width: 95%;
+      height: 100px;
+      background: rgba(0, 142, 255, 0.2);
+      box-sizing: border-box;
+      margin: 10px auto;
+      font-size: 12px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 142, 255, 1);
+      padding: 10px;
+    }
+
+    .add_img {
+      margin-left: 20px;
+      width: 45px;
+      height: 45px;
+      background: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(0, 142, 255, 1);
+      border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .add_img i {
+      color: #008EFF
+    }
+
+    .add_img span {
+      font-size: 9px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 142, 255, 1);
+    }
+
+    .btn {
+      width: 90%;
+      height: 60px;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 5px;
+      margin: 10px auto;
+      font-size: 15px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 142, 255, 1);
+      text-align: center;
+      line-height: 60px;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="top">
+      <img :src="liftInfo.photoUrl" alt="">
+      <ul class="t_rt">
+        <li class="fs_li"><span v-text="liftInfo.liftNo"></span></li>
+        <li class="fs_li2"><span v-text="liftInfo.liftModel"></span></li>
+        <li class="fs_li3">备案号: <span v-text="liftInfo.recordNo"></span></li>
+      </ul>
+    </div>
+    <ul class="list">
+      <li class="list_item">
+        <span>维保单位:</span>
+        <p v-text="liftInfo.tpmUnit">设备公司</p>
+      </li>
+      <li class="list_item">
+        <span>维保单位负责人:</span>
+        <p v-text="liftInfo.tpmOperator">张三</p>
+      </li>
+      <li class="list_item">
+        <span>维保单位负责人联系电话:</span>
+        <p v-text="liftInfo.tpmOperatorPhone">17823395190</p>&nbsp;&nbsp;&nbsp;<i class="aui-iconfont aui-icon-phone"
+          style="color:rgba(0,142,255,1)" @click="call(liftInfo.tpmOperatorPhone)"></i>
+      </li>
+
+    </ul>
+    <div class="ft_box">
+      <div class="raduis">
+        <h2>填写报修信息</h2>
+        <div class="date" @click="selectType()">
+          <p><span class="aui-text-danger">*</span>
+            <span v-text="typeText"></span>
+            <span v-if="!typeText">选择故障类型</span>
+          </p>
+          <!-- <i class="aui-iconfont aui-icon-calendar"></i> -->
+        </div>
+        <textarea name="name" placeholder="请简要概述设备问题(50字以内)" rows="8" cols="80" v-model="description"
+          maxlength="50"></textarea>
+        <div class="img_box">
+          <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+            <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+              <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                tapmode="hover"></i>
+              <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+            </div>
+            <div class="add_img" @click="uploadHeadPic()" style="background-color: #fff;" tapmode
+              v-if="imgSrc.length < 3">
+              <i class="aui-iconfont aui-icon-camera"></i>
+              <span>故障部位</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btn" @click="verifyData()">提交订单</div>
+    </div>
+  </div>
+  <script type="text/javascript" src="../../../../script/api.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script type="text/javascript" src="../../../../script/vue.js"></script>
+  <script>
+    apiready = function () {
+      var UIAlbumBrowser = api.require('UIAlbumBrowser');
+      var app = new Vue({
+        el: '#app',
+        data: {
+          liftInfo: api.pageParam.liftInfo,//升降机信息
+          // liftInfo: { "id": "500de8f937304d2a93cf87695f0c25c6", "liftName": "100T升降机", "liftNo": "1#", "ccid": "89860439111880030129", "liftType": "1", "liftPhoto": "/demo/a3.jpg", "liftModel": "大汉建机QTZ63(5010)", "liftLicenseNo": "00569LBZC3100", "liftCapHeight": null, "liftTopHeight": 85, "liftArmHeight": 120, "liftFarmLength": 75, "liftBarmLength": 35, "liftMaxMoment": 5, "liftMaxWeight": 100, "liftMaxRanger": null, "liftMaxHeight": null, "liftMaxAnger": null, "liftMinAnger": null, "liftMaxWind": null, "liftMaxDips": null, "longitude": null, "latitude": null, "agentNumber": null, "coordX": null, "coordY": null, "rentalUnit": null, "rentalOperator": null, "rentalPhone": null, "imei": "1#-HMI-P KEY:1 FACE:1 ERR:37", "liftStandards": "最大载荷100T", "liftProducer": "大汉建机工程设备有限公司", "liftLeaveDate": "2020-04-01 00:00:00", "liftPunonNo": "EF202002234589130", "liftStatus": "0", "insureName": "人保财险", "insureNo": "BL30-2319-M8910-1158", "insureStartdate": "2020-05-01 00:00:00", "insureEnddate": "2024-06-01 00:00:00", "operator": "刘华", "operatorPhone": "1359235626", "tpmOperator": "张胜", "tpmOperatorPhone": "16625869632", "mainContractor": "中建三局", "tpmUnit": "广华泰机械设备有限公司", "ownUnit": "民有工程设备公司", "entryTime": "1588262400000", "exitTime": null, "projectId": "4dd6d6f62bc44b05989a73c96171eb22", "urlPrefix": "http://47.92.149.108/SmartSite", "createDate": "2020-05-29 10:53:41", "maintainList": null, "repairList": null, "healthList": null },
+          description: "",   //报修原因
+          type: null,  //类型
+          typeText: null,  //类型文档
+          //上传图片字段
+          isCloseBtn: true,//是否显示删除图片icon
+          imgSrc: [],
+          serverImg: "",//服务器返回图片地址
+          lableUrl: "",//标注图片地址(更改：该字段已清除)
+          srcImgUrl: "",//原图片地址（多张逗号分隔）
+          compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+        },
+        methods: {
+          //拨打电话
+          call: function (phone) {
+            console.log(phone);
+            api.call({
+              type: 'tel_prompt',
+              number: phone
+            });
+          },
+          //验证数据
+          verifyData: function () {
+            if (this.liftInfo.tpmOperator == null || this.liftInfo.tpmOperatorPhone == null || this.liftInfo.tpmUnit == null) {
+              api.toast({
+                msg: '维保信息不全，请先补充维保信息',
+                duration: 2000,
+                location: 'bottom'
+              });
+              return;
+            }
+            if (this.type == null || this.serverImg == "") {
+              api.toast({
+                msg: '保修类型和图片不能为空',
+                duration: 2000,
+                location: 'bottom'
+              });
+              return;
+            }
+            this.saveImg();
+          },
+          //提交保修订单
+          submitFn: function () {
+            var that = that;
+            var prame = {
+              cranesId: this.liftInfo.id,
+              type: this.type,
+              photos: this.serverImg,
+              description: this.description,
+              feedback: "",
+              flag: "1",
+              // stateName: "待结单"
+            };
+            console.log("报修订单新增参数：" + JSON.stringify(prame));
+            $app.post(
+              true,
+              repairAddURL,
+              prame,
+              function (ret) {
+                console.log("返回参数" + JSON.stringify(ret));
+                api.closeWin({
+                  name: "troubleshooting"
+                });
+                api.openFrame({
+                  name: 'order',
+                  url: './order.html',
+                  pageParam: {
+                    repairOrderInfo: {
+                      id: ret.obj
+                    }
+                  }
+                });
+              }
+            )
+          },
+          selectType: function () {
+            var that = this
+            api.actionSheet({
+              title: '选择故障类型',
+              cancelTitle: '取消',
+              buttons: ['限位装置', '保护装置', '结构设施', '电气安全', '动力机构', '吊钩、滑轮卷筒与钢丝', '其他']
+            }, function (ret, err) {
+              that.type = ret.buttonIndex - 1;
+              switch (that.type) {
+                case 0:
+                  that.typeText = '限位装置';
+                  break;
+                case 1:
+                  that.typeText = '保护装置';
+                  break;
+                case 2:
+                  that.typeText = '结构设施';
+                  break;
+                case 3:
+                  that.typeText = '电气安全';
+                  break;
+                case 4:
+                  that.typeText = '动力机构';
+                  break;
+                case 5:
+                  that.typeText = '吊钩、滑轮卷筒与钢丝';
+                  break;
+                case 6:
+                  that.typeText = '其他';
+                  break;
+              }
+            });
+          },
+
+          //上传图片
+          //上传图片处理函数start
+          // //图片查看
+          imgSee: function (url, index) {
+            var photoBrowser = api.require('photoBrowser');
+            photoBrowser.open({
+              images: url,
+              activeIndex: index,
+              // placeholderImg: 'widget://res/img/apicloud.png',
+              bgColor: '#000'
+            }, function (ret, err) {
+              if (ret) {
+                if (ret.eventType === 'click') {
+                  photoBrowser.close();
+                }
+              } else { }
+            });
+          },
+
+          //删除图片
+          removeImage: function (index) {
+            this.imgSrc.splice(index, 1)
+          },
+          //图片上传服务器保存
+          saveImg: function () {
+            var compressImg = [];
+            var that = this;
+            if (that.imgSrc.length) {
+              var imageFilter = api.require('imageFilter');
+              for (var i = 0; i < that.imgSrc.length; i++) {
+                (function (index) {
+                  var imageName = randomWord(false, 9, 12);
+                  var imageCachePath = api.cacheDir;
+                  imageFilter.compress({
+                    img: that.imgSrc[index],
+                    quality: 0.3,
+                    save: {
+                      album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                      imgPath: imageCachePath,
+                      imgName: imageName + '.jpg'
+                    }
+                  }, function (ret, err) {
+                    if (ret) {
+                      var txt = imageCachePath + '/' + imageName + '.jpg';
+                      compressImg.push(txt)
+                    }
+                  });
+                })(i);
+              }
+
+              var timer = setInterval(function () {
+                console.log("compressImg:" + JSON.stringify(compressImg));
+                if (compressImg.length) {
+                  clearInterval(timer)
+                  ajaxFile(
+                    true,
+                    '图片上传中...',
+                    uplodeURL, {}, {
+                    files: compressImg
+                  },
+                    function (ret) {
+                      console.log("上传图片返回数据：" + JSON.stringify(ret))
+                      that.isCloseBtn = false;
+                      that.serverImg = '';
+                      ret.obj.map(function (item) {
+                        that.serverImg += item.fileName + ','
+                      });
+                      that.serverImg = that.serverImg.substr(0, that.serverImg.length - 1);
+                      that.submitFn();
+                    }
+                  )
+                }
+              }, 1000)
+            }
+          },
+          // // 图片选择
+          uploadHeadPic: function () {
+            // confirmPer('camera,photos', function () { })
+            var i = 0;
+            var imgarr = [];
+            var that = this;
+            UIAlbumBrowser_imagePicker();
+            //打开图片选择器
+            function UIAlbumBrowser_imagePicker() {
+              UIAlbumBrowser.imagePicker({
+                max: 3 - that.imgSrc.length,
+                styles: {
+                  bg: '#000000',
+                  //cameraImg: 'widget://res/cameraImg.png',
+                  mark: {
+                    position: 'top_right',
+                    size: 20
+                  },
+                  nav: {
+                    bg: '#000000',
+                    cancelColor: '#fff',
+                    cancelSize: 16,
+                    nextStepColor: '#7fff00',
+                    nextStepSize: 16
+                  },
+                  thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                    w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                    h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                  }
+                },
+                animation: true,
+              }, function (ret) {
+                if (ret.eventType == 'nextStep') {
+                  if (ret.list && ret.list.length > 0) {
+                    imgarr = ret.list;
+                    UIAlbumBrowser_transPath();
+                  }
+                  UIAlbumBrowser.closePicker();
+                }
+                if (ret.originalPath && ret.originalPath.length > 0) {
+                  that.imgSrc.push(ret.originalPath)
+                }
+              });
+            }
+
+            function UIAlbumBrowser_transPath() {
+              UIAlbumBrowser.transPath({
+                path: imgarr[i].path
+              }, function (ret, err) {
+                if (ret) {
+                  i++;
+                  if (i < imgarr.length) {
+                    UIAlbumBrowser_transPath();
+                  } else {
+                    i = 0;
+                  }
+                  that.imgSrc.push(ret.path)
+                } else {
+                }
+              });
+            }
+          },
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

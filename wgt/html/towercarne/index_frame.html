@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .top {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 34px;
+        }
+
+        .t_rt {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .t_rt h2 {
+            font-size: 18px;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .t_rt p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        /*//nav*/
+
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav_item {
+            position: relative;
+            width: 33.3%;
+        }
+
+        .lf_line:after {
+            position: absolute;
+            content: '';
+            width: 1px;
+            height: 45px;
+            background: rgba(181, 181, 181, 1);
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle {
+            width: 15px;
+            height: 15px;
+            background: rgba(238, 238, 238, 1);
+            border: 2px solid rgba(255, 0, 0, 1);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .nav_item:nth-child(2) .circle {
+            border: 2px solid #009944;
+        }
+
+        .nav_item:last-child .circle {
+            border: 2px solid #B5B5B5
+        }
+
+        /*//show*/
+
+        .show {
+            display: flex;
+            justify-content: space-between;
+            ;
+            align-items: center;
+            padding: 10px 20px;
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #EEEEEE;
+            margin-bottom: 10px;
+        }
+
+        .show .rt,
+        .show .lf {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .notifce {
+            width: 13px;
+            height: 16px;
+        }
+
+        /*meau_box*/
+
+        .meau_box {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .meau_item {
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .img_bg_circel {
+            width: 50px;
+            height: 50px;
+            background: rgba(5, 143, 253, 0.2);
+            border-radius: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .meau_item img {
+            max-width: 25px;
+            max-height: 25px;
+        }
+
+        .meau_item p {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .t_rt p {
+            color: #058FFD
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="top">
+            <img :src="projectInfo.logo" alt="" class="logo">
+            <div class="t_rt">
+                <h2 v-text="projectInfo.projectName">龙湖紫都</h2>
+                <!-- <h2 v-text="projectInfo.projectName">龙湖紫都</h2> -->
+                <p @click="equipmentlistFn()" class="color_primer">塔机总数:&nbsp;<span v-text="count">5</span> <i
+                        class="aui-iconfont aui-icon-right"></i></p>
+            </div>
+        </div>
+        <ul class="nav ">
+            <li class="nav_item lf_line">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>异常</span>
+                </div>
+                <p v-text="abnormityCount">2</p>
+            </li>
+            <li class="nav_item lf_line">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>正常</span>
+                </div>
+                <p v-text="normalCount">2</p>
+            </li>
+            <li class="nav_item ">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>离线</span>
+                </div>
+                <p v-text="offLineCount">2</p>
+            </li>
+        </ul>
+        <div class="show" @click="openCallpolice()" tapmode>
+            <div class="lf">
+                <img class="notifce" src="../../../image/towercrane/ling.png" alt="">&nbsp;&nbsp;
+                <span>最近24小时:</span>
+            </div>
+            <div class="rt">
+                <!-- <p>报警<span v-text="callCount.call"></span>次</p>&nbsp;&nbsp; -->
+                <p>报警<span></span>2次</p>&nbsp;&nbsp;
+                <i class="aui-iconfont aui-icon-right"></i>
+            </div>
+        </div>
+        <ul class="meau_box">
+            <li class="meau_item" @click="openanticollision()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/pz.png" alt="">
+                </div>
+                <p>防碰撞监控</p>
+            </li>
+            <li class="meau_item" @click="openvideo()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/video.png" alt="">
+                </div>
+                <p>视频监控</p>
+            </li>
+            <li class="meau_item" @click="openoperationmonitoring()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/yx.png" alt="">
+                </div>
+                <p>运行监控</p>
+            </li>
+            <li class="meau_item" @click="opendailymanagement()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/jk.png" alt="">
+                </div>
+                <p>日常管理</p>
+            </li>
+            <li class="meau_item" @click="troubleshootingFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/zjgz.png" alt="">
+                </div>
+                <p>故障报修</p>
+
+            </li>
+            <li class="meau_item" @click="maintainFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/bx.png" alt="">
+                </div>
+                <p>预约保养</p>
+            </li>
+            <li class="meau_item" @click="callthepoliceFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/bf.png" alt="">
+                </div>
+                <p>报警统计</p>
+            </li>
+            <li class="meau_item" @click="taskFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/rcgl.png" alt="">
+                </div>
+                <p>作业统计</p>
+            </li>
+            <li class="meau_item" @click="jackupmonitoringFn">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/tj_2.png" alt="">
+                </div>
+                <p>顶升监控</p>
+            </li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    projectInfo: null,   //项目信息
+                    count: 0,   //总数
+                    abnormityCount: 0, //异常数
+                    normalCount: 0, //正常数
+                    offLineCount: 0, //离线数
+                    callCount: null,  //报警次数
+                },
+                created: function () {
+                    //获取塔机数量状态
+                    this.getDeviceNumAndStatus();
+                    this.getTowerDeviceLists();
+                    //获取项目信息详情
+                    this.getProjectinfo();
+                    // 获取24小时内的报警预警数
+                    this.getCallAndEarlyNum();
+                    var that = this;
+                    api.addEventListener({
+                        name: 'updetPage'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.getCallAndEarlyNum();
+                            that.getDeviceNumAndStatus();
+                            that.getTowerDeviceLists();
+                        }
+                    });
+
+                },
+                methods: {
+                    //获取24小时内的报警预警数
+                    getCallAndEarlyNum: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getCallAndEarlyNumURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取24小时内的报警预警数:" + JSON.stringify(ret.obj));
+                                that.callCount = ret.obj;
+                            }
+                        )
+                    },
+                    //获取项目信息详情
+                    getProjectinfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getProjectinfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                // console.log("获取项目信息详情:" + JSON.stringify(ret.obj));
+                                that.projectInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //获取塔机列表
+                    getTowerDeviceLists: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getTowerListInfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取塔机列表接口参数" + JSON.stringify($api.getStorage('enterpriseId')));
+                                console.log("获取塔机列表:" + JSON.stringify(ret.obj));
+                                ret.obj.list && ret.obj.list.map(function (item) {
+                                    if (item.towerPhoto) {
+                                        item.photoUrl = item.urlPrefix + item.towerPhoto;
+                                    } else {
+                                        item.photoUrl = null
+                                    }
+                                    item.entryTime = $app.timeStampTurnTime(item.entryTime).slice(0, 10);
+                                    item.exitTime = $app.timeStampTurnTime(item.exitTime).slice(0, 10);
+                                });
+                                that.count = ret.obj.list && ret.obj.list.length;
+                            }
+                        )
+                    },
+                    //获取塔机数量
+                    getDeviceNumAndStatus: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getDeviceNumAndStatusURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取塔机数量状态:" + JSON.stringify(ret.obj));
+                                ret.obj && ret.obj.map(function (item) {
+                                    switch (item.status) {
+                                        case "0":
+                                            that.normalCount = item.count;
+                                            break;
+                                        case "2":
+                                            that.abnormityCount = item.count;
+                                            break;
+                                        case "4":
+                                            that.offLineCount = item.count;
+                                            break;
+                                    }
+                                });
+
+                            }
+                        )
+                    },
+                    //自检故障
+                    bITFaultFn: function () {
+                        api.openWin({
+                            name: 'bITFaultFn',
+                            url: './bITFault/list.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //顶升监控
+                    jackupmonitoringFn: function () {
+                        api.openWin({
+                            name: 'jackupmonitoring',
+                            url: './jackupmonitoring/list.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //防碰撞监控页面
+                    openanticollision: function () {
+                        api.openWin({
+                            name: 'openanticollision',
+                            url: './anticollision/index.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //视频监控
+                    openvideo: function () {
+                        api.openWin({
+                            name: 'video',
+                            url: './video/index.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //打开报警预警
+                    openCallpolice: function () {
+                        api.openWin({
+                            name: 'callpolice',
+                            url: 'callpolice/callpolice.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //设备列表
+                    equipmentlistFn: function () {
+
+                        api.openWin({
+                            name: 'equipmentlist',
+                            url: './equipmentlist.html',
+                            pageParam: {}
+                        });
+                    },
+                    //报警
+                    callthepoliceFn: function () {
+                        api.openWin({
+                            name: 'callthepolice',
+                            url: './callthepolice.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //作业统计
+                    taskFn: function () {
+                        api.openWin({
+                            name: 'task',
+                            url: './task.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //运行
+                    openoperationmonitoring: function () {
+                        api.openWin({
+                            name: 'operationmonitoring',
+                            url: './operationmonitoring/list.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //日常管理
+                    opendailymanagement: function () {
+                        api.openWin({
+                            name: 'dailymanagement',
+                            url: './dailymanagement/index.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //保养预约
+                    maintainFn: function () {
+                        api.openWin({
+                            name: 'maintain',
+                            url: './maintain/index.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //故障报修
+                    troubleshootingFn: function () {
+                        api.openWin({
+                            name: 'troubleshooting',
+                            url: './troubleshooting/index.html',
+                            pageParam: {}
+                        });
+
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

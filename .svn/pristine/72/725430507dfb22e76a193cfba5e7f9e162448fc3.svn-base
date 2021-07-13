@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        .container {
+            height: 100%;
+            width: 100%;
+            display: flex;
+        }
+
+        .left-tab {
+            width: 23%;
+            height: 100%;
+            background: #fff;
+            border-right: 1px #e3e4e5 solid;
+        }
+
+        .tab-item {
+            min-height: 2rem;
+            width: 100%;
+            padding-top: 0.6rem;
+            text-align: center;
+            word-wrap: break-word;
+            font-size: 0.7rem;
+            border-left: 0.2rem #fff solid;
+        }
+
+        .tab-active {
+            color: #0590FF;
+            border-left: 0.2rem #0590FF solid;
+        }
+
+        .right-tab {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .list-item {
+            position: relative;
+            border-bottom: 1px #e3e4e5 solid;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .bottom-before-line::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: #F5F5F5;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .flex-r {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top {
+            margin-bottom: 10px
+        }
+
+        .top p {
+            font-size: 0.8rem;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 1, 14, 1);
+        }
+
+        .top span {
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(0, 1, 14, 1);
+
+        }
+
+        .bottom p {
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(150, 150, 155, 1);
+        }
+
+        .title-ellipsis {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .font-style {
+            font-size: 0.4rem;
+            color: #7E7E80;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="left-tab" id="tab">
+            <div class="tab-item tab-active" onclick="randomSwitchBtn(this)">未分类</div>
+            <div class="tab-item" onclick="randomSwitchBtn(this)">
+                结构构造围护防护类
+            </div>
+        </div>
+        <div class="right-tab">
+            <ul>
+                <li class="list-item bottom-before-line" v-for="(item,index) in goOutStorageInfo" :key="index"
+                    @click="openGoOutStorageRecord(item)">
+                    <div class="top flex-r">
+                        <div class="aui-ellipsis-1 title-ellipsis">
+                            <p>钢筋&nbsp;&nbsp;<span class="font-style" style="color: #7E7E80;">(规格：∅20；单位：吨)</span></p>
+                        </div>
+                        <!-- <p>租赁中</p> -->
+                    </div>
+                    <div class="bottom flex-r font-style">
+                        <p>入：<span style="color: #000;">10</span></p>
+                        <p>出：<span style="color: #000;">10</span></p>
+                        <p>存：<span style="color: #000;">10</span></p>
+                    </div>
+                </li>
+                <li class="list-item bottom-before-line" @click="openGoOutStorageRecord()">
+                    <div class="top flex-r">
+                        <div class="aui-ellipsis-1 title-ellipsis">
+                            <p>钢筋&nbsp;&nbsp;<span class="font-style" style="color: #7E7E80;">(规格：∅20；单位：吨)</span></p>
+                        </div>
+                        <!-- <p>租赁中</p> -->
+                    </div>
+                    <div class="bottom flex-r font-style">
+                        <p>入：<span style="color: #000;">10</span></p>
+                        <p>出：<span style="color: #000;">10</span></p>
+                        <p>存：<span style="color: #000;">10</span></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <script src="../../../../script/api.js"></script>
+        <script src="../../../../script/aui-tab.js"></script>
+        <script src="../../../../script/sha1.js"></script>
+        <script src="../../../../script/common.js"></script>
+        <script src="../../../../script/vue.js"></script>
+        <script src="../../../../script/lunarcalendar.js"></script>
+        <script src="../../../../script/permission.js"></script>
+        <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+        <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+        <script src="../../../../script/commonJS/voiceinput.js"></script>
+        <script>
+            // var vm;
+            apiready = function () {
+
+            };
+
+            function randomSwitchBtn(tag) {
+                if (tag == $api.dom('.left-tab div.tab-active')) return;
+                var divList = $api.domAll('.left-tab div');
+                var index = 0;
+                for (var i = 0, len = divList.length; i < len; i++) {
+                    if (tag == divList[i]) {
+                        index = i;
+                    } else {
+                        $api.removeCls(divList[i], 'tab-active');
+                    }
+                }
+                $api.addCls(divList[index], 'tab-active');
+            }
+        </script>
+</body>
+
+</html>

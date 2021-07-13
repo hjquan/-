@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>未封闭问题</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+        html,body{height:100%;}
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+
+        }
+        .noDataContent {
+            display: flex;
+            min-height: 500px;
+            flex-direction: column;
+            ;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noDataContent img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .noDataContent p {
+            marin-top: 7px;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(102, 102, 102, 1);
+            line-height: 19px;
+        }
+        .flex_start{
+            justify-content: flex-start !important;
+        }
+        .txt_color{
+            color:#FF4131;
+            font-size: 13px !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main_box" style="margin-top:10px; " id="app">
+            <div class="aui-card-list" v-if="probleamInfo.length">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list ">
+                        <li class="aui-list-item aui-list-item-middle" v-for="(item,index) in probleamInfo" tapmode @click="openInspectionDetails(item)">
+                            <div class="aui-media-list-item-inner ">
+                                <div class="aui-list-item-inner aui-list-item-arrow" v-cloak>
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-15 aui-ellipsis-1" style="color:#333;width:80%;" v-text="item.problemDescribe?item.problemDescribe:'暂无描述'"></div>
+                                    </div>
+                                    <div class="aui-list-item-text  flex_start" style="color:#999;" v-cloak>
+                                        {{item.projectName}}&nbsp;&nbsp;
+                                        <span class="txt_color" v-if="item.day < 0" v-cloak>逾期{{-item.day}}天</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="noDataContent" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+
+    </div>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/common.js"></script>
+        <script>
+            apiready = function(){
+                vm.init(false)
+                api.setRefreshHeaderInfo({
+                    visible: true,
+                    loadingImg: 'widget://image/refresh.png',
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...',
+                    showTime: true
+                }, function(ret, err) {
+                    api.refreshHeaderLoadDone();
+                    vm.init(false);
+                });
+                //上拉加载
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 100 //设置距离底部多少距离时触发，默认值为0，数字类型
+                    }
+                }, function(ret, err) {
+                    vm.init(true);
+                });
+            }
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    currentPage:'1',
+                    probleamInfo:''
+                },
+                methods:{
+                    init:function(loadMore){
+                        if (loadMore) {
+                            vm.currentPage++;
+                        } else {
+                            vm.currentPage = 1;
+                        }
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getMyNoCloseProblemArraysURL,
+                            {
+                                userId:$api.getStorage('userId'),
+                                enterpriseId:$api.getStorage('enterpriseId'),
+                                showCount:PAGE_NUMBER,
+                                currentPage:vm.currentPage
+                            },
+                            function(ret){
+                                if(loadMore){
+                                    if(ret.totalResult > vm.probleamInfo.length){
+                                        ret.obj.forEach(function(item){
+                                            vm.probleamInfo.push(item)
+                                        })
+                                    }else{
+                                        api.toast({
+                                            msg: '没有更多数据了...',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else {
+                                    vm.probleamInfo = ret.obj;
+                                }
+                            }
+                        )
+                    },
+                    openInspectionDetails:function(item){
+                        api.openWin({
+                            name: 'InspectionDetails',
+                            url: './InspectionDetails.html',
+                            pageParam: {
+                                enterCheckId:item.checkId,
+                                projectName:item.projectName
+
+                            }
+                        });
+
+                    },
+                }
+
+            })
+        </script>
+</body>
+
+</html>

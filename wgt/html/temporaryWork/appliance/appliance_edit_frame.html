@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/timeAxis/libs/index.css">
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .apply-info {
+            width: 100%;
+            padding: 10px;
+            background: #ffffff;
+            margin-bottom: 0.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .apply-info header {
+            display: flex;
+            align-items: center;
+        }
+
+        .apply-info header img {
+            width: 0.9rem;
+            height: 0.9rem;
+        }
+
+        .list-ul {
+            margin-top: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .list-ul li {
+            margin-top: 0.5rem;
+            display: flex;
+        }
+
+        .list-titile {
+            width: 5rem;
+            color: #a6a6a6;
+            margin-right: 1rem;
+        }
+
+        .list-text {
+            flex: 1;
+            text-align: justify;
+            text-justify: newspaper;
+            word-break: break-all;
+        }
+
+        .footer {
+            width: 100%;
+            height: 3rem;
+            position: fixed;
+            bottom: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -moz-box-shadow: 2px 2px 5px #333333;
+            -webkit-box-shadow: 2px 2px 5px #333333;
+            box-shadow: 2px 2px 5px #333333;
+            display: none;
+        }
+
+        .examine {
+            width: 80%;
+            height: 2rem;
+            border-radius: 2px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #2a82e4;
+            line-height: 2rem;
+            text-align: center;
+        }
+
+        .footer-img {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        .displayFlex {
+            display: flex;
+        }
+
+        .bg_ff {
+            background-color: #fff;
+        }
+
+        .list {
+            padding-bottom: 20px
+        }
+
+        .list .item-inner .dot i {
+            left: 2px;
+        }
+
+        .btnBox .rectificationBtn {
+            width: 335px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            margin: 0 auto;
+            margin-bottom: 5px
+        }
+
+        .btnBox .rectification {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .imgBox {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .showimg {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
+
+        .img_t {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+        }
+
+        .show-img {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 0.5rem;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height">
+        <section style="padding-bottom: 2rem;">
+            <article class="apply-info" style="padding-top: 0px;">
+                <header>
+                    <img src="../../../../image/temporaryWork/title.png" alt="">
+                    <h3>申请详情</h3>
+                </header>
+                <ul class="list-ul">
+                    <!-- <li>
+                        <span class="list-titile">审批编号</span>
+                        <span class="list-text" v-text="applyInfo.">202009010089</span>
+                    </li> -->
+                    <li>
+                        <span class="list-titile">提交时间</span>
+                        <span class="list-text" v-text="applyInfo.createTime">2020/09/01 19:29</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">申请人</span>
+                        <span class="list-text" v-text="applyInfo.createUserName">张大山</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">用工事由</span>
+                        <span class="list-text" v-text="applyInfo.subjectMatterName">其他无效成本</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">具体工作内容</span>
+                        <span class="list-text"
+                            v-text="applyInfo.workContent">5号楼物业用房空调吊洞，墙面堵空洞，商业305地坪补开裂，收门槛，15号楼电机房墙面渗水剃打，防水内堵，修补，因是风井洞墙面漏水，无法做防水，所以只有内堵。</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">出工班组名称</span>
+                        <span class="list-text" v-text="applyInfo.workerTeamName">李大马</span>
+                    </li>
+                </ul>
+            </article>
+            <article class="apply-info" v-for="(item,index) in applyInfo.mechanicsDetails">
+                <header>
+                    <img src="../../../../image/temporaryWork/title1.png" alt="">
+                    <h3> 预计机械明细<span v-text="index+1"></span> </h3>
+                </header>
+                <ul class="list-ul">
+                    <li>
+                        <span class="list-titile">机械名称</span>
+                        <span class="list-text" v-text="item.mechanicsName">技工</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">机械数量</span>
+                        <span class="list-text"> <span v-text="item.mechanicsNumber"></span>
+                            <span v-if="item.mechanicsNumber"> 台</span></span>
+                    </li>
+                    <li>
+                        <span class="list-titile">使用时间</span>
+                        <span class="list-text"><span v-text="item.mechanicsDuration"></span>
+                            <span v-if="item.mechanicsDuration"> 小时</span></span>
+                    </li>
+                    <li>
+                        <span class="list-titile">小时单价</span>
+                        <span class="list-text"><span v-text="item.price"></span>
+                            <span v-if="item.price"> 元</span></span>
+                    </li>
+                    <li>
+                        <span class="list-titile">预计金额</span>
+                        <span class="list-text"> <span v-text="item.money"></span>(<span
+                                v-text="item.capitalization"></span>)</span>
+                    </li>
+                </ul>
+            </article>
+            <article class="apply-info">
+                <ul class="list-ul">
+                    <li>
+                        <span class="list-titile">本次申请预计总费用</span>
+                        <span class="list-text"><span v-text="applyInfo.totalMoney"></span>(<span
+                                v-text="applyInfo.totalMoneyText"></span>)</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">费用承担方式</span>
+                        <span class="list-text" v-text="applyInfo.bearTypeName">项目部与责任班组分摊</span>
+                    </li>
+                    <li v-if="applyInfo.bearTypeName ==='责任班组承担' || applyInfo.bearTypeName ==='项目部与责任班组分摊'">
+                        <span class="list-titile">责任班组名称</span>
+                        <span class="list-text" v-text="applyInfo.responsibleTeamName">李大马</span>
+                    </li>
+                    <li v-if="applyInfo.bearTypeName ==='项目部与责任班组分摊'">
+                        <span class="list-titile">责任班组承担比例系数</span>
+                        <span class="list-text"><span v-text="applyInfo.bearProportion"></span> <span> %</span></span>
+                    </li>
+                    <li v-if="applyInfo.bearTypeName ==='责任班组承担' || applyInfo.bearTypeName ==='项目部与责任班组分摊'">
+                        <span class="list-titile">预计责任班组承担费用</span>
+                        <span class="list-text"><span v-text="applyInfo.responsibleTeamMoney"></span>(<span
+                                v-text="applyInfo.responsibleTeamMoneyText"></span>)</span>
+                    </li>
+                    <li>
+                        <span class="list-titile">使用前资料照片</span>
+                        <span class="list-text"
+                            style="display: flex;flex-direction: row;flex-wrap: wrap;justify-content: flex-start;">
+                            <img class="show-img" v-for="(item,index) in applyInfo.imgUrl" :src="item.compressUrl"
+                                @click="imgSee(applyInfo.imgUrl,index)" alt="">
+                        </span>
+                    </li>
+                </ul>
+            </article>
+            <article class="apply-info">
+                <header>
+                    <img src="../../../../image/temporaryWork/title1.png" alt="">
+                    <h3> 审批信息</h3>
+                </header>
+            </article>
+            <article class="apply-info" style="padding-left: 0px;">
+                <div class="list bg_ff">
+                    <div class="item-inner flex-box-x" :class="{'active':index == 0}" style="justify-content:baseline"
+                        v-for="(items,index) in taskHandleStep">
+                        <div class="item-date">
+                            <div class="date" v-text="items.createTime" style="font-size:10px;"></div>
+                        </div>
+                        <div class="dot"><i></i></div>
+                        <div class="item-main col-xs-x aui-ellipsis-1">
+                            <div class="item-type aui-ellipsis-1" style="font-size:14px;" v-cloak
+                                v-text="items.assigneeName"></div>
+                            <div class="item-content" style="font-size:14px;" v-cloak v-if="items.content"
+                                v-text="items.content"></div>
+
+                            <div class="imgBox" v-if="items.imgUrl && items.imgUrl.length">
+                                <img class="showimg" v-for="(item,index) in items.imgUrl" :src="item.compressUrl" alt=""
+                                    @click="imgSee(items.imgUrl,index)">
+                            </div>
+                        </div>
+                        <span class="statu" v-cloak v-text="items.actName"></span>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="footer">
+            <article class="examine" @click="approve()">
+                审批
+            </article>
+        </section>
+        <section class="footer ">
+            <article class="displayFlex" @click="cancellation()" v-if="applyInfo.state != '0'"
+                style="margin-right: 5rem;">
+                <img class="footer-img" src="../../../../image/temporaryWork/cancellation.png " alt=""> 作废
+            </article>
+            <article class="displayFlex" @click="anew()">
+                <img class="footer-img" src="../../../../image/temporaryWork/anew.png" alt=""> 重新提交
+            </article>
+        </section>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    applyId: api.pageParam.applyId,
+                    // applyId: "66788cf5edf44e08ba52a5768e59475b",
+                    taskHandleStep: {},
+                    applyInfo: {},
+                },
+                created: function () {
+                    this.getTaskHandleStepLists();
+                    this.getWorkerApplyById();
+                    var that = this;
+                    api.addEventListener({
+                        name: 'mechanicsApply'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.applyId = ret.value.applyId;
+                            that.getWorkerApplyById();
+                            that.getTaskHandleStepLists();
+                        }
+                    });
+                },
+                methods: {
+                    // //图片查看
+                    imgSee: function (imgInfo, index) {
+                        var url = [];
+                        imgInfo.map(function (item) {
+                            url.push(item.compressUrl);
+                        });
+                        url.push();
+                        console.log("数据：" + JSON.stringify(url));
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    //重新提交
+                    anew: function () {
+                        var that = this;
+                        api.openWin({
+                            name: 'appliance',
+                            url: 'appliance.html',
+                            bounces: false,
+                            pageParam: { applyInfo: that.applyInfo }
+                        });
+                    },
+                    //作废
+                    cancellation: function () {
+                        var that = this;
+                        api.confirm({
+                            title: '警告',
+                            msg: '确认作废申请',
+                            buttons: ['确认', '取消']
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == 1) {
+                                    var prame = {
+                                        businessId: that.applyId,
+                                        ccUserId: "",
+                                        state: "0",
+                                        content: "",
+                                        msgContent: "",
+                                        msgTitle: "",
+                                        msgModule: "",
+                                    };
+                                    console.log("参数：" + JSON.stringify(prame));
+                                    $app.post(
+                                        false,
+                                        mechanicsapplyEditStateURL,
+                                        prame,
+                                        function (ret) {
+                                            console.log("作废返回数据：" + JSON.stringify(ret));
+                                            api.sendEvent({
+                                                name: 'cancellation',
+                                            });
+                                            api.closeWin();
+                                        }
+                                    )
+                                }
+                            }
+                        });
+
+
+                    },
+                    //审批函数
+                    approve: function () {
+                        api.openWin({
+                            name: 'check',
+                            url: 'check.html',
+                            pageParam: {
+                                applyId: this.applyId
+                            }
+                        });
+                    },
+                    //获取单个数据
+                    getWorkerApplyById: function () {
+                        var that = this;
+                        var prame = {
+                            applyId: this.applyId
+                        }
+                        $app.post(
+                            false,
+                            getMechanicsApplyByIdURL,
+                            prame,
+                            function (ret) {
+                                console.log("获取单个数据：" + JSON.stringify(ret));
+                                that.applyInfo = ret.obj
+                                that.applyInfo.responsibleTeamMoneyText = $app.changeNumMoneyToChinese(that.applyInfo.responsibleTeamMoney);
+                                that.applyInfo.totalMoneyText = $app.changeNumMoneyToChinese(that.applyInfo.totalMoney);
+                                that.applyInfo.mechanicsDetails.map(function (item) {
+                                    item.capitalization = $app.changeNumMoneyToChinese(item.money)
+                                });
+                                if (that.applyInfo.createUserId === $api.getStorage('enterLoginInfo').userId) {
+                                    document.getElementsByClassName("footer")[1].style.display = "flex"
+                                }
+                                if (that.applyInfo.handleUserId === $api.getStorage('enterLoginInfo').userId && that.applyInfo.state != 0 && that.applyInfo.state != 2) {
+                                    document.getElementsByClassName("footer")[0].style.display = "flex"
+                                } else {
+                                    document.getElementsByClassName("footer")[0].style.display = "none"
+                                }
+                            }
+                        )
+                    },                    //获取流程处理步骤列表
+                    getTaskHandleStepLists: function () {
+                        var that = this;
+                        var prame = {
+                            applyId: this.applyId
+                        }
+                        $app.post(
+                            false,
+                            getTaskHandleStepMechanicsapply,
+                            prame,
+                            function (ret) {
+                                console.log("参数：" + JSON.stringify(prame));
+                                console.log("获取流程处理步骤列表:" + JSON.stringify(ret));
+                                that.taskHandleStep = ret.obj
+                            }
+                        )
+                    },
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

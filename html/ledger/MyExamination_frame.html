@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .noDataContent {
+            display: flex;
+            height: 80vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noDataContent img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .noDataContent p {
+            marin-top: 7px;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(102, 102, 102, 1);
+            line-height: 19px;
+        }
+        #popbox {
+            width: 116px;
+            height: 90px;
+            background: rgba(51, 51, 51, 1);
+            border-radius: 5px;
+            color: #fff;
+            position:absolute; ;
+            z-index: 200;
+            text-align: center;
+            line-height: 45px;
+            right:8px;
+        }
+
+        #popbox::before {
+            content: "";
+            width: 0px;
+            height: 0px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #333;
+            position: absolute;
+            top: -10px;
+            right: 5px;
+        }
+
+        .popItem {
+            border-bottom: 1px solid #404040;
+        }
+        .hover{
+            opacity: .6;
+        }
+        .show{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <ul id="popbox" class="show">
+            <li class="popItem" tapmode="hover" @click="openSubItem()">分项检查</li>
+            <li class="" tapmode="hover" @click="openCamera()">随机检查</li>
+        </ul>
+        <div class="main_box" style="margin-top:10px;">
+            <div class="aui-card-list" v-if="examinationInfo.length">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list ">
+                        <li class="aui-list-item aui-list-item-middle" v-for="item in examinationInfo" tapmode @click="openexaminationItem(item)">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-media" style="width: 3rem;">
+                                    <img :src="item.msgModule == 'notice' ? '../../image/enterprice/notice.png':'../../image/enterprice/check.png'" class="aui-img-round aui-list-img-sm">
+                                </div>
+                                <div class="aui-list-item-inner aui-list-item-arrow" v-cloak>
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-ellipsis-1 aui-font-size-15" style="color:#333;width:80%;" v-cloak>{{item.projectName}}</div>
+                                    </div>
+                                    <div class="aui-list-item-text aui-font-size-13 flex_start " style="color:#999;" v-cloak>
+                                        {{item.createTime}}
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="noDataContent" v-if="!examinationInfo.length">
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/permission.js"></script>
+    <script>
+        apiready = function() {
+            api.addEventListener({
+                name: 'toggleCheckShow'
+            }, function(ret, err){
+                if( ret ){
+                    $api.toggleCls($api.byId('popbox'),'show');
+                }
+            });
+
+            vm.init(false);
+            api.setRefreshHeaderInfo({
+                visible: true,
+                loadingImg: 'widget://image/refresh.png',
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err) {
+                api.refreshHeaderLoadDone();
+                vm.init(false);
+            });
+            //上拉加载
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 200 //设置距离底部多少距离时触发，默认值为0，数字类型
+                }
+            }, function(ret, err) {
+                vm.init(true);
+            });
+
+
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                examinationInfo: '',
+                currentPage: '1',
+
+            },
+            methods: {
+                init: function(loadMore) {
+                    if (loadMore) {
+                        vm.currentPage++;
+                    } else {
+                        vm.currentPage = 1;
+                    }
+
+                    // 'DeviceID':api.deviceId,
+                    // 'userId':$api.getStorage('userId')
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        getMyCheckProjectArraysURL, {
+                            userId: $api.getStorage('userId'),
+                            enterpriseId: $api.getStorage('enterpriseId'),
+                            showCount:PAGE_NUMBER,
+                            currentPage: vm.currentPage
+                        },
+                        function(ret) {
+                            if (loadMore) {
+                                ret.obj.forEach(function(item){
+                                    if (ret.totalResult > vm.examinationInfo.length) {
+                                        vm.examinationInfo.push(item)
+                                    } else {
+                                        api.toast({
+                                            msg: '没有更多数据了...',
+                                            duration: 3000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                })
+                            } else {
+                                vm.examinationInfo = ret.obj;
+                            }
+
+
+                        }
+                    )
+                },
+                openSubItem:function(){
+                    $api.setStorage('checkType', '1');
+                    api.openWin({
+                        name: 'enterpriceBasis',
+                        url: '../randomCheckBox/enterpriceBasis.html',
+                        pageParam: {
+                        }
+                    });
+
+                },
+                openCamera: function() {
+                    confirmPer('camera,photos', function() {})
+                    if ($api.getStorage('token')) {
+
+                        $api.setStorage('checkType', '2');
+                        api.openWin({
+                            name: 'randomCheck',
+                            url: '../randomCheckBox/randomCheck.html',
+                            pageParam: {
+                            }
+                        });
+                    }
+
+                },
+                openexaminationItem:function(item){
+                    api.openWin({
+                        name: 'examinationItem',
+                        url: './examinationItem.html',
+                        pageParam: {
+                            examinationItem:item
+                        }
+                    });
+
+                }
+            }
+
+        })
+        //打开分享检查
+
+    </script>
+</body>
+
+</html>

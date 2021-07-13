@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .list_item {
+            background-color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f5f5f5;
+            padding: 0 25px;
+        }
+
+        .show_list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        .show_list_item {
+            width: 33.3%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .show_list_item:nth-child(2n) {
+            border: 1px solid #f5f5f5;
+        }
+
+        .val {
+            font-size: 15px;
+            color: rgba(255, 0, 0, 1);
+        }
+
+        .danger {
+            color: rgba(255, 144, 0, 1);
+        }
+
+        .type {
+            font-size: 10px;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <ul class="list" v-if="dateFlage">
+            <li class="list_item" v-for="(item,index) in towerRunMonitorList">
+                <div class="title">
+                    <p class="day" v-text="item.beginTime">2020-07-12</p>
+                    <p class="tiem" v-text="item.endTime"></p>
+                    <!-- <p class="tiem" v-text="item.beginTime"><span>09:00</span>~<span>09:08</span></p> -->
+                </div>
+                <ul class="show_list">
+                    <li class="show_list_item">
+                        <p class="val " v-text="item.maxWeight">45</p>
+                        <p class="type">最大载重(t)</p>
+                    </li>
+                    <li class="show_list_item">
+                        <p class="val danger" v-text="item.maxTorque">45</p>
+                        <p class="type">最大力矩(tm)</p>
+                    </li>
+                    <li class="show_list_item">
+                        <p class="val " v-text="item.maxRanger">45</p>
+                        <p class="type">幅度(m)</p>
+                    </li>
+                    <li class="show_list_item">
+                        <p class="val " v-text="item.maxHeight">45</p>
+                        <p class="type">高度(m)</p>
+                    </li>
+                    <!-- <li class="show_list_item">
+                        <p class="val " v-text="item.beginTime">45</p>
+                        <p class="type">最大转角(°)</p>
+                    </li>
+                    <li class="show_list_item">
+                        <p class="val " v-text="item.beginTime">45</p>
+                        <p class="type">最大风速(m/s)</p>
+                    </li> -->
+                </ul>
+            </li>
+        </ul>
+        <div class="noData" v-else>
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    nav_txt: '', //nav文本
+                    cur_nav_i: 0,
+                    towerRunMonitor: api.pageParam.towerRunMonitor,
+                    // towerRunMonitor: { "number": "1#", "ccid": "89860439111880030129", "id": "500de8f937304d2a93cf87695f0c25c7", "status": "在线", "statusFlage": 0 },
+                    towerRunMonitorList: null,
+                    dateFlage: null,
+                },
+                created: function () {
+                    this.nav_txt = [{
+                        txt: '实时数据',
+                        type: 0,
+                    }, {
+                        txt: '运行数据',
+                        type: 1,
+                    }, {
+                        txt: '基本数据',
+                        type: 2,
+                    },]
+                    //获取塔机历史运行数据列表
+                    this.getTowerHistoryRunDataLists();
+                },
+                methods: {
+                    //点击切换当前nav
+                    curtoggleFn: function (data, i) {
+                        this.cur_nav_i = i;
+                    },
+                    //补充o
+                    addZero: function (s) {
+                        return s < 10 ? '0' + s : s
+                    },
+                    //获取塔机历史运行数据列表
+                    getTowerHistoryRunDataLists: function () {
+                        var date = new Date();
+                        var that = this;
+                        var prame = {
+                            towerId: that.towerRunMonitor.id,
+                            ccid: that.towerRunMonitor.ccid,
+                        };
+                        console.log("参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getTowerWorkCycleInfoURL,
+                            prame,
+                            function (ret) {
+                                console.log("==========" + JSON.stringify(ret));
+                                that.towerRunMonitorList = ret.obj;
+                                // console.log("==========" + that.towerRunMonitorList.length);
+                                if (that.towerRunMonitorList.length !== 0) {
+                                    that.dateFlage = true;
+                                }
+                            }
+                        );
+                    }
+                    // getTowerHistoryRunDataLists: function () {
+                    //     var date = new Date();
+                    //     var that = this;
+                    //     var prame = {
+                    //         currentPage: "1",
+                    //         showCount: "10",
+                    //         projectId:  $api.getStorage('enterpriseId'),
+                    //         deviceNo: this.towerRunMonitor.id,
+                    //         startTime: date.getFullYear() + "-" + this.addZero(date.getMonth() + 1) + "-01" + " " + this.addZero(date.getHours()) + ":" + this.addZero(date.getMinutes()) + ":" + this.addZero(date.getSeconds()),
+                    //         endTime: $app.formDate(false, '-', true), //最新时间日期
+                    //     };
+                    //     console.log("参数：" + JSON.stringify(prame));
+                    //     $app.post(
+                    //         true,
+                    //         getTowerHistoryRunDataListsURL,
+                    //         prame,
+                    //         function (ret) {
+                    //             that.towerRunMonitorList = ret.obj;
+                    //             console.log("==========" + that.towerRunMonitorList.length);
+                    //             if (that.towerRunMonitorList.length !== 0) {
+                    //                 that.dateFlage = true;
+                    //             }
+                    //         }
+                    //     );
+                    // }
+                },
+            })
+
+        }
+    </script>
+
+</body>
+
+</html>

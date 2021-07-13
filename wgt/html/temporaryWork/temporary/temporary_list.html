@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+
+        .img_h {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height">
+        <header class="aui-bar aui-bar-nav bg_f " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <section class="aui-title">零星用工事前申请</section>
+            <a class="aui-pull-right aui-btn">
+                <!-- <i class="aui-iconfont aui-icon-menu" tapmode onclick="openquelity(1)"></i> -->
+                <img class="img_h" src="../../../../image/temporaryWork/screen.png" tapmode onclick="openquelity()"
+                    alt="">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="aui-iconfont aui-icon-plus add-ico" style="font-weight: bold;" tapmode
+                    onclick="addInfo()"></i>
+            </a>
+        </header>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            //设置推送
+            var ajpush = api.require('ajpush');
+
+            ajpush.init(function (ret) {
+                if (ret && ret.status) {
+                    //success
+                    console.log("===========:" + JSON.stringify(ret));
+                }
+            });
+            ajpush.setListener(
+                function (ret) {
+                    var id = ret.id;
+                    var title = ret.title;
+                    var content = ret.content;
+                    var extra = ret.extra;
+                }
+            );
+            var param = { alias: 'myalias', tags: ['tag1', 'tag2'] };
+            ajpush.bindAliasAndTags(param, function (ret) {
+                var statusCode = ret.statusCode;
+                console.log("+++++++++++++++++++:" + JSON.stringify(ret));
+            });
+            api.openFrame({
+                name: 'temporary_list_frame',
+                url: './temporary_list_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                },
+                bounces: true,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+        function openquelity() {
+            api.openFrame({
+                name: 'screen',
+                url: 'screen.html',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                },
+                bounces: false,
+                bgColor: 'transparent',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+        function addInfo() {
+            api.openWin({
+                name: 'temporary',
+                url: 'temporary.html',
+            });
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

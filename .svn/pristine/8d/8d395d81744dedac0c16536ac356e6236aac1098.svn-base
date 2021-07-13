@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/timeAxis/libs/index.css" />
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .propress,
+        .center {
+            width: 95%;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px;
+            padding: 20px 20px;
+            margin-top: 10px;
+
+        }
+
+        .order_code {
+            font-size: 10px;
+            color: rgba(136, 136, 136, 1);
+            float: left;
+        }
+
+        .statu {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .time_active {
+            color: #058FFD;
+
+        }
+
+        .list .item-inner .time_active_bg i {
+            border: 3px solid #008EFF
+        }
+
+        .center_item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 40px;
+            position: relative;
+        }
+
+        .center_item h1 {
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(5, 143, 253, 1);
+        }
+
+        .type {
+            font-size: 14px;
+            color: rgba(153, 153, 153, 1);
+            flex: 0 0 80px;
+        }
+
+        .val {
+            font-size: 14px;
+            color: rgba(102, 102, 102, 1)
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #f5f5f5;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .img_box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .img_item {
+            width: 50px;
+            height: 50px;
+            margin-left: 5px;
+            float: right;
+        }
+
+        .info_type {
+            flex: 0 0 100px;
+        }
+
+        .info_val {
+            flex: 1
+        }
+
+        .qvxioa {
+            float: right;
+            width: 3rem;
+            height: 1rem;
+            background: rgba(253, 168, 38, 1);
+            border-radius: 2px;
+            font-size: 0.5rem;
+            text-align: center;
+            color: #ffffff;
+            line-height: 1rem;
+
+        }
+
+        .header-qvxiao {
+            width: 100%;
+            height: 1rem;
+            font-size: 0.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="propress">
+            <div class="header-qvxiao">
+                <p style=" font-size: 0.5rem;" class="order_code">订单编号: <span
+                        v-text="repairDetailInfo.health.id">EFGHHJH1564646456</span></p>
+                <div class="qvxioa" v-if="repairDetailInfo.health.state == 0" @click="healthCancelOrder()">取消订单</div>
+            </div>
+            <div class="list">
+                <div class="item-inner flex-box-x">
+                    <div class="dot time_active_bg"><i></i></div>
+                    <div class="item-main col-xs-x" v-if="repairDetailInfo.health.state == 2">
+                        <div class="item-type time_active">订单取消</div>
+                        <div class="item-content" v-text="content">取消原因 信息取消错误</div>
+                    </div>
+                    <div class="item-main col-xs-x" v-if="repairDetailInfo.health.state == 3">
+                        <div class="item-type time_active">已完成</div>
+                    </div>
+                    <div class="item-main col-xs-x" v-if="repairDetailInfo.health.state == 1">
+                        <div class="item-type time_active">已接单</div>
+                    </div>
+                    <div class="item-main col-xs-x" v-if="repairDetailInfo.health.state == 0">
+                        <div class="item-type time_active">待接单</div>
+                    </div>
+                    <span class="statu" v-text="createDate">2020-07-16 02:05</span>
+                </div>
+                <div class="item-inner flex-box-x">
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type">提交订单</div>
+                    </div>
+                    <span class="statu" v-text="repairDetailInfo.orders[0].createDate">2020-07-16 02:05</span>
+                </div>
+            </div>
+        </div>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">保养信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type">保养项目</span>
+                <span class="val" v-text="repairOrderInfo.healthName"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type">预约时间</span>
+                <span class="val" v-text="repairDetailInfo.health.orderDate"></span>
+            </li>
+            <li class="center_item img_box">
+                <span class="type">保养要求</span>
+                <span class="val" v-text="repairDetailInfo.health.content"></span>
+            </li>
+        </ul>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">设备信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">品牌型号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerModel"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">备案号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerPunonNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">自编号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">维保单位</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.tpmUnit"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">维保负责人</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.tpmOperator"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">联系电话</span>
+                <span class="val info_val">
+                    <span v-text="repairDetailInfo.crane.tpmOperatorPhone">
+                    </span>&nbsp;&nbsp;&nbsp;<i class="aui-iconfont aui-icon-phone " style="color:#008EFF"
+                        @click="call(repairDetailInfo.crane.tpmOperatorPhone)"></i></span>
+            </li>
+        </ul>
+        <ul class="center" v-if="repairDetailInfo.health.state == 3">
+            <li class="center_item line_after_1" style="border-bottom: 1px #e3e4e5 solid;">
+                <h1>保养反馈</h1>
+            </li>
+            <li class="center_item ">
+                <input class="val" style="background: #fff;" v-model="repairDetailInfo.health.feedback" disabled />
+            </li>
+            <div class="img_box">
+                <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                    <img class="img_item" :src="item" alt="" v-for="(item,index) in echoPhotosUrl">
+                </div>
+            </div>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    repairOrderInfo: api.pageParam.repairOrderInfo,
+                    // repairOrderInfo: { "liftNo": "1#", "orderId": "EF2020080711120099877779233305191", "stateName": "已完成", "id": 4, "faultName": "限位装置", "createDate": 1596769921000, state: 1 },
+                    repairDetailInfo: null,
+                    imgUrl: [],
+                    createDate: null,
+                    content: null,
+                    echoPhotosUrl: []
+                },
+                created: function () {
+                    this.getRepairDetailInfo()
+                },
+                methods: {
+                    //拨打电话
+                    call: function (phone) {
+                        console.log(phone);
+                        api.call({
+                            type: 'tel_prompt',
+                            number: phone
+                        });
+                    },
+                    //查询单个报修明细信息
+                    getRepairDetailInfo: function () {
+                        var that = this;
+                        console.log("请求参数：" + that.repairOrderInfo.id);
+                        $app.post(
+                            true,
+                            getHealthDetailInfoURL, {
+                            id: that.repairOrderInfo.id + "",
+                        },
+                            function (ret) {
+                                console.log("返回数据：" + JSON.stringify(ret))
+                                that.repairDetailInfo = ret.obj;
+                                that.repairDetailInfo.orders.map(function (item) {
+                                    switch (item.name) {
+                                        case "订单取消":
+                                            that.createDate = item.createDate;
+                                            that.content = item.content;
+                                            break;
+                                        case "已完成":
+                                            that.createDate = item.createDate;
+                                            break;
+                                        case "已接单":
+                                            that.createDate = item.createDate;
+                                            break;
+                                        case "待接单":
+                                            that.createDate = item.createDate;
+                                            break;
+                                    }
+                                });
+                                var echoPhotos = [];
+                                if (that.repairDetailInfo.health.echoPhotos) {
+                                    echoPhotos = that.repairDetailInfo.health.echoPhotos.split(",");
+                                }
+                                echoPhotos.map(function (item) {
+                                    item = that.repairDetailInfo.crane.urlPrefix + item
+                                    that.echoPhotosUrl.push(item);
+                                });
+                            }
+                        )
+                    },
+                    //提交
+                    healthCancelOrder: function () {
+                        var dialog = new auiDialog({})
+                        var that = this;
+                        api.prompt({
+                            title: "取消订单",
+                            msg: "确认取消订单",
+                            buttons: ['确定', '取消']
+                        }, function (ret, err) {
+                            if (ret.buttonIndex == 1) {
+                                $app.post(
+                                    true,
+                                    healthCancelOrderlURL, {
+                                    id: that.repairDetailInfo.orders[0].id.toString(),
+                                    content: ret.text
+                                },
+                                    function (ret) {
+                                        api.sendEvent({
+                                            name: 'repairorder_detail_frame'
+                                        });
+                                        that.getRepairDetailInfo();
+                                    }
+                                )
+                            }
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

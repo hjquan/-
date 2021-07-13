@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .bottom li {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            padding: 10px;
+        }
+
+        .bottom img {
+            width: 35px;
+            height: 40px;
+        }
+
+        .noImage {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list .aui-list-item-media {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .size_rt {
+            width: 70px;
+            text-align: right;
+        }
+
+        .title {
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+            padding-left: 15px;
+            line-height: 30px;
+            background-color: #F5F5F5
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: rgba(165, 165, 165, 1);
+        }
+        .main_box{box-sizing: border-box;}
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="main_box">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content">
+                    <div v-if="unreadList.length">
+                        <p class="title">正在下载 <span class="subtitle" v-text=" '(' + unreadList.length  + ')' "></span></p>
+                        <ul class="aui-list aui-media-list">
+                            <li class="aui-list-item aui-list-item-middle border_size  " v-for="(item,index) in unreadList" :key="index">
+
+                                <div class="aui-media-list-item-inner" style="width:95%">
+                                    <div class="aui-list-item-media" tapmode @click="seeFileFn(item.path)">
+                                        <img :src="typeFile(item.name)" style="width:40px;height:35px;" class=" aui-list-img-sm">
+                                    </div>
+                                    <div class="aui-list-item-inner " tapmode  @click="seeFileFn(item.path)"  style="width:80%">
+                                        <div class="aui-list-item-text">
+                                            <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.name">AUI</div>
+                                        </div>
+                                        <div class="aui-list-item-text aui-ellipsis-1">
+                                            <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.wait">AUI</div>
+                                            <!-- <div class="aui-list-item-right aui-ellipsis-1 size_rt" style="width:150px" v-text="item.lastModified">08:00</div> -->
+                                        </div>
+                                    </div>
+                                    <!-- <label v-show="checkShow"><input class="aui-radio" ref="check_parent"  v-model="item.checked"    type="checkbox" name="checkbox"  ></label> -->
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div v-if="readList.length">
+                        <p class="title">已下载 <span class="subtitle" v-text=" '(' + readList.length  + ')' "></span></p>
+                        <ul class="aui-list aui-media-list">
+                            <li class="aui-list-item aui-list-item-middle border_size  " v-for="(item,index) in readList" :key="index">
+
+                                <div class="aui-media-list-item-inner" style="width:95%">
+                                    <div class="aui-list-item-media" tapmode @click="seeFileFn(item.path)">
+                                        <img :src="typeFile(item.name)" style="width:40px;height:35px;" class=" aui-list-img-sm">
+                                    </div>
+                                    <div class="aui-list-item-inner " tapmode  @click="seeFileFn(item.path)"  style="width:80%">
+                                        <div class="aui-list-item-text">
+                                            <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.name">AUI</div>
+                                        </div>
+                                        <div class="aui-list-item-text aui-ellipsis-1">
+                                            <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.size">AUI</div>
+                                            <div class="aui-list-item-right aui-ellipsis-1 size_rt" style="width:150px" v-text="item.lastModified">08:00</div>
+                                        </div>
+                                    </div>
+                                    <label v-show="checkShow"><input class="aui-radio" ref="check_parent"  v-model="item.checked"    type="checkbox" name="checkbox"  ></label>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+                <!-- <div class="noImage" v-else>
+                    <img src="../../../image/data/data_no.png" alt="">
+                </div> -->
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script src="../../../script/zcirclemove.js"></script>
+
+
+    <script>
+        var office, aliOSS, NVTabBar;
+        apiready = function() {
+            var photoBrowser = api.require('photoBrowser');
+            var fs = api.require('fs');
+            var dialogBox = api.require('dialogBox');
+            office = api.require('officePreview');
+            aliOSS = api.require("aliOSS");
+            $api.fixStatusBar($api.dom('.fixd'));
+
+            //监听复选框是否显示
+            api.addEventListener({
+                name: 'clouddisk_checkboxList_event_'
+            }, function(ret, err) {
+                if (ret) {
+                    var data = ret.value.checkbox_txt;
+                    data === '选择' ? vm.checkShow = true : vm.checkShow = false;
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //监听删除列表事件
+            api.addEventListener({
+                name: 'clouddisk_dowmList_del_event'
+            }, function(ret, err) {
+                if (ret) {
+                    var params = {
+                        title: '提示',
+                        content: '是否确定删除',
+                        callback: function(ret) {
+                            vm.dowmlist_delFn();
+                        }
+                    }
+                    vm.dialogBox_alert(params)
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    checkShow: false, //复选框是否隐藏
+                    unreadList:[],//未读列表
+                    readList: [], //已读列表
+                    topimg: [
+                        '../../../image/data/xslx.png', //0
+                        '../../../image/data/img.png', //1
+                        '../../../image/data/pdf.png', //2
+                        '../../../image/data/ppt.png', //3
+                        '../../../image/data/word.png', //4
+                        '../../../image/data/txt.png', //5
+                        '../../../image/data/video.png', //6
+                        '../../../image/data/zip.png', //7
+                        '../../../image/data/wz.png', //8
+                        '../../../image/data/Group.png', //9
+                    ]
+                },
+                created: function() {
+                    this.readinit()
+                },
+                mounted: function() {
+
+                },
+                watch: {
+                    readList: {
+                        deep: true,
+                        handler: function(newVal, oldVal) {
+                            var isFlg = this.readList.some(function(item) {
+                                return item.checked == true;
+                            })
+                            api.sendEvent({
+                                name: 'cloud_index2_dowmload_event',
+                                extra: {
+                                    clouddisk_dowmload_flag: isFlg
+                                }
+                            });
+
+                        }
+                    }
+                },
+                methods: {
+                    // 预览文件
+                    seeFileFn: function(data) {
+                        console.log(data);
+                        // var url = data.replace(/(.*)(?=(folder))/,'widget://');
+                        // console.log(url);
+                        var fileType = data.split('.')[1].toLowerCase();
+                        switch (fileType) {
+                            case 'png':
+                            case 'jpg':
+                                photoBrowser.open({
+                                    images:data,
+                                    activeIndex:0,
+                                    // placeholderImg: 'widget://res/img/apicloud.png',
+                                    bgColor: '#000'
+                                }, function(ret, err) {
+                                    if (ret) {
+                                        if (ret.eventType === 'click') {
+                                            photoBrowser.close();
+                                        }
+                                    } else {}
+                                });
+                                break
+                            default:
+                                office.open({
+                                    rect: {
+                                        x: 0,
+                                        y: 0,
+                                        w: 'auto',
+                                        h: 'auto'
+                                    },
+                                    // fixedOn: api.frameName,
+                                    fixed: true,
+                                    url:data,
+                                    fileType: fileType
+
+                                });
+
+                        }
+                    },
+                    //alert弹窗
+                    /*
+                    alert对话框
+                    params.title  提示语
+                    params.content 内容
+                    params.callback(ret) 回调
+                    */
+                    //
+                    dialogBox_alert: function(params) {
+                        dialogBox.alert({
+                            texts: {
+                                title: params.title,
+                                content: params.content,
+                                leftBtnTitle: '取消',
+                                rightBtnTitle: '确认'
+                            },
+                            styles: {
+                                bg: '#fff',
+                                w: 300,
+                                corner: 12,
+                                title: {
+                                    marginT: 20,
+                                    icon: 'widget://res/gou.png',
+                                    iconSize: 40,
+                                    titleSize: 14,
+                                    titleColor: '#000'
+                                },
+                                content: {
+                                    color: '#000',
+                                    size: 14
+                                },
+                                left: {
+                                    marginB: 7,
+                                    marginL: 20,
+                                    w: 130,
+                                    h: 35,
+                                    corner: 2,
+                                    color: '#058FFD',
+                                    bg: '#fff',
+                                    size: 14
+                                },
+                                right: {
+                                    marginB: 7,
+                                    marginL: 10,
+                                    w: 130,
+                                    h: 35,
+                                    color: '#058FFD',
+                                    corner: 2,
+                                    bg: '#fff',
+                                    size: 14
+                                },
+                                horizontalLine: {
+                                    color: '#f5f5f5', //（可选项）字符串类型；左右按钮上边横线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                    height: 1 //（可选项）数字类型；左右边按钮横线的高度；默认：0
+                                },
+                                verticalLine: {
+                                    color: '#f5f5f5', //（可选项）字符串类型；左右按钮中间竖线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                    width: 1 //（可选项）数字类型；左右边按钮竖线的高度；默认：0
+                                }
+                            }
+                        }, function(ret) {
+                            if (ret.eventType == 'left') {
+                                var dialogBox = api.require('dialogBox');
+                                dialogBox.close({
+                                    dialogName: 'alert'
+                                });
+                            } else {
+                                params.callback(ret);
+
+                            }
+                        });
+
+                    },
+                    //删除已选数据
+                    dowmlist_delFn: function() {
+                        var _this = this,
+                        delUrlList = []; //删除文件的文件源路径
+                        this.readList = this.readList.filter(function(item, i) {
+                                if (item.checked) {
+                                    delUrlList.unshift(item.path)
+                                }else{
+                                    return item
+                                }
+                            })
+                        //     //删除本地缓存记录
+                        var prefData = {
+                            'dowmList': this.readList
+                        }
+                        api.setPrefs({
+                            key: 'clouddisk_dowmList_pref',
+                            value: prefData
+                        });
+                        //删除文件源
+                        _this.del_localFile(delUrlList)
+
+                        setTimeout(function() {
+                            dialogBox.close({
+                                dialogName: 'alert'
+                            });
+                        }, 500)
+
+
+
+                    },
+                    //删除本地文件
+                    del_localFile: function(dataUrl) {
+                        console.log($api.jsonToStr(dataUrl));
+                        for (var i = 0; i < dataUrl.length; i++) {
+                            (function(i) {
+                                fs.remove({
+                                    path: dataUrl[i]
+                                }, function(ret, err) {
+                                    if (ret.status) {
+                                        console.log(JSON.stringify(ret));
+                                        api.toast({
+                                            msg: '删除成功',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    } else {
+
+                                    }
+                                });
+                            })(i)
+                        }
+                    },
+                    //未读列表
+                    unreadInit:function(){
+                        var undowmlistPref = api.getPrefs({
+                            sync: true,
+                            key: 'clouddisk_undowmList_pref'
+                        });
+                        console.log(undowmlistPref);
+                        this.unreadList = $api.strToJson('undowmlistPref').map(function(item){
+                            item.name = item.name.split('.')[1];
+                            item.wait = '下载'
+                        });
+
+                    },
+                    //已下载数据本地读取
+                    readinit: function() {
+                        var _this = this;
+                        api.getPrefs({
+                            key: 'clouddisk_dowmList_pref'
+                        }, function(ret, err) {
+                            if (ret) {
+                                _this.readList = $api.strToJson(ret.value).dowmList.map(function(item) {
+                                    var filter_name = item.path.split('/');
+                                    item.name = filter_name[filter_name.length - 1];
+                                    item.size = $app.fromCatcheSize(item.contentLength, 2);
+                                    item.checked = false;
+                                    return item;
+                                });
+
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+
+                    //根据文件名后缀匹配对应图片
+                    typeFile: function(type) {
+                        var data = type.split('.')[1];
+                        if (data) {
+                            data = data.toLowerCase()
+                        } else {
+                            data = 'group'
+                        }
+                        switch (data) {
+                            case 'zip':
+                                return this.topimg[7]
+                                break;
+                            case 'mp4':
+                                return this.topimg[6]
+                                break;
+                            case 'txt':
+                                return this.topimg[5]
+                                break;
+                            case 'doc':
+                            case 'docx':
+                                return this.topimg[4]
+                                break;
+                            case 'ppt':
+                            case 'pptx':
+                                return this.topimg[3]
+                                break;
+                            case 'pdf':
+                                return this.topimg[2]
+                            case 'jpg':
+                            case 'png':
+                                return this.topimg[1]
+                                break;
+                            case 'xls':
+                            case 'xlsx':
+                                return this.topimg[0]
+                                break;
+                            case 'group':
+                                return this.topimg[9]
+                                break;
+
+                            default:
+                                return this.topimg[8]
+
+                        }
+                    }
+
+
+                }
+
+            })
+
+
+
+
+        }
+    </script>
+
+</html>

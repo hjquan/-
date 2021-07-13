@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../../../css/video-js.min.css"> -->
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        .video {
+            position: relative;
+        }
+
+        .video video {
+            width: 100%;
+            height: 200px;
+
+        }
+
+        .contron {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(27, 27, 27, 0.8);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10px;
+        }
+
+        .contron>* {
+            flex: 1;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+
+        }
+
+        .txt_online {
+            color: #00994C
+        }
+
+        .main {
+            padding: 15px;
+
+            font-family: PingFang SC;
+            font-weight: 500;
+
+        }
+
+        .main h1 {
+            font-size: 15px;
+            color: rgba(51, 51, 51, 1);
+            margin-bottom: 15px;
+        }
+
+        .list {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .list_item {
+            width: 33.3%;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .item {
+            width: 100px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 142, 255, 1);
+        }
+
+        .active {
+            color: rgba(238, 238, 238, 1);
+            background: rgba(0, 142, 255, 1);
+        }
+
+        .videoInfo {
+            height: 10rem;
+            width: 100%;
+        }
+
+        .video-conten {
+            width: 100%;
+            height: 300px;
+            border: 1px #ffffff solid;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="video-conten">
+            <!-- <video id="example_video_1" class="video-js vjs-default-skin" autoplay="autoplay" controls preload="none"
+                width="640" height="264" poster="http://47.92.149.108/SmartSite">
+                <source src="http://hls01open.ys7.com/openlive/a870f8d36bca40eea9a598fc0efc7056.m3u8" type="video/mp4">
+            </video> -->
+            <!-- <div class="contron">
+                <div>设备1: <span>摄像机位1</span> </div>
+                <i class="aui-iconfont aui-icon-video"></i>
+                <div class="txt_online">在线</div>
+            </div> -->
+        </div>
+        <div class="main">
+            <h1>监控位置</h1>
+            <ul class="list">
+                <li class="list_item" v-for="(item,i) in nav_bar" :key="item.id">
+                    <div class="item " @click="curClickFn(item,i)" :class="{'active':currIndex === i }"
+                        v-text="item.name">1#号升降机</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <!-- <script src="../../../../script/video.min.js"></script> -->
+    <script>
+        apiready = function () {
+            var moviePlayer = api.require('moviePlayer');
+            moviePlayer.open({
+                rect: {
+                    x: 0,
+                    y: api.pageParam.offsetH,
+                    w: api.frameWidth,
+                    h: 300
+                },
+                styles: {
+                    head: {
+                    },
+                    foot: {
+                        bg: 'rgba(0,0,0,0.5)',
+                        height: 44,
+                        palyBtn: {
+                            size: 20,
+                            playImg: 'widget://image/play.png',
+                            pauseImg: 'widget://image/pause.png',
+                            marginLeft: 5
+                        },
+                        currentTimeLabel: {
+                            textSize: 14,
+                            textColor: "#FFF",
+                            textWidth: 43,
+                            marginLeft: 5
+                        },
+                        seekBar: {
+                            sliderImg: 'widget://image/circle.png',
+                            sliderW: 20,
+                            sliderH: 20,
+                            progressColor: '#696969',
+                            progressSelected: '#76EE00',
+                            marginLeft: 10,
+                            marginRight: 10
+                        },
+                        totalTimeLabel: {
+                            textSize: 14,
+                            textColor: "#FFF",
+                            textWidth: 43,
+                            marginRight: 5
+                        },
+                        fullscreenBtn: {
+                            size: 20,
+                            verticalImg: 'widget://image/vertical.png',
+                            horizontalImg: 'widget://image/horizontal.png',
+                        }
+                    }
+                },
+                showBack: false,
+                path: 'rtmp://rtmp01open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.hd',
+                // path: '',
+                autoPlay: true
+            }, function (ret, err) {
+                if (ret) {
+                    // alert(JSON.stringify(ret));
+                    // } else {
+                    // alert(JSON.stringify(err));
+                }
+            });
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    nav_bar: [],//升降机集合
+                    currIndex: 0,//当前下标
+                    videoPath: "",
+                },
+                created: function () {
+                    // this.getTowerDeviceLists();
+                },
+
+                methods: {
+                    openVideo: function () {
+                        var that = this;
+                        moviePlayer.open({
+                            rect: {
+                                x: 0,
+                                y: api.pageParam.offseth,
+                                w: api.frameWidth,
+                                h: 300
+                            },
+                            styles: {
+                                head: {
+                                    bg: 'rgba(161,161,161,0.5)',
+                                    height: 44,
+                                    y: 20,
+                                    title: {
+                                        size: 20,
+                                        color: '#fff',
+                                        width: 40,
+                                        leftMargin: 10
+                                    },
+                                    backSize: 30,
+                                    backImg: 'widget://image/back.png',
+                                    customButtons: [{
+                                        w: 30,
+                                        h: 30,
+                                        rightMagin: 10,
+                                        img: 'widget://image/image/collect.png',
+                                        imgSelected: 'fs://image/collectSelected.png',
+                                    }]
+                                },
+                                foot: {
+                                    bg: 'rgba(0,0,0,0.5)',
+                                    height: 44,
+                                    palyBtn: {
+                                        size: 20,
+                                        playImg: 'widget://image/play.png',
+                                        pauseImg: 'widget://image/pause.png',
+                                        marginLeft: 5
+                                    },
+                                    currentTimeLabel: {
+                                        textSize: 14,
+                                        textColor: "#FFF",
+                                        textWidth: 43,
+                                        marginLeft: 5
+                                    },
+                                    seekBar: {
+                                        sliderImg: 'widget://image/circle.png',
+                                        sliderW: 20,
+                                        sliderH: 20,
+                                        progressColor: '#696969',
+                                        progressSelected: '#76EE00',
+                                        marginLeft: 10,
+                                        marginRight: 10
+                                    },
+                                    totalTimeLabel: {
+                                        textSize: 14,
+                                        textColor: "#FFF",
+                                        textWidth: 43,
+                                        marginRight: 5
+                                    },
+                                    fullscreenBtn: {
+                                        size: 20,
+                                        verticalImg: 'widget://image/vertical.png',
+                                        horizontalImg: 'widget://image/horizontal.png',
+                                    }
+                                }
+                            },
+                            showBack: false,
+                            // path: 'http://hls01open.ys7.com/openlive/a870f8d36bca40eea9a598fc0efc7056.m3u8',
+                            path: that.videoPath,
+                            autoPlay: true
+                        }, function (ret, err) {
+                            if (ret) {
+                                // alert(JSON.stringify(ret));
+                                // } else {
+                                // alert(JSON.stringify(err));
+                            }
+                        });
+                    },
+                    //获取升降机列表
+                    getTowerDeviceLists: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getElevatorListInfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取升降机列表" + JSON.stringify(ret));
+                                that.nav_bar = []
+                                ret.obj.list.map(function (item) {
+                                    var tower = {
+                                        id: item.id,
+                                        name: item.towerNo
+                                    }
+                                    that.nav_bar.push(tower);
+                                });
+                                that.getCameraListInfo(that.nav_bar[0].id);
+                                console.log("获取升降机列表" + JSON.stringify(that.nav_bar));
+
+                            }
+                        )
+                    },
+                    //查询摄像头列表
+                    getCameraListInfo: function (cranesId) {
+                        var that = this;
+                        var prame = {
+                            cranesId: cranesId,
+                            projectId: $api.getStorage('enterpriseId'),
+                            type: "0"
+                        };
+                        // console.log("查询摄像头列表参数" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getCameraListInfoURL,
+                            prame,
+                            function (ret) {
+                                if (ret.obj.length != 0) {
+                                    that.videoInfo = ret.obj[0];
+                                    that.videoPath = that.videoInfo.playAddr;
+                                    that.openVideo()
+                                }
+                            }
+                        )
+                    },
+                    //点击切换当前升降机高亮
+                    curClickFn: function (item, i) {
+                        this.currIndex = i;
+                        console.log(JSON.stringify(item));
+                        this.getCameraListInfo(item.id);
+                    },
+                    //打开抓拍事件
+                    captureFn: function () {
+                        api.openWin({
+                            name: 'capture',
+                            url: './capture.html',
+                            pageParam: {
+                            }
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

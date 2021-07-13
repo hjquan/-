@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+    html,body{height: 100%}
+
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+        .list_item{
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;;
+            border-bottom: 1px solid #f5f5f5;
+
+        }
+        .aui-list{
+            padding-bottom: 10px;
+        }
+
+        .txt_succ{
+            color: #15BC83
+        }
+        .txt_err{
+            color: #F47575
+        }
+        .list-box{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            padding: 0 10px;
+            font-size: 14px;
+            background-color: #fff;
+            /*margin-top: 10px;*/
+        }
+        .aui-list{
+            background-color: #f5f5f5
+        }
+        .txt_theme{
+            color:#058FFD;
+        }
+        .i_by{
+            font-weight: bold;
+        }
+        .tabbox{
+            position: fixed;
+            top: 10px;
+            left: 0;
+            right: 0;
+            background-color: #f5f5f5;
+            z-index: 100;
+        }
+        .mt_60{
+            margin-top: 50px;
+        }
+        .pd_25{
+            padding-left: 25px;
+        }
+        .item_detail{
+            background-color: #fff
+        }
+        .bor_b{
+            border-bottom: 1px solid #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" style="margin-top:5px;"  id="app">
+        <div class="aui-card-list-content " v-if="getAllpercentList.length" v-cloak>
+            <div class="aui-list aui-media-list " v-for="(items,i) in getAllpercentList"  >
+                <div class="list-box bor_b" tapmode @click="parentToggle(items,i)">
+                    <div class="lf_box aui-ellipsis-1">
+                        <i class="aui-iconfont aui-icon-right i_by" :class="{'aui-icon-down': items.checked}"></i>&nbsp;&nbsp;
+                        <span class="aui-ellipsis-1" v-text="items.name">装修哈哈</span>
+                    </div>
+                    <div class="rt_box txt_theme">
+                        <span class="aui-ellipsis-1" v-text="items.rate">合格：50%</span>
+                    </div>
+                </div>
+                <ul class="item_detail pd_25 " v-show="items.checked">
+                    <li class="list-box bor_b" v-for="item in items.subs" tapmode @click="childJump(item)">
+                        <div class="lf_box aui-ellipsis-1">
+                            <span class="aui-ellipsis-1" v-text="item.name">装修哈哈</span>
+                        </div>
+                        <div class="rt_box txt_theme">
+                            <span class="aui-ellipsis-1" v-text="item.rate">合格：50%</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="noData" v-else>
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            api.addEventListener({
+                name: 'statistics_index_item_enevt'
+            }, function(ret, err){
+                if( ret ){
+                    console.log('统计首页2');
+                    vm.init()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    parms_info:'',//接收传参
+                    url:'',//接口
+                    getAllpercentList:[],//获取列表详情
+                },
+                created:function(){
+                    console.log($api.jsonToStr(api.pageParam.statistics_info));
+                    this.parms_info = api.pageParam.statistics_info;
+                    this.init()
+
+                },
+                methods:{
+                    //点击子级
+                    childJump:function(data){
+                        console.log($api.jsonToStr(data));
+                        var params;
+                        if(this.parms_info.isFlag == '0'){
+                            console.log('区域');
+                            params = {
+                                location:this.parms_info,
+                                checked:data,
+                                isFlag:this.parms_info.isFlag
+                            }
+
+                        }else{
+                            console.log('检查项');
+                            params = {
+                                location:data,
+                                checked:this.parms_info,
+                                isFlag:this.parms_info.isFlag
+
+                            }
+                        }
+                        api.openWin({
+                            name: 'statistics_list_detail',
+                            url: './list_detail.html',
+                            pageParam: {
+                                'actual_list_detail': params
+                            }
+                        });
+
+                    },
+                    //父级点击是否展开子集
+                    parentToggle:function(data,i){
+                        data.checked = !data.checked;
+                        this.$forceUpdate();
+                    },
+                    //导航栏切换
+                    init:function(item,i){
+                        var _this = this;
+                        switch (this.parms_info.isFlag) {
+                            case '0':
+                                console.log('区域');
+                                _this.url = getAllpercentToComponent;
+                                var params = {
+                                    "projectId": $api.getStorage('enterpriseId'),
+                                    "areaId": _this.parms_info.itemId
+                                }
+                                console.log($api.jsonToStr(params));
+                                _this.getAllFromComponent(_this.url,params)
+
+                                break;
+                            case '1':
+                                console.log('按检查项');
+                                var params = {
+                                            "projectId": $api.getStorage('enterpriseId'),
+                                            "componentId": _this.parms_info.componentId,
+                                            "gaugeItemId": _this.parms_info.gaugeItemId
+                                        }
+                                        console.log($api.jsonToStr(params));
+                                _this.url = getAllFromComponentToArea;
+                                _this.getAllFromComponent(_this.url,params)
+
+                                break;
+
+                        }
+                    },
+                    //请求列表数据
+                    getAllFromComponent:function(url,params){
+                        var that = this;
+                        $app.post(
+                            true,
+                            url,
+                            params,
+                            function(ret){
+                                // console.log($api.jsonToStr(ret));
+                                that.getAllpercentList = ret.obj;
+                                that.getAllpercentList.forEach(function(items){
+                                    items.checked = false;
+                                })
+                            }
+                        )
+                    },
+
+                },
+
+            })
+
+        }
+    </script>
+</body>
+
+</html>

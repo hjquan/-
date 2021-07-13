@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        /* 新增样式 */
+        html,
+        body {
+            background-color: transparent;
+            width: 100%;
+            min-height: 100vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+        }
+
+        .content {
+            min-height: 100vh;
+            width: 100%;
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .left {
+            height: 100%;
+            width: 20%;
+            position: absolute;
+            background: rgba(135, 137, 142, 1);
+            opacity: 0.2;
+        }
+
+        .rt {
+            width: 80%;
+            min-height: 100vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(245, 245, 245, 1);
+            padding: 40px;
+            background: #fff;
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px
+        }
+
+        .btnBox {
+            width: 80%;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .rt .inpt {
+            width: 237px;
+            height: 45px;
+            background: rgba(249, 249, 251, 1);
+            border-radius: 2px;
+            text-align: left;
+            padding-left: 15px;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(183, 183, 188, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="addView">
+        <div class="left" onclick="closeSearchGoStorage()"></div>
+        <div class="rt">
+            <div class="mt_10">
+                <h2>物资名称</h2>
+                <div>
+                    <!-- <div class="time startTime"  @click="selctdevice()" tabmode v-text="deviceTxt? deviceTxt.deviceName :'请选择设备'"></div> -->
+                    <input type="text" placeholder="输入物资" class="inpt time startTime">
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>经办人</h2>
+                <div>
+                    <input type="text" placeholder="输入姓名" class="inpt time startTime">
+                    <!-- <div class="time startTime" @click="typeFn()" tabmode v-text="typeTxt? typeTxt.alarmName :'请选择类型'"></div> -->
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>接收人</h2>
+                <div>
+                    <input type="text" placeholder="输入姓名" class="inpt time startTime">
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>时间</h2>
+                <div>
+                    <div class="time startTime" tapmode @click="beginTimeFn()" v-text="startTime ? startTime : '开始日期'">
+                    </div>
+                    <div class="time entime" tapmode @click="endTimeFn()" v-text="endTime ? endTime : '结束日期'"></div>
+                </div>
+            </div>
+            <div class="btnBox">
+                <div class="btn" tapmode @click="rotate()">重置</div>
+                <div class="btn active" tapmode @click="submit()">确定</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../script/sha1.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<script>
+    apiready = function () {
+        $api.fixStatusBar($api.byId('app'));
+        // api.addEventListener({
+        //     name: 'keyback'
+        // }, function(ret, err){
+        //     if( ret ){
+        //         api.closeFrame({
+        //             name: 'wirning'
+        //         });
+        //
+        //     }else{
+        //     }
+        // });
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                startTime: '', //筛选开始时间
+                endTime: '', //筛选结束时间
+                resInfo: [], //请求类型数据
+                typeTxt: '', //类型选择展示
+                deviceTxt: '', //选择设备
+            },
+            created: function () {
+                this.$nextTick(function () {
+                    vm.starttimeFn()
+                })
+            },
+            methods: {
+                //重置按钮
+                rotate: function () {
+                    this.startTime = '',
+                        this.endTime = '',
+                        this.typeTxt = '',
+                        this.deviceTxt = ''
+                },
+                submit: function () {
+                    console.log($api.jsonToStr(vm.deviceTxt));
+                    api.sendEvent({
+                        name: 'towercrane2time',
+                        extra: {
+                            'startTime': this.startTime,
+                            'endTime': this.endTime,
+                            'alarmType': vm.typeTxt.alarmType,
+                            'currentdeviceNo': vm.deviceTxt.deviceNo
+                        }
+                    });
+                    api.closeFrame({
+                        name: 'search_go_out_torage'
+                    });
+                    setTimeout(function () {
+                        api.closeFrame();
+
+                    }, 500)
+                },
+                starttimeFn: function () {
+
+                    var d = new Date();
+
+                    var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + '  ' +
+                        '00' + ':' + '00' + ':' + '00';
+                    vm.startTime = time;
+
+
+                },
+                beginTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var seconds = d.getSeconds() + '';
+                            seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                            var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d
+                                .getDate() + '  ' + d.getHours() + ':' + d.getMinutes() + ':' +
+                                seconds;
+                            vm.startTime = time;
+
+                        }
+
+                    })
+
+                },
+                endTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date(vm.startTime).getTime()
+
+
+                            if (currenD > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                // vm.endTime = null
+                            } else {
+                                var seconds = d.getSeconds() + '';
+                                seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                                var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d
+                                    .getDate() + '  ' + d.getHours() + ':' + d.getMinutes() +
+                                    ':' + seconds;
+                                vm.endTime = time;
+                            }
+
+                        }
+
+                    })
+                },
+                typeFn: function () {
+                    if (!$api.getStorage('getTowerAlarmTypeInfo')) {
+                        ajaxGet(
+                            true,
+                            '加载中...',
+                            getTowerAlarmType,
+                            '',
+                            function (ret) {
+                                $api.setStorage('getTowerAlarmTypeInfo', ret.obj);
+                                vm.resInfo = ret.obj;
+                                vm.openactionSheet($api.getStorage('getTowerAlarmTypeInfo'))
+                            }
+                        )
+                    } else {
+                        vm.openactionSheet($api.getStorage('getTowerAlarmTypeInfo'))
+                    }
+
+                },
+                openactionSheet: function (content) {
+                    var btnBox = content.map(function (item) {
+                        return item.alarmName
+                    })
+                    api.actionSheet({
+                        title: '类型选择',
+                        // cancelTitle: '这里是取消按钮',
+                        // destructiveTitle: '红色警告按钮',
+                        buttons: btnBox
+                    }, function (ret, err) {
+                        if (ret) {
+                            console.log(JSON.stringify(ret));
+                            console.log(btnBox[ret.buttonIndex - 1]);
+                            vm.typeTxt = content[ret.buttonIndex - 1]
+                            console.log($api.jsonToStr(content[ret.buttonIndex - 1]));
+                        } else {}
+                    });
+                },
+                selctdevice: function () {
+                    var device = $api.getStorage('getTowerDeviceListsInfo');
+                    console.log($api.jsonToStr(device));
+                    var deviceBox = device.map(function (item) {
+                        return item.deviceName
+                    })
+                    api.actionSheet({
+                        title: '设备选择',
+                        buttons: deviceBox
+                    }, function (ret, err) {
+                        if (ret) {
+                            vm.deviceTxt = device[ret.buttonIndex - 1]
+                        } else {}
+                    });
+
+                },
+                close: function () {
+                    api.closeFrame()
+                }
+
+            }
+        })
+    }
+
+    function closeSearchGoStorage() {
+        api.closeFrame({
+            name: 'searchGoOutStorage'
+        });
+    }
+</script>
+
+</html>

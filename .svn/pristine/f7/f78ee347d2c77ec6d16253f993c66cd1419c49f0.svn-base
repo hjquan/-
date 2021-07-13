@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/selectPerson.css"/>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" onclick="javascript:api.closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">人员选择</div>
+        </header>
+        <div class="main_box" id="app">
+            <!-- <ul>
+                <li class="mian_item border_bottom_after">
+                    <p>单位</p>
+                    <p>重庆市渝北建委</p>
+                </li>
+            </ul> -->
+            <ul>
+                <li class="aui-list-item border_bottom_after" v-for="item in info" tapmode @click="selectPerson(item)">
+                    <div class=" select_item" v-cloak>
+                        <label>{{item.name}}</label>
+                        <!-- <label><input class="aui-radio"  type="radio" name="radio"> </label> -->
+                        <span>{{item.position}}</span>
+                    </div>
+                </li>
+                <!-- <li class="aui-list-item border_bottom_after">
+                    <div class=" select_item">
+                        <label><input class="aui-radio"  type="radio" name="radio"> 张三</label>
+                        <span>项目经理</span>
+                    </div>
+                </li>
+                <li class="aui-list-item border_bottom_after">
+                    <div class=" select_item">
+                        <label><input class="aui-radio"  type="radio" name="radio"> 张三</label>
+                        <span>项目经理</span>
+                    </div>
+                </li> -->
+            </ul>
+
+
+        </div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar( $api.dom('header') );
+            vm.info = api.pageParam.projectUserList;
+        };
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                info:''
+            },
+            methods:{
+                selectPerson:function(item){
+                    api.sendEvent({
+                        name: 'selectPerson',
+                        extra: {
+                            'selectItem':item
+                        }
+                    });
+                    setTimeout(function(){
+                        api.closeWin()
+                    },500)
+
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

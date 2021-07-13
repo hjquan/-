@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../css/voice.css">
+    <style>
+        html,
+        body {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+
+            <ul>
+
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>日志日期<span class="requid">*</span></p>
+                    <p tapmode @click="clicklogTimeFn()"><span v-text="logTime"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>上午天气<span class="requid">*</span></p>
+                    <p tapmode @click="morningweatherFn()"><span v-text="morningweather"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>下午天气<span class="requid">*</span></p>
+                    <p tapmode @click="afternoonweatherFn()"><span v-text="afternoonweather"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>温度<span class="requid">*</span></p>
+                    <div>
+                        <input type="number" v-model="temperature" placeholder="请输入" @blur="istemperature" class="inputPosition" tapmode><i class="aui-iconfont i_wd">℃</i>
+                    </div>
+                </li>
+
+            </ul>
+            <ul class="mt_10">
+
+
+                <li class="aui-list-item border_bottom_after">
+                    <div class="aui-list-item-inner textarea">
+                        <div class="aui-list-item-label list_title">
+                            安全日志内容<span class="requid">*</span>
+                        </div>
+                        <div class="aui-list-item-input">
+                            <textarea placeholder="请输入" id="" v-model="constructionContents"></textarea>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="imgUpdate border_bottom_after">
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                    <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index) tapmode="hover"></i>
+                    <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+            </div>
+
+
+            <div class="" style="background-color:#f5f5f5;">
+                <div class="cancelBtn" :class="{'active':isSubmitActive}" tapmode="hover" @click="submitFn()">确定</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/lunarcalendar.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../script/commonJS/voiceinput.js"></script>
+    <script>
+        // var vm;
+        apiready = function() {
+            //自定义键盘按钮
+            var keyboardView = api.require('keyboardView');
+
+
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');;
+            //删除草稿
+            api.addEventListener({
+                name: 'aq_deldraftevent'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.deldrafFn()
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //监听是否保存草稿事件
+            api.addEventListener({
+                name: 'securlog_draft_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.isDraftSaveFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            //保存草稿
+            api.addEventListener({
+                name: 'aq_savedraftevent'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.savedraftFn()
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //撤回监听
+
+
+            //侵入式导航栏
+            api.addEventListener({
+                name: 'aq_logPersonListCurent'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.pcoo = ret.value.logPersonListCurent;
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+            //选择的当前人
+            api.addEventListener({
+                name: 'aq_logListPerson'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.constructionLocation = ret.value.logListPerson;
+                } else {}
+            });
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    isDraft:false,//判断是否有草稿用于删除草稿
+                    toggleState: false, //显示收缩状态
+                    logTime: '', //日志日期
+                    morningweather: '晴', //上午天气
+                    afternoonweather: '晴', //下午天气
+                    weatherAll: [], //天气集合
+                    temperature: '', //温度
+
+                    constructionContents: '', //施工内容
+
+
+                    imgSrc: [], //本地图片地址
+                    srcImgUrl: [], //服务器返回图片未压缩地址
+                    compressImgUrl: [], //服务器返回图片压缩地址
+                    isCloseBtn: true //图片删除按钮状态控制
+
+                },
+                watch: {
+
+                },
+                computed: {
+
+                    //控制提交按钮状态
+                    isSubmitActive: function() {
+                        if (!this.logTime || !this.morningweather || !this.afternoonweather || !this.temperature || !this.constructionContents) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+
+                },
+                mounted: function() {
+                    this.pcoo = {
+                        name: $api.getStorage('enterLoginInfo').name,
+                        userId: $api.getStorage('userId')
+                    }
+                    this.initPrefsFn()
+
+                },
+                created: function() {
+                    this.logTime = $app.formDate(api.pageParam.currentaddlogtime,'-')|| $app.formDate(false,'-');//日志日期
+                    console.log(this.logTime);
+                    this.getweather();
+                },
+                methods: {
+                    //是否保存草稿
+                    isDraftSaveFn:function(){
+                        var _this = this;
+                        api.getPrefs({
+                            key: 'aq_savedraftBox'
+                        }, function(ret, err) {
+                            if (ret.value) {
+                                var item = $api.strToJson(ret.value);
+                                var isFlag = _this.logTime == item.logTime && //; //日志日期
+                                            _this.morningweather == item.morningweather && //; //上午天气
+                                            _this.afternoonweather == item.afternoonweather && //; //下午天气
+                                            _this.temperature == item.temperature && //; //温度
+                                            _this.constructionContents == item.constructionContents;//; //施工内容
+                                            $api.jsonToStr(_this.imgSrc) == $api.jsonToStr(item.imgSrc);
+
+
+                                            // _this.imgSrc == item.imgSrc; //本地图片地址
+
+                                    console.log(isFlag);
+                                    if(isFlag){
+                                        api.closeWin();
+                                    }else{
+                                        api.confirm({
+                                            title: '是否保存草稿',
+                                            // msg: '',
+                                            buttons: ['确定', '取消']
+                                        }, function(ret, err){
+                                            if( ret ){
+                                                if(ret.buttonIndex == 1){
+                                                    _this.savedraftFn()
+
+                                                }else{
+                                                    api.closeWin();
+                                                }
+                                            }else{
+
+                                            }
+                                        });
+
+                                    }
+
+                                // _this.imgSrc = item.imgSrc; //本地图片地址
+                            }else{
+                                api.confirm({
+                                    title: '是否保存草稿',
+                                    // msg: '',
+                                    buttons: ['确定', '取消']
+                                }, function(ret, err){
+                                    if( ret ){
+                                        if(ret.buttonIndex == 1){
+                                            _this.savedraftFn()
+
+                                        }else{
+                                            api.closeWin();
+                                        }
+                                    }else{
+
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    addKeyboardListener: function(el) {
+                        // function fnc(ret_txt){
+                        //     data = ret_txt;
+                        // }
+                        keyboardInit(el)
+                    },
+
+                    //温度输入验证
+                    istemperature:function(){
+                        var _this = this;
+                        // console.log(typeof(this.temperature));
+                        if(Number(this.temperature) < -90 || Number(this.temperature) > 60){
+                            api.alert({
+                                title: '提示',
+                                msg: '温度区间[-90,60]',
+                            }, function(ret, err){
+                                if( ret ){
+                                    _this.temperature = '';
+                                }else{
+                                     alert( JSON.stringify( err ) );
+                                }
+                            });
+
+
+                        }
+                    },
+                    //初始化缓存赋值
+                    initPrefsFn: function() {
+                        var _this = this
+                        api.getPrefs({
+                            key: 'aq_savedraftBox'
+                        }, function(ret, err) {
+                            if (ret.value) {
+                                var item = $api.strToJson(ret.value);
+                                if (item.logTime == vm.logTime) {
+                                    api.sendEvent({
+                                        name: 'aq_deldraft_del',
+                                        extra: {
+                                            isshow: true
+                                        }
+                                    });
+                                }
+                                if (item.logTime == _this.logTime) {
+                                    _this.logTime = item.logTime; //日志日期
+                                    _this.morningweather = item.morningweather; //上午天气
+                                    _this.afternoonweather = item.afternoonweather; //下午天气
+                                    _this.temperature = item.temperature; //温度
+
+                                    _this.constructionContents = item.constructionContents; //施工内容
+
+                                    _this.imgSrc = item.imgSrc; //本地图片地址
+                                    _this.isDraft = true;
+                                    api.sendEvent({
+                                        name: 'aq_istitletxt',
+                                        extra: {}
+                                    })
+                                }
+
+
+
+                            }else{
+                                    // vm.logTime = item.logTime; //日志日期
+                                    // vm.morningweather = item.morningweather; //上午天气
+                                    // vm.afternoonweather = item.afternoonweather; //下午天气
+                                vm.temperature = ''; //温度
+
+                                vm.constructionContents = ''; //施工内容
+
+                                vm.imgSrc = []; //本地图片地址
+                            };
+                        });
+                    },
+                    //草稿删除
+                    deldrafFn: function() {
+                        api.confirm({
+                            title: '警告',
+                            msg: '是否确定删除草稿',
+                            buttons: ['取消', '删除']
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == 2) {
+                                    api.removePrefs({
+                                        key: 'aq_savedraftBox'
+                                    });
+                                    api.sendEvent({
+                                        name: 'aq_deldraft_del',
+                                        extra: {
+                                            isshow: false
+                                        }
+                                    });
+                                    api.toast({
+                                        msg: '删除成功',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    vm.initPrefsFn();
+
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+
+                    },
+                    //草稿保存
+                    savedraftFn: function() {
+                        var params = {
+                            logTime: this.logTime, //日志日期
+                            morningweather: this.morningweather, //上午天气
+                            afternoonweather: this.afternoonweather, //下午天气
+                            temperature: this.temperature, //温度
+                            constructionContents: this.constructionContents, //施工内容
+
+                            imgSrc: this.imgSrc, //本地图片地址
+                        };
+                        api.setPrefs({
+                            key: 'aq_savedraftBox',
+                            value: $api.jsonToStr(params)
+                        });
+                        api.toast({
+                            msg: '保存成功',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        setTimeout(function(){api.closeWin();},500)
+                        // vm.initPrefsFn()
+
+
+                    },
+                    submitFn: function() {
+                        var _this = this;
+                        if (!this.logTime || !this.morningweather || !this.afternoonweather || !this.temperature || !this.constructionContents) {
+                            api.toast({
+                                msg: '带有 "*" 为必须填写',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false
+
+                        }
+
+                        function fnc() {
+                            //图片格式处理
+                            if (vm.srcImgUrl.length) {
+                                var imgBox = [];
+                                vm.srcImgUrl.forEach(function(item, index) {
+                                    var imgItem = {};
+                                    imgItem.srcPath = item;
+                                    imgItem.compressPath = vm.compressImgUrl[index]
+                                    imgBox.push(imgItem)
+                                })
+                            }
+                            //农历时间处理
+                            var date_filter = new Date(vm.logTime);
+                            var year_b = date_filter.getFullYear();
+                            var month_b = date_filter.getMonth() + 1;
+                            var date_b = date_filter.getDate();
+                            var log_lunar_filter = LunarDate.GetLunarDay(year_b, month_b, date_b);
+                            //处理数据当前星期几
+                            function getWeekDate(date_z) {
+                                var now = new Date(date_z);
+                                var day = now.getDay();
+                                var weeks = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+                                var week = weeks[day];
+                                return week;
+                            }
+                            var week_filter = getWeekDate(vm.logTime);
+                            //是否为当前日
+                            function isDay_filter() {
+                                var currentDate = new Date();
+                                if (currentDate.getFullYear() == year_b && (currentDate.getMonth() + 1) == month_b && currentDate.getDate() == date_b) {
+                                    return 1
+                                } else {
+                                    return 0
+                                }
+                            }
+                            // //施工部位处理
+                            // function constructionLocation_filter() {
+                            //     var str = '';
+                            //     vm.constructionLocation.forEach(function(item) {
+                            //         str += (item.area_id + ',')
+                            //     })
+                            //     return (str.substring(0, str.length - 1))
+                            // }
+
+                            var params = {
+                                enterprise_id: '', //企业ID
+                                project_id: $api.getStorage('enterpriseId'), //项目ID
+                                logTime: vm.logTime, //日期
+                                loglunar: log_lunar_filter, //农历年
+                                loglunar: week_filter, //星期
+                                temperature: vm.temperature, //温度范围
+                                upper_weather: vm.morningweather, //上午天气
+                                lower_weather: vm.afternoonweather, //下午天气
+
+                                securit_desc: vm.constructionContents, //施工内容
+
+
+                                create_user_id: $api.getStorage('userId'), //创建人id
+
+                                isOnTime: isDay_filter(), //是否为当日（0否 1是）
+                                pictureUrl: imgBox //图片
+                            }
+                            $app.post(
+                                false,
+                                addSecurityLog,
+                                params,
+                                function(ret) {
+                                    console.log($api.jsonToStr(ret));
+                                    setTimeout(function(){
+                                        api.hideProgress();
+                                    },500)
+                                    vm.isCloseBtn = false;
+                                    api.sendEvent({
+                                        name: 'aq_refreshcalendar_frame',
+                                        extra: {}
+                                    });
+                                    if(_this.isDraft){
+                                        api.removePrefs({
+                                            key: 'aq_savedraftBox'
+                                        });
+
+                                    }
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    setTimeout(function() {
+                                        api.closeWin();
+                                    }, 500)
+
+                                }
+                            )
+                        }
+                        this.saveImg(fnc)
+
+                    },
+
+
+
+                    // 获取天气
+                    getweather: function() {
+                        ajaxPost(
+                            false,
+                            '加载中...',
+                            showDictListURL, {
+                                'dictCode': '10'
+                            },
+                            function(ret) {
+
+                                vm.weatherAll = ret.obj.map(function(item) {
+                                    return item.name
+                                })
+                            }
+                        )
+                    },
+                    //获取日志日期
+                    clicklogTimeFn: function() {
+                        var timeDate = new Date(vm.logTime)
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate() //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function(ret) {
+                            if (!ret) {
+                                return
+                            }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime(); //选择的时间年月日
+                            var currenDateTime = new Date(); //当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime(); //当前时间年月日
+
+                            if (selectDate > curenDate) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+
+                            }
+                            vm.logTime = $app.formDate(date,'-');
+                        })
+                    },
+                    //上午天气选择
+                    morningweatherFn: function() {
+                        vm.actionSheetFn('选择上午天气', 1)
+
+                    },
+                    //下午天气选择
+                    afternoonweatherFn: function() {
+                        vm.actionSheetFn('选择下午天气', 0)
+                    },
+
+                    closeWin: function() {
+                        api.closeWin();
+                    },
+                    actionSheetFn: function(title, state) {
+                        api.actionSheet({
+                            title: title,
+                            cancelTitle: '取消',
+                            // destructiveTitle: '红色警告按钮',
+                            buttons: vm.weatherAll
+                        }, function(ret, err) {
+                            if (ret) {
+
+                                if (ret.buttonIndex - 1 == vm.weatherAll.length) {
+                                    return
+                                }
+                                var currenText = vm.weatherAll[ret.buttonIndex - 1];
+                                state ? (vm.morningweather = currenText) : (vm.afternoonweather = currenText);
+
+                            } else {
+                                //  alert( JSON.stringify( err ) );
+                            }
+                        });
+                    },
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function(fncFN) {
+                        if (vm.serverImg) {
+                            vm.srcImgUrl = this.serverImg.map(function(item) {
+                                return item.srcPath
+                            })
+                            vm.compressImgUrl = this.serverImg.map(function(item) {
+                                return item.compressPath
+                            })
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function(fncFN) {
+                        var compressImg = [];
+                        setTimeout(function(){
+                            api.showProgress({
+                                style: 'default',
+                                animationType: 'fade',
+                                title: '新增中...',
+                                text: '先喝杯茶...',
+                                modal: false
+                            });
+
+                        },500)
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                (function(index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: vm.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            // album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function(ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            var timer = setInterval(function() {
+                                if (compressImg.length == vm.imgSrc.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        false,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                            enterpriseId: $api.getStorage('enterpriseId')
+                                        }, {
+                                            imgFile: compressImg
+                                        },
+                                        function(ret) {
+                                            vm.serverImg = ret.obj;
+                                            vm.imgFilter(fncFN)
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    //图片选择
+                    uploadHeadPic: function() {
+                        confirmPer('camera,photos', function() {})
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - vm.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function(ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function(ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    }
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

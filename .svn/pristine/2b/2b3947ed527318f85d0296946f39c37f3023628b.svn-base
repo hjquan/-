@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .bg_f {
+            background: #fff
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+        .aui-bar-btn .aui-active {
+            color: #fff
+        }
+
+        .pb_10 {
+            padding-bottom: 10px;
+        }
+
+        .tabbox {
+            width: 100%;
+            background-color: #fff;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tabar {
+            width: 80%;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #058FFD;
+            line-height: 13px;
+            height: 23px;
+            line-height: 23px;
+            overflow: hidden;
+            border-radius: 4px;
+            border: 1px solid rgba(5, 143, 253, 1);
+        }
+
+        .tabar_item {
+            flex: 1;
+            /*background:rgba(5,143,253,1);*/
+            /*border-radius:4px 4px 0px 0px;*/
+            text-align: center;
+            height: 23px;
+            line-height: 23px;
+        }
+
+        .active {
+            background: rgba(5, 143, 253, 1);
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg_f pb_10 header" id="app">
+        <header class="aui-bar aui-bar-nav bg_f ">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title color_3" v-text="params.title"></div>
+            <a class="aui-pull-right color_3" tapmode @click="openaddtask()">
+                <i class="aui-iconfont aui-icon-info" style="color:#058FFD"></i>
+            </a>
+        </header>
+        <div class="tabbox">
+            <div class="tabar" style="">
+                <div class="tabar_item" :class="{'active':index == curIndex}" v-for="(item,index) in btnBox"
+                    @click="toggle_item(item,index)" v-text="item"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var offset = $api.offset($api.dom('.header'));
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    params: '',//接收参数
+                    btnBox: ['不合格', '全部'],
+                    // btnType:1,
+                    curIndex: 0,
+                    listInfo: '',//获取列表数据
+                },
+                created: function () {
+                    var data = api.pageParam.actual_list_detail;
+                    this.params = data;
+                    this.getListFn(data)
+
+                },
+                methods: {
+                    //加载frame
+                    initFrame: function () {
+                        var _this = this;
+                        api.openFrame({
+                            name: 'actual_itemdetail_frame',
+                            url: './list_itemdetail_frame.html',
+                            rect: {
+                                x: offset.l,
+                                y: offset.h,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                actual_info: _this.listInfo
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    //获取列表
+                    getListFn: function (data) {
+                        console.log($api.jsonToStr(data));
+                        var _this = this;
+                        var params = {
+                            "componentId": data.componentId,
+                            "areaId": data.areaId,
+                            "projectId": data.projectId,
+                            "gaugeItemId": data.gaugeItemId
+                        }
+                        $app.post(
+                            true,
+                            actualmeasurementListDetails,
+                            params,
+                            function (ret) {
+                                // console.log($api.jsonToStr(ret));
+                                _this.listInfo = ret.obj;
+                                _this.initFrame();
+                            }
+                        )
+                    },
+                    toggle_item: function (item, i) {
+                        this.curIndex = i;
+                        switch (item) {
+                            case '不合格':
+                                api.sendEvent({
+                                    name: 'actual_areaNoPass',
+                                    extra: {
+                                    }
+                                });
+                                break;
+                            case '全部':
+                                api.sendEvent({
+                                    name: 'actual_areaPass',
+                                    extra: {
+                                    }
+                                });
+
+                                break;
+                            default:
+
+                        }
+                    },
+                    openaddtask: function () {
+                        var _this = this;
+                        // api.openWin({
+                        //     name: 'actual_layer',
+                        //     url: './actual_layer.html',
+                        //     bgColor:'rgba(0,0,0,.2)',
+                        //     pageParam: {
+                        //         'actual_info':_this.listInfo
+                        //
+                        //     }
+                        // });
+                        api.openFrame({
+                            name: 'actual_layer',
+                            url: './actual_layer.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                'actual_info': _this.listInfo
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    }
+                }
+            })
+        }
+
+
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

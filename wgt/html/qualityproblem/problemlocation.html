@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding:200px 0;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 80px;
+            padding: 10px 15px;
+            background-color: #fff;
+        }
+
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 100%;
+          height: 1px;
+          background-color: #F5F5F5;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .parent_t i{
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .pd_5{padding: 10px 0;position: relative;}
+        .parent_t{
+            font-size:16px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+        }
+        .child_t{
+            font-size:15px;
+            color:rgba(120,120,120,1);
+        }
+        .show_txt{
+            padding-left: 25px;
+            display: none;
+        }
+        .active_show{
+            display: block;
+        }
+        .active{
+            color:#0590FF
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="openWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">选择问题部位</div>
+
+            </header>
+        </div>
+        <div class="main_box">
+            <div v-if="problemlocationInfo.length" v-cloak>
+                <div class="box-item" v-for="(items,i) in problemlocationInfo">
+                    <h1  class="parent_t pd_5 bottom_before_line" @click="toggle(i)" :class="{'active':stateActive_parent(items)}">
+                        <i class="aui-iconfont aui-icon-right" ref="toggle_icon"  v-cloak></i> &nbsp;&nbsp;{{items.area_name}}
+                    </h1>
+                    <ul class="show_txt child_t pd_5" ref="showBox">
+                        <li @click="selecitemtFn(item,items.area_name)" class="pd_5 bottom_before_line" :class="{'active':stateActive(item)}"  v-for="(item,_index) in items.subArea" v-text="item.area_name">咨询想</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="noData" v-else v-cloak>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    problemlocationInfo:[],//区域部位数据集合
+                    currentproblemlocationId:''//默认选中的数据id
+                },
+                computed: {
+
+                },
+                created:function(){
+                    this.currentproblemlocationId = api.pageParam.defalutproblemlocationId && $api.strToJson(api.pageParam.defalutproblemlocationId);
+                },
+                methods: {
+                    //子集选中数据高亮
+                    stateActive:function(data){
+                        if(data.area_id == this.currentproblemlocationId.area_id){
+                            return true
+                        }else{
+                            return false
+                        }
+                    },
+                    //父集选中数据高亮
+                    stateActive_parent:function(data){
+
+                        if(data.area_id == this.currentproblemlocationId.parent_id){
+                            return true
+                        }else{
+                            return false
+                        }
+                    },
+
+                    //选中子集信息
+                    selecitemtFn:function(data,parent_name){
+
+                        api.sendEvent({
+                            name: 'problemlocation_event',
+                            extra: {
+                                problemlocationInfo:$api.jsonToStr(data),
+                                problemlocationInfo_parent:parent_name
+                            }
+                        });
+                        setTimeout(function(){api.closeWin()},500)
+
+                    },
+                    //是否显示子集元素
+                    toggle:function(i){
+                        var el = this.$refs.toggle_icon[i];
+                        var isFlag = $api.hasCls(this.$refs.toggle_icon[i], 'aui-icon-down');
+                        if(isFlag){
+                            $api.addCls(el, 'aui-icon-right');
+                            $api.removeCls(el, 'aui-icon-down');
+                            $api.removeCls(this.$refs.showBox[i], 'active_show');
+                        }else{
+                            $api.addCls(el, 'aui-icon-down');
+                            $api.removeCls(el, 'aui-icon-right');
+                            $api.addCls(this.$refs.showBox[i], 'active_show');
+                        }
+                        this.currentIndex = i;
+                    },
+
+                    //初始化数据
+                    init:function(){
+
+                        setTimeout(function(){
+                            api.showProgress({
+                                style: 'default',
+                                animationType: 'fade',
+                                title: '努力加载中...',
+                                text: '先喝杯茶...',
+                                modal: false
+                            });
+                        },200)
+
+                        api.getPrefs({
+                            key: 'problemlocation_storage'
+                        }, function(ret, err) {
+                            var userName = ret.value;
+                            if(userName){
+                                setTimeout(function(){api.hideProgress();},200)
+
+                                vm.problemlocationInfo = $api.strToJson(userName);
+                            }else{
+                                var params = {
+                                    "projectId": $api.getStorage('enterpriseId'),
+                                    "userId": $api.getStorage('userId')
+                                }
+                                function callback(ret){
+                                    setTimeout(function(){api.hideProgress();},200)
+                                    vm.problemlocationInfo = ret.obj;
+                                    api.setPrefs({
+                                        key: 'problemlocation_storage',
+                                        value: ret.obj
+                                    });
+                                }
+                                $app.post(
+                                    false,
+                                    getAreaByUser,
+                                    params,
+                                    callback
+                                )
+                            }
+                        });
+
+
+                    },
+                }
+
+            })
+            vm.init()
+        }
+
+    </script>
+</body>
+
+</html>

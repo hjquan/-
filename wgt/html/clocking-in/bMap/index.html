@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .header_title {
+            color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">我的位置</div>
+        </header>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            $api.fixStatusBar($api.dom('.header'));
+            var bMap = api.require('bMap');
+            var offset = $api.offset($api.byId('app'));
+            api.openFrame({
+                name: 'index_frame',
+                url: './index_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {},
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    rulesInfo: null,                    //考勤规则
+                },
+                created: function () {
+                    //获取考勤规则
+                    this.getRulesInfo();
+                },
+                methods: {
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //打开map
+                    openMap: function () {
+                        var that = this;
+                        // console.log(JSON.stringify(that.rulesInfo))
+                        bMap.open({
+                            rect: {
+                                y: 60,
+                                h: 450
+                            },
+                            center: {
+                                lon: this.rulesInfo.mapY,
+                                lat: this.rulesInfo.mapX,
+                            },
+                            zoomLevel: 18,
+                            showUserLocation: true,
+                            fixedOn: api.frameName,
+                            fixed: true
+                        }, function (ret) {
+                            if (ret.status) {
+                                that.getNewAdrr();
+                            }
+                        });
+                    },
+                    //获取考勤规则
+                    getRulesInfo: function () {
+                        var that = this;
+                        // console.log(JSON.stringify(api.pageParam));
+                        $app.post(
+                            true,
+                            attendanceRuleDetailURL, {
+                            rulesId: api.pageParam.thisRulesId
+                        },
+                            function (ret) {
+                                that.rulesInfo = ret.obj
+                                // 获取最新位置
+                                that.openMap();
+                            }
+                        )
+                    },
+                    //获取最新位置
+                    getNewAdrr: function () {
+                        var that = this;
+                        var userMapX = null; //用户当前的纬度
+                        var userMapY = null; //用户当前的经度
+                        //添加公司的打卡范围圆
+                        // console.log("__________________" + JSON.stringify(that.rulesInfo));
+                        bMap.addCircle({
+                            id: 2,
+                            center: {
+                                lon: that.rulesInfo.mapY,
+                                lat: that.rulesInfo.mapX
+                            },
+                            radius: 150,
+                            styles: {
+                                borderColor: '#37ADFF',
+                                borderWidth: 3,
+                                fillColor: 'RGBA(226, 237, 251, 0.5)'
+                            }
+                        });
+                        //标记公司地址
+                        bMap.addAnnotations({
+                            annotations: [{
+                                id: 1,
+                                lon: that.rulesInfo.mapY,
+                                lat: that.rulesInfo.mapX
+                            }],
+                            icon: 'widget://image/clocking-in/kq_dk_wq_icon_xingmu.png',
+                            draggable: true,
+                            size: 60,
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                        });
+                        // console.log(JSON.stringify(that.rulesInfo));
+                        this.timer = setInterval(function () {
+                            //获取当前位置的经纬度
+                            bMap.getLocation({
+                                accuracy: '100m',
+                                autoStop: true,
+                                filter: 1
+                            }, function (ret, err) {
+                                if (ret.status) {
+                                    // console.log(JSON.stringify(ret));
+                                    userMapX = ret.lat;
+                                    userMapY = ret.lon
+                                }
+                            });
+                        }, 1000)
+
+                        bMap.addAnnotations({
+                            annotations: [{
+                                id: 6,
+                                lon: userMapY,
+                                lat: userMapX
+                            }],
+                            draggable: true,
+                        }, function (ret) {
+                        });
+                    },
+                },
+
+            })
+        }
+    </script>
+</body>
+
+</html>

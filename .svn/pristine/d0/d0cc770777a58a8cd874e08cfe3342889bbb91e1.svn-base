@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/sendObj.css"/>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        #header{
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        .main_box{
+            margin-top: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id='app'>
+        <header class="aui-bar aui-bar-nav aui-bar-light " id="header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">发送对象</div>
+            <a class="aui-pull-right aui-btn">
+
+            </a>
+        </header>
+        <div class="main_box " v-if="personInfo">
+            <!-- <div onclick="addCs()" class="select tri_bottom border_bottom_after aui-ellipsis-1">
+                <i class="aui-iconfont aui-icon-top aui-icon-down"></i>
+                {{currenEnterprice}}</div> -->
+            <ul class="active">
+                <li class="border_bottom_after" v-for="item in  personInfo" tapmode >
+                    <span class="txt_333" v-cloak >{{item.reciveName}}&nbsp;({{item.roleName}})</span>
+                    <span class="txt_999" v-text="item.isRead==0?'未读':'已读'"></span>
+                </li>
+                <!--<li class="border_bottom_after ">
+                    <span class="txt_333">张三(副经理)</span>
+                    <span class="txt_999">已读</span>
+                </li> -->
+
+            </ul>
+        </div>
+    </div>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            apiready = function(){
+
+                //侵入式导航栏
+                $api.fixStatusBar( $api.dom('header') );
+                var vm = new Vue({
+                    el:'#app',
+                    data:{
+                        personInfo:'',
+                        currenEnterprice:''
+                    },
+                    methods:{
+                        openHandle:function(item){
+                            api.sendEvent({
+                                name: 'openHandleInfo',
+                                extra: {
+                                    personInfoItem: item
+                                }
+                            });
+                            setTimeout(function(){
+                                api.closeWin();
+                            },1000)
+
+
+                        }
+                    }
+                })
+                vm.currenEnterprice = $api.getStorage('currentProject');
+                vm.personInfo = api.pageParam.personInfo
+
+            }
+            function closeWin(){
+                api.closeWin();
+
+            }
+
+            function addCs(){
+                $api.toggleCls($api.dom('.main_box ul'), 'active');
+                $api.toggleCls($api.dom('.select i'), 'aui-icon-down');
+            }
+        </script>
+</body>
+
+</html>

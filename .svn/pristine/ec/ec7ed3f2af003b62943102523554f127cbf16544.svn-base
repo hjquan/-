@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding:200px 0;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 80px;
+            padding: 0 15px 10px;
+            background-color: #fff;
+
+        }
+        .list_item{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 5px ;
+          position: relative;
+          align-items: center;
+          margin-bottom:5px
+        }
+        .list_left{
+          display: flex;
+        }
+        .list_left p{
+          /*padding: 5px;*/
+          color: #323233;
+          font-size: 15px;
+          margin-left: 15px;
+        }
+        .logo{
+          width: 36px;
+          height: 36px;
+          border-radius: 18px;
+          background-color: #7187E5;
+          color: #fff;
+          line-height: 36px;
+          font-size: 12px;
+          font-weight: 500;
+          text-align: center;
+          /*margin-left: 30px;*/
+
+        }
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 100%;
+          height: 1px;
+          background-color: #F5F5F5;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .mt-5{margin-top:5px;}
+        .txt_p{
+          color: #B7B7BC
+        }
+        .w_5{
+            flex: 1;
+            /*text-align: right;*/
+        }
+        .btn{
+            font-size:16px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color:rgba(199,199,204,1);
+        }
+        .active{
+            color:#058FFD
+        }
+        .txt_show p{
+            font-size:15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+        }
+        .txt_show p:last-child{
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(183,183,188,1);
+        }
+        .active{
+            color:#FFC168;
+        }
+        .list_box{
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">阅读状态</div>
+                <!-- <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfonts btn" :class="{'active':checkedBox.length}" @click="submit()">确定</span>
+                </a> -->
+            </header>
+
+        </div>
+        <div class="main_box">
+            <ul class="list_box" v-if="infoBox.length">
+
+              <li class="list_item" v-for="item in infoBox" @click="call(item.phone)">
+                <div class="list_left bottom_before_line" >
+                    <!-- <label><input class="aui-radio mt-5"  type="checkbox" name="checkbox" ></label> -->
+                    <div class="logo" v-text="item.name.substr(-2)">你好</div>
+                    <div class="txt_show">
+                        <p v-text="item.name">张建</p>
+                        <p class="aui-ellipsis-1" v-text="item.position">工长</p>
+                    </div>
+                </div>
+
+                <p class="txt_p" :class="{'active':item.isReadStatus === '未读'}" v-text="item.isReadStatus">工长</p>
+              </li>
+
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <!-- <script src="../../../script/sha1.js"></script> -->
+    <!-- <script src="../../../script/common.js"></script> -->
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+
+
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    infoBox:api.pageParam.redstateInfo
+                },
+                computed: {
+
+                },
+                created:function(){
+                },
+                methods: {
+                    call:function(phone){
+                        api.call({
+                            type: 'tel_prompt',
+                            number: phone
+                        });
+
+                    }
+
+                }
+
+            })
+        }
+        function closeWin(){
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

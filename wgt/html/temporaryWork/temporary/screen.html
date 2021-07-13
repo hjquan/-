@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+            background-color: transparent;
+        }
+
+        .content {
+            min-height: 100%;
+            background-color: transparent;
+        }
+
+        .rt {
+            width: 270px;
+            min-height: 100vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            padding: 10px 10px 10px 0px;
+            background: #fff;
+            position: relative;
+            z-index: 100
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px;
+            padding: 0 3px;
+        }
+
+        .btnBox {
+            width: 270px;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+            background-color: #F5F5F5;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+
+        .status {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .w_110 {
+            width: 110px;
+        }
+
+        .show_txt {
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            /*color:rgba(199,199,204,1);*/
+
+        }
+
+        .lay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            background-color: rgba(245, 245, 245, .8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <div class="lay" @click="closeFn()"></div>
+        <div class="rt">
+            <div style="margin-top: 20px;">
+                <h2>申请人</h2>
+                <div>
+                    <input class="time startTime aui-ellipsis-1 show_txt" tapmode v-model="createUserName" />
+                </div>
+            </div>
+            <div>
+                <h2>更新时间</h2>
+                <div>
+                    <div class="time startTime" tapmode v-text="startTime ? startTime : '开始日期'" @click="beginTimeFn()"
+                        tapmode></div>
+                    <div class="time entime" tapmode @click="endTimeFn()" v-text="endTime ? endTime : '结束日期'"></div>
+                </div>
+            </div>
+            <div>
+                <h2>选择状态</h2>
+                <div>
+                    <div class="time startTime  aui-ellipsis-1 show_txt" v-text="stateText ? stateText : '不限'" tapmode
+                        @click="selectState()" v-text="personliable_name_box"></div>
+                </div>
+            </div>
+            <div class="btnBox">
+                <div class="btn " tapmode @click="rotate()">重置</div>
+                <div class="btn active " tapmode @click="submit()">确定</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<!-- <script type="text/javascript" src="../../../../script/common.js"></script> -->
+<script>
+    apiready = function () {
+        $api.fixStatusBar($api.dom('.rt'));
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                createUserName: "",  //申请人
+                stateText: '',
+                state: '', //选择状态
+                startTime: '', //开始时间
+                endTime: '', //结束时间
+                selectDate: new Date().getFullYear() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getDate(), //时间插件初始化时间格式
+            },
+            created: function () {
+            },
+            methods: {
+                //selectState选择状态
+                selectState: function () {
+                    var that = this;
+                    api.actionSheet({
+                        cancelTitle: '取消',
+                        buttons: ['已作废', '已退回', '已通过', '审批中']
+                    }, function (ret, err) {
+                        console.log(JSON.stringify(ret.buttonIndex - 1));
+                        switch (ret.buttonIndex - 1) {
+                            case 0:
+                                that.stateText = "已作废";
+                                that.state = ret.buttonIndex - 1;
+                                break;
+                            case 1:
+                                that.stateText = "已退回";
+                                that.state = ret.buttonIndex - 1;
+                                break;
+                            case 2:
+                                that.stateText = "已通过";
+                                that.state = ret.buttonIndex - 1;
+                                break;
+                            case 3:
+                                that.stateText = "审批中";
+                                that.state = ret.buttonIndex - 1;
+                                break;
+                        }
+                    });
+                },
+                closeFn: function () {
+                    api.closeFrame();
+                },
+                //重置按钮
+                rotate: function () {
+                    this.stateText = '';
+                    this.startTime = '';
+                    this.endTime = '';
+                    this.createUserName = "";
+                },
+                //提交
+                submit: function () {
+                    api.sendEvent({
+                        name: 'user-screen',
+                        extra: {
+                            state: this.state + "", //选择状态
+                            startTime: this.startTime, //开始时间
+                            endTime: this.endTime, //结束时间
+                            createUserName: this.createUserName
+                        }
+                    });
+                    setTimeout(function () {
+                        api.closeFrame();
+                    }, 200)
+                },
+                //更新开始时间
+                beginTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            // var selectTime = d.getTime(); //选择毫秒数
+                            // var seconds = d.getSeconds() + '';
+                            // seconds.length == 2 ? seconds : (seconds = '0'+seconds);
+                            var m = (d.getMonth() + 1) + '', day = d.getDate() + '';
+                            var time = d.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            vm.startTime = time;
+                        }
+                    })
+                },
+                //更新结束时间
+                endTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date(vm.startTime)
+                            var currenTime = new Date(currenD.getFullYear(), currenD.getMonth(), currenD.getDate()).getTime(); //当前毫秒数
+
+                            if (currenTime > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                vm.endTime = ''
+                            } else {
+                                var m = (d.getMonth() + 1) + '', day = d.getDate() + '';
+                                var time = d.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                                vm.endTime = time;
+                            }
+
+                        }
+
+                    })
+                },
+            }
+        })
+    }
+</script>
+
+</html>

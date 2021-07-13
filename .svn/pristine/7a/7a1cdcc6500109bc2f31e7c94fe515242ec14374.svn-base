@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .container {
+            margin-top: 10px;
+            background-color: #fff;
+            padding: 6px 15px;
+            box-sizing: border-box;
+            height: 100%;
+            background-color: #fff
+        }
+
+        .container img {
+            width: 100%
+        }
+
+        .aui-tab-item {
+            color: #999;
+        }
+
+        .aui-tab-item.aui-active {
+            color: #058FFD;
+            border-bottom: 2px solid #058FFD;
+        }
+
+        .tab_box {
+            margin-top: 22px;
+            min-height: 300px;
+        }
+
+        .tab_item {
+            float: left;
+            width: calc(100%/4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tab_top {
+            margin-bottom: 25px;
+            width: 100%
+        }
+
+        .tab_top div {
+            margin-right: 10px;
+        }
+
+        .tab_show img {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 5px;
+        }
+
+        .aui-tab-item {
+            width: 80px;
+            font-size: 13px;
+        }
+
+        .tab_show {
+            background-color: #fff;
+        }
+
+        .tab_show p {
+            height: 15px;
+            line-height: 15px;
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .aui-clearfix:after {
+            display: table;
+            content: '';
+            height: 0;
+            width: 0;
+            clear: both;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        /*#058FFD*/
+    </style>
+</head>
+
+<body>
+    <div class="container aui-clearfix" id="app">
+        <img src="../../image/project/banner.png" alt="">
+        <div class="tab_box  aui-clearfix" id="sildeBox">
+            <div class="aui-tab tab_top" id="tab">
+                <div class="aui-tab-item" :class="{'aui-active':index == currenIndex}"
+                    v-for="(item,index) in projectMenu" @click="toggletabTop(item,index)">{{item.menu_name}}</div>
+            </div>
+            <div>
+                <ul class="tab_show aui-clearfix" v-if="currenItem.length">
+                    <li class="tab_item" v-for="(item,index) in currenItem" @click="openMenuItem(meau,item)" tapmode>
+
+                        <img v-if='meau[menuParent_order-1][item.menu_order-1]'
+                            :src="meau[menuParent_order-1][item.menu_order-1].meau_img" alt="">
+                        <p v-text="item.menu_name"></p>
+                    </li>
+
+                </ul>
+                <div class="noData" v-else>
+                    <img src="../../image/noData.png" alt="">
+                    <p>暂无菜单权限哦~</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script src="../../script/touchFn.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+
+            api.addEventListener({
+                name: 'currenProject'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.init()
+                }
+            });
+            api.addEventListener({
+                name: 'projectInit1'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.init()
+                }
+            });
+
+            function sliderlfFn() {
+                if (vm.currenIndex == 0) {
+                    vm.currenIndex = vm.projectMenu.length - 1;
+                    var itemdata = vm.projectMenu[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                } else {
+
+                    vm.currenIndex--;
+                    var itemdata = vm.projectMenu[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                }
+
+            }
+            function slidertrFn() {
+                if (vm.currenIndex < vm.projectMenu.length - 1) {
+                    vm.currenIndex++;
+                    var itemdata = vm.projectMenu[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                } else {
+                    vm.currenIndex = 0;
+                    var itemdata = vm.projectMenu[0];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                }
+            }
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    projectMenu: '',
+                    currenIndex: 0,
+                    currenItem: [],//当前的子菜单项
+                    first_menuorder: '',//菜单图片menu_order
+                    menuParent_order: '',//菜单一级标识
+                    meau: '',//菜单图片路径匹配
+                },
+                created: function () {
+                    this.init();
+                    this.meau = [//菜单
+                        [],
+                        [
+                            {
+                                name: '质量问题',
+                                src: './qualityproblem/quelitylist.html',//'./qualityproblem/quelitylist.html',
+                                meau_img: '../../image/project/quality.png', //'../../image/project/quality.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '实测实量',
+                                src: './actualmeasurement/index.html',//'./actualmeasurement/index.html',
+                                meau_img: '../../image/project/Actual.png', //'../../image/project/Actual.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '安全问题',
+                                src: './securityproblem/securitylist.html',//'./securityproblem/securitylist.html',
+                                meau_img: '../../image/project/safetyproblem.png',//'../../image/project/safetyproblem.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '安全日志',
+                                src: './securitylog/index.html',//'./securitylog/index.html',
+                                meau_img: '../../image/project/aqlog_fn.png',//'../../image/project/aqlog_fn.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '施工日志',
+                                src: './constructionlog/index.html',//'./constructionlog/index.html',
+                                meau_img: '../../image/project/sg_log.png',//'../../image/project/sg_log.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '周计划',
+                                src: '',
+                                meau_img: '',
+                                isDeveloped: false,//是否已经开发
+                            },
+                            {
+                                name: '周总结',
+                                src: '',
+                                meau_img: '', //'../../image/project/Laborrecordwork.png',
+                                isDeveloped: false,
+                            },
+                            {
+                                name: '日计划',
+                                src: '',
+                                meau_img: '', //'../../image/project/Laborrecordwork.png',
+                                isDeveloped: false,
+                            },
+                            {
+                                name: '日总结',
+                                src: '',
+                                meau_img: '', //'../../image/project/Laborrecordwork.png',
+                                isDeveloped: false,
+                            },
+                            {
+                                name: '记工表',
+                                src: '',
+                                meau_img: '../../image/project/Laborrecordwork.png', //'../../image/project/Laborrecordwork.png',
+                                isDeveloped: false,//是否已经开发
+
+                            },
+                            {
+                                name: '公文',
+                                src: './document/index.html',//'./document/index.html',
+                                meau_img: '../../image/project/document.png',//'../../image/project/document.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '任务',
+                                src: './task/index.html',//'./task/index.html'
+                                meau_img: '../../image/project/task.png',//'../../image/project/task.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '云盘',
+                                src: './clouddisk/index.html',//'./clouddisk/index.html'
+                                meau_img: '../../image/project/Cloud.png',//'../../image/project/Cloud.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '考勤',
+                                src: './clocking-in/index.html',
+                                meau_img: '../../image/project/checkworkattendance.png',//'../../image/project/checkworkattendance.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '物资管理',
+                                src: '',
+                                meau_img: '../../image/project/material.png',//'../../image/project/material.png',
+                                isDeveloped: false,//是否已经开发
+                            },
+                            {
+                                name: '巡检',
+                                src: '',
+                                meau_img: '../../image/project/aq_check.png',//'../../image/project/aq_check.png',
+                                isDeveloped: false,//是否已经开发
+                            },
+                            {
+                                name: '进度管理',
+                                src: '',
+                                meau_img: '../../image/project/Tripartitecooperation.png',//'../../image/project/Tripartitecooperation.png',
+                                isDeveloped: false,//是否已经开发
+                            },
+                            {
+                                name: '三方协同',
+                                src: '',
+                                meau_img: '../../image/project/schedule.png',//'../../image/project/schedule.png'
+                                isDeveloped: false,//是否已经开发
+                            },
+                            {
+                                name: '零星用工',
+                                src: 'temporaryWork/index.html',
+                                meau_img: '../../image/temporaryWork/temporary-work.png',//'../../image/project/schedule.png'
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '交底',
+                                src: '',
+                                meau_img: '../../image/temporaryWork/temporary-work.png',//'../../image/project/schedule.png'
+                                isDeveloped: false,//是否已经开发
+                            }
+                        ],
+                        [
+                            {
+                                name: '塔机监测',
+                                src: './towercarne/index.html',
+                                meau_img: '../../image/project/towerCrane_p.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '实名考勤',
+                                src: './realnameattendance/index.html',
+                                meau_img: '../../image/project/realname.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '升降机',
+                                src: './elevator/index.html',
+                                meau_img: '../../image/project/elevator.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '视频监控',
+                                src: './videosurveillance/index.html',
+                                meau_img: '../../image/project/videosurveillance.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '环境监测',
+                                src: './environmentalScience/index.html',
+                                meau_img: '../../image/project/environmentalScience.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '塔机维保',
+                                src: './towermaintenance/index.html',
+                                meau_img: '../../image/project/elevator.png',
+                                isDeveloped: true,//是否已经开发
+                            },
+                            {
+                                name: '升降机维保',
+                                src: './elevatormaintenance/index.html',
+                                meau_img: '../../image/project/elevator.png',
+                                isDeveloped: true,//是否已经开发
+                            }
+                        ],
+                        [
+                            {
+                                name: '安全检查',
+                                src: './safetyWen.html',
+                                meau_img: '../../image/project/securitycheck.png',
+                                isDeveloped: true,//是否已经开发
+                            }
+                        ]
+                    ]
+                },
+                mounted: function () {
+                    //监听左右滑动事件切换菜单
+                    EventUtil.listenTouchDirection(document.getElementById('sildeBox'), false, slidertrFn, sliderlfFn);
+
+                },
+                methods: {
+
+                    init: function () {
+                        var _this = this;
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            projectMenu,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+
+                            },
+                            function (ret) {
+                                console.log("菜单图标：" + $api.jsonToStr(ret.obj));
+                                _this.projectMenu = ret.obj.filter(function (item) {
+                                    if (item.menu_order == 4 || item.menu_order == 3 || item.menu_order == 2) {
+                                        return item
+                                    }
+                                });
+                                $api.setStorage('menu', ret.obj);
+                                if (_this.projectMenu.length) {
+                                    _this.toggletabTop(_this.projectMenu[0], 0)
+                                } else {
+
+                                }
+                            }
+                        )
+                    },
+                    toggletabTop: function (item, index) {
+                        this.currenIndex = index;
+                        this.menuParent_order = item.menu_order;
+                        if (item.submenu) {
+                            vm.first_menuorder = item.menu_order;
+                            var filterMenu = item.submenu.filter(function (item) {
+                                // if((vm.first_menuorder == 4) || (vm.first_menuorder == 2 && item.menu_order == 13)||(vm.first_menuorder ==3) || (vm.first_menuorder ==2  && (item.menu_order == 5 || item.menu_order == 2 || item.menu_order == 12 || item.menu_order == 11 || item.menu_order == 4 ||item.menu_order == 1 ||item.menu_order == 3))){//塔机
+                                //     return item
+                                // }
+                                if ((vm.first_menuorder == 4) || !(vm.first_menuorder == 2 && (item.menu_order == 6 || item.menu_order == 7 || item.menu_order == 8 || item.menu_order == 9))) {//塔机
+                                    return item
+                                }
+                            })
+                            vm.currenItem = filterMenu;
+                        } else {
+                            vm.first_menuorder = item.menu_order;
+                            vm.currenItem = [];
+                        }
+                    },
+                    openMenuItem: function (url, menuOrder) {
+                        var meauInfo = url[vm.menuParent_order - 1][menuOrder.menu_order - 1];
+                        var menuURl = meauInfo.src;
+                        if (!meauInfo.isDeveloped) {
+                            api.alert({
+                                title: '温馨提示',
+                                msg: '暂无权限，请联系管理员...',
+                            }, function (ret, err) {
+
+                            });
+                            return false;
+                        }
+                        if (menuURl) {
+                            api.openWin({
+                                name: menuURl,
+                                url: menuURl,
+                                reload: true,
+                                pageParam: {
+                                }
+                            });
+
+
+                        }
+                    },
+                }
+            })
+
+        }
+
+
+    </script>
+    </div>
+</body>
+
+</html>

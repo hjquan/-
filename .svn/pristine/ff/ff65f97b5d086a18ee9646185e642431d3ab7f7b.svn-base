@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .bg_f {
+            background: #fff
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+        .aui-bar-btn .aui-active {
+            color: #fff
+        }
+        .pb_10{padding-bottom: 10px; }
+    </style>
+</head>
+
+<body>
+    <div class="bg_f  header" id="app">
+        <header class="aui-bar aui-bar-nav bg_f ">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title color_3">公文详情</div>
+        </header>
+        <!-- <div class="aui-bar aui-bar-btn " style="width:80%">
+            <div class="aui-bar-btn-item" :class="{'aui-active':index == curIndex}" v-for="(item,index) in btnBox" v-text="item" @click="toggle_item(item,index)"></div>
+
+        </div> -->
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <!-- <script src="../../../script/vue.js"></script> -->
+
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var offset = $api.offset($api.dom('.header'));
+            api.openFrame({
+                name: 'doc_detail_frame',
+                url: './doc_detail_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    "doc_list_info":api.pageParam.doc_list_info
+                },
+                bounces: true,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+            // var vm = new Vue({
+            //     el:'#app',
+            //     data:{
+            //     },
+            //     methods:{
+            //
+            //
+            //     }
+            // })
+        }
+
+
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

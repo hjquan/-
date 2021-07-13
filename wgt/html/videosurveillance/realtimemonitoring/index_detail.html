@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+            background-color: #fff
+        }
+
+        .video {
+            position: relative;
+        }
+
+        .video video {
+            width: 100%;
+            height: 200px;
+
+        }
+
+        .contron {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(27, 27, 27, 0.8);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10px;
+        }
+
+        .contron>* {
+            flex: 1;
+            font-size: 12px;
+
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+
+        }
+
+        .nav_video {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 13px 5px;
+
+        }
+
+        .nav_item {
+            position: relative;
+            flex: 1;
+
+        }
+
+        .nav_item video {
+            width: 100%;
+            height: 67px;
+            background: rgba(181, 181, 181, 0.4);
+        }
+
+        .nav_stack {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: rgba(27, 27, 27, 0.8);
+            font-size: 9px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .nav_item:nth-child(2) {
+            margin: 0 6px;
+        }
+
+        .txt_online {
+            color: #00994C
+        }
+
+        .circel {
+            width: 250px;
+            height: 240px;
+            border-radius: 50%;
+            background-color: #eee;
+            position: relative;
+            margin: 40px auto;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .innercircel {
+            width: 130px;
+            height: 130px;
+            border-radius: 65px;
+            background-color: #fff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            color: #000;
+            font-size: 26px;
+            font-weight: 800
+        }
+
+        .innercircel div {
+            flex: 1;
+            position: relative;
+        }
+
+        .line {
+            width: 100%;
+            height: 5px;
+            background-color: #eee;
+        }
+
+        .position_icon {
+            position: absolute;
+            top: 15px;
+            left: 110px;
+            font-weight: 800;
+            font-size: 22px;
+            color: #000;
+
+        }
+
+        .position_icon:nth-child(2) {
+            left: 210px;
+            top: 110px;
+        }
+
+        .position_icon:nth-child(3) {
+            left: 115px;
+            top: 210px;
+        }
+
+        .position_icon:nth-child(4) {
+            top: 110px;
+            left: 15px;
+        }
+
+        .video-conten {
+            width: 100%;
+            height: 260px;
+            border: 1px #ffffff solid;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" tapmode @click="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title"><span v-text="cameraInfo.cranesName"></span><span
+                    v-text="cameraInfo.cameraName"></span></div>
+        </header>
+        <div class="video-conten">
+
+        </div>
+        <div class="circel">
+            <i class="aui-iconfont aui-icon-top position_icon" @click=""></i>
+            <i class="aui-iconfont aui-icon-right position_icon"></i>
+            <i class="aui-iconfont aui-icon-down position_icon"></i>
+            <i class="aui-iconfont aui-icon-left position_icon"></i>
+            <div class="innercircel">
+                <div class="inner_top">+</div>
+                <hr class="line">
+                <div class="inner_b">-</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+
+            var offset = $api.offset($api.byId('header'));
+            var moviePlayer = api.require('moviePlayer');
+            moviePlayer.open({
+                rect: {
+                    x: 0,
+                    y: offset.h,
+                    w: api.frameWidth,
+                    h: 260
+                },
+                styles: {
+                    head: {
+                    },
+                    foot: {
+                        bg: 'rgba(0,0,0,0.5)',
+                        height: 44,
+                        palyBtn: {
+                            size: 20,
+                            playImg: 'widget://image/play.png',
+                            pauseImg: 'widget://image/pause.png',
+                            marginLeft: 5
+                        },
+                        currentTimeLabel: {
+                            textSize: 14,
+                            textColor: "#FFF",
+                            textWidth: 43,
+                            marginLeft: 5
+                        },
+                        seekBar: {
+                            sliderImg: 'widget://image/circle.png',
+                            sliderW: 20,
+                            sliderH: 20,
+                            progressColor: '#696969',
+                            progressSelected: '#76EE00',
+                            marginLeft: 10,
+                            marginRight: 10
+                        },
+                        totalTimeLabel: {
+                            textSize: 14,
+                            textColor: "#FFF",
+                            textWidth: 43,
+                            marginRight: 5
+                        },
+                        fullscreenBtn: {
+                            size: 20,
+                            verticalImg: 'widget://image/vertical.png',
+                            horizontalImg: 'widget://image/horizontal.png',
+                        }
+                    }
+                },
+                showBack: false,
+                path: '',
+                autoPlay: true
+            }, function (ret, err) {
+                if (ret) {
+                    // alert(JSON.stringify(ret));
+                    // } else {
+                    // alert(JSON.stringify(err));
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    cameraInfo: api.pageParam.cameraInfo,
+                    // cameraInfo: { "id": "4", "cameraName": "实名制通道", "cameraType": "0", "playAddr": "http://hls01open.ys7.com/openlive/a870f8d36bca40eea9a598fc0efc7056.m3u8", "projectId": "e76a19cf18f2498c99f66017c05f07d6", "cranesId": "500de8f937304d2a93cf87695f0c25c7", "cranesName": "", "type": "100", "posterAddress": "http://47.92.149.108/videocover/1.jpg", "cameraIdx": "5", "centerType": "0", "isHomePage": "1", "urlPrefix": "http://47.92.149.108/SmartSite" }
+                },
+                created: function () {
+                    console.log("jssodooasf" + JSON.stringify(api.pageParam.cameraInfo));
+                    moviePlayer.replay({
+                        title: '篮球',
+                        path: this.cameraInfo.playAddr
+                    });
+                },
+                methods: {
+                    confirm: function () {
+                        api.confirm({
+                            title: 'testtitle',
+                            msg: 'testmsg',
+                            buttons: ['确定', '取消']
+                        }, function (ret, err) {
+                            var index = ret.buttonIndex;
+                        });
+                    },
+                    closeWin: function () {
+                        api.closeWin();
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+        #header{
+            background-color: #fff
+        }
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+        .nav{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            line-height: 40px;
+            font-size:12px;
+            color:rgba(149,149,149,1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">报警</div>
+                <!-- <a class="aui-pull-right aui-btn" onclick="openealywarning()" style="color:#058FFD">
+                    预警
+                </a> -->
+            </header>
+        </div>
+
+        <script src="../../../script/api.js"></script>
+
+        <script>
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar($api.byId('header'));
+                var offset = $api.offset($api.byId('header'));
+
+
+
+
+                api.openFrame({
+                    name: 'switchDevide_frame',
+                    url: './switchDevide_frame.html',
+                    rect: {
+                        x: offset.l,
+                        y: offset.h,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {
+                    },
+                    bounces: false,
+                    bgColor: 'rgba(0,0,0,0)',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+            }
+            function openealywarning(){
+                api.openFrame({
+                    name: 'earlywarning',
+                    url: './earlywarning.html',
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {
+                    },
+                    bounces: false,
+                    // bgColor: 'transparent',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+
+            }
+            function closeWin() {
+                api.closeWin();
+            }
+        </script>
+</body>
+
+</html>

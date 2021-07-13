@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+
+
+        .panel,
+        .panel2 {
+            /*width: 95%;*/
+            margin: 0 auto;
+            /*background: rgba(255, 255, 255, 1);*/
+            border-radius: 10px 10px 0px 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /*padding: 10px;*/
+            padding-bottom: 15px;
+        }
+
+
+
+
+
+
+
+
+        .panel1_conten {
+            width: 100%;
+        }
+
+        .panel1_item {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 12px;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .panel1_item div {
+            flex: 1;
+            font-size: 15px;
+            /*text-align: center;*/
+        }
+
+        .panel1_item .rt {
+            display: flex;
+            flex: 2;
+            justify-content: space-between;;
+            align-items: center;
+            padding-right: 12px;
+        }
+
+        .rt p {
+            color: #00A856;
+            font-size: 12px;
+        }
+        .fs_18 {
+            font-size: 18px;
+            color: #058FFD
+        }
+        .btn{
+            color:  #058FFD;
+            text-align: center;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+
+            <ul class="panel1_conten mt_110" v-if="listinfo.length">
+
+                <li class="panel1_item line_after_1" v-for="item in listinfo">
+                    <div v-text="item.ruleName" tapmode @click="currleaderFn(item)">木工板</div>
+                    <div tapmode @click="currleaderFn(item)">
+                        <span v-text="item.workStartDate">08:00</span>
+                        <span>~</span>
+                        <span v-text="item.workEndDate">19:00</span>
+                    </div>
+                    <div class="btn" tapmode @click="seeDeatils(item)">查看详情</div>
+                </li>
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+
+
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+
+    <script>
+        apiready = function() {
+            //上拉加载
+            $app.uploding(
+                function(ret){
+                    vm.init(true)
+                }
+            )
+            //下拉刷新
+            $app.downrefresh(
+                function(ret){
+                    vm.init(false)
+                }
+            )
+
+        var vm = new Vue({
+                el: '#app',
+                data: {
+                    listinfo:'',//考勤规则列表
+                    pageNo:1,//当前页
+                    // pageSize:3,//每页显示个
+
+                },
+                created: function() {
+                    this.init(false)
+
+                },
+                mounted: function() {
+
+                    // this.initCanvas()
+
+
+                },
+                watch: {
+
+
+                },
+                computed: {
+
+
+                },
+                methods: {
+                    //选择考勤规则
+                    currleaderFn:function(data){
+                        //自定义选择考勤事件
+                        api.sendEvent({
+                            name: 'curr_chooseleader_event',
+                            extra: {
+                                currChooseleader:data
+                            }
+                        });
+                        setTimeout(function(){api.closeWin()},500)
+
+                    },
+                    //查看考勤规则详情
+                    seeDeatils:function(data){
+                        api.openWin({
+                            name: 'chooseleader_details',
+                            url: './chooseleader_details.html',
+                            pageParam: {
+                                chooseleader:data
+                            }
+                        });
+
+                    },
+                    //isLoad 上拉(true)或下拉（false）
+                    init:function(isLoad){
+                        var _this = this;
+                        this.pageNo = isLoad ? ++this.pageNo: 1;
+
+                        $app.post(
+                            true,
+                            realNameruleList,
+                            {
+                                projectId:$api.getStorage('enterpriseId'),//项目ID
+                                ruleName:'',//规则名称/班组名称
+                                pageNo:this.pageNo,//当前页
+                                pageSize:PAGE_NUMBER
+                            },
+                            function(ret){
+                                if(isLoad){
+                                    if(ret.obj.count > _this.listinfo.length){
+                                        _this.listinfo = _this.listinfo.concat(ret.obj.list)
+
+                                    }else{
+                                        api.toast({
+                                            msg: '暂无更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+                                    }
+                                }else{
+                                    _this.listinfo = ret.obj.list
+                                }
+                                console.log($api.jsonToStr(_this.listinfo));
+
+                            }
+                        )
+                    },
+                    openpage:function(){
+                        api.openWin({
+                            name: 'workattendance',
+                            url: './workattendance.html',
+                            pageParam: {
+                            }
+                        });
+
+                    }
+                }
+
+
+
+            })
+            }
+    </script>
+
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        #search {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100
+        }
+
+        .list_box {
+            padding-top: 45px;
+        }
+
+        .list_item {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+        }
+
+        .list_item p+span {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(1, 1, 1, 1);
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fs_18 {
+            font-size: 18px;
+            color: rgba(5, 143, 253, 1)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="请输入姓名" v-model="condition">
+                </form>
+            </div>
+            <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+        </div>
+        <ul class="list_box">
+            <li class="list_item line_after_1">
+                <div><span v-text="pageParam.name">分包单位</span>&nbsp;&nbsp;(<span v-text="total">0</span>人)</div>
+            </li>
+            <li class="list_item line_after_1" v-for="item in teamCountInfo" @click="openNewpage(item)"
+                v-if="teamCountInfo.length">
+                <div>
+                    <span v-text="item.name || item.teamName">木匠工</span>&nbsp;&nbsp;<span
+                        v-cloak>({{item.counts}}人)</span>&nbsp;&nbsp;
+                    <!-- <i class="aui-iconfont aui-icon-pencil" tapmode @click.slef="modifyFn(item)" v-if="pageParam.category == 2"></i> -->
+                    <i class="aui-iconfont aui-icon-pencil fs_18" v-if="pageParam.category == 2" tapmode
+                        @click.slef="modifyFn(item)"></i>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li v-else>
+                <div class="noData">
+                    <img src="../../../../image/noData.png" alt="">
+                    <p>没有相关数据~</p>
+                </div>
+            </li>
+
+
+        </ul>
+
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script src="../../../../script/jquery.min.js"></script>
+    <script src="../../../../script/zcirclemove.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+
+    <script>
+        apiready = function () {
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    // pageParam:api.pageParam.subcontractor,//接收跨页面值
+                    pageParam: { "unit": "53dbf3df097311eb944700163e030112", "counts": 2, "name": "张三三劳务公司" },//接收跨页面值
+                    total: 0,//分包单位总个数
+                    teamCountInfo: '',//获取实名制台账班组统计信息
+                    copyteamCountInfo: '',//获取实名制台账班组统计信息
+                    condition: '',//检索条件
+                },
+                created: function () {
+                    // console.log($api.jsonToStr(api.pageParam.subcontractor));
+                    // this.pageParam = api.pageParam.subcontractor;
+                    this.getteamCount()
+
+                },
+                mounted: function () {
+
+                    // this.initCanvas()
+
+
+                },
+                watch: {
+                    condition: function () {
+                        this.searchFn()
+                    }
+
+                },
+                computed: {
+
+
+                },
+                methods: {
+                    //修改
+                    modifyFn: function (data) {
+                        api.openWin({
+                            name: 'addteam',
+                            url: './addteam.html',
+                            pageParam: {
+                                addteaminfo: data
+                            }
+                        });
+
+                    },
+                    //检索
+                    searchFn: function () {
+                        var reg = new RegExp(this.condition.split('').join('.*'), 'gi')
+                        var filterData = this.teamCountInfo.filter(function (item) {
+                            var itemName = item.name || item.teamName;
+                            if (reg.test(itemName)) {
+                                return item
+                            }
+                        })
+                        this.teamCountInfo = filterData;
+                        if (!this.condition) {
+                            this.teamCountInfo = this.copyteamCountInfo;
+                        }
+                    },
+                    //获取实名制台账班组统计信息
+                    getteamCount: function () {
+                        var _this = this;
+                        var params = {
+                            'projectId': $api.getStorage('enterpriseId'),
+                            'unit': _this.pageParam.unit
+                        }
+                        $app.post(
+                            true,
+                            getUnitPersonCountInfo,
+                            params,
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.teamCountInfo = ret.obj;
+                                _this.total = ret.obj.reduce(function (total, currentValue, index, arr) {
+                                    return total += currentValue.counts
+                                }, 0)
+                                console.log(_this.total);
+                                _this.copyteamCountInfo = $api.strToJson($api.jsonToStr(_this.teamCountInfo));
+                            }
+                        )
+                    },
+                    //
+                    openNewpage: function (data) {
+                        var _this = this;
+                        api.openWin({
+                            name: 'realname_item',
+                            url: '../realname_item.html',
+                            pageParam: {
+                                info: data,
+                                subcontractor: _this.pageParam
+                            }
+                        });
+                    },
+                }
+            })
+        }
+    </script>
+
+</html>

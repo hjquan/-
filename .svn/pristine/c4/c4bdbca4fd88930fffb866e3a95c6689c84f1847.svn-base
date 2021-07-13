@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .txt_cl_FF1515 {
+            color: #FF1515 !important;
+        }
+
+        .list_box {
+            background-color: #fff;
+            margin: 10px 0 10px 0;
+            box-sizing: border-box;
+        }
+
+        .list_item {
+            height: 115px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            box-sizing: border-box;
+            transition: all .5s;
+        }
+
+        .list_item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 2px;
+        }
+
+        .list_item .noImg {
+            width: 80px;
+            height: 80px;
+            border-radius: 2px;
+            line-height: 80px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .item_center p {
+            height: 20px;
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(102, 102, 102, 1);
+            line-height: 20px;
+            width: 160px;
+        }
+
+        .item_center p:first-child {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .item_center {
+            margin-left: 12px;
+            width: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .item_rt {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            box-sizing: border-box;
+        }
+
+        .item_rt span {
+            font-size: 13px;
+            font-family: PingFang-SC-Regular;
+            font-weight: 400;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        i.aui-iconfont {
+            font-size: 1rem;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 200px 0;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .del_btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 2px;
+            line-height: 80px;
+            text-align: center;
+            background-color: #EC4031;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 1);
+            font-size: 13px;
+            margin-left: 10px;
+        }
+
+        .translate_lf40 {
+            transform: translateX(-40px);
+        }
+
+        .translate_rt40 {
+            transform: translateX(40px);
+        }
+
+        .hide {
+            display: none;
+        }
+
+
+
+
+
+        .list_item .caogao_img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list_box" v-cloak>
+            <li class="swiper_item" v-show="!(state == 2 || state == 3)">
+                <template v-if="draftBox.length">
+
+                    <div class="list_item  "  :class="{'translate_lf40':isscreenState}"  v-for="draft in draftBox" @click.stop="openAdddraft('draft')">
+                        <div style="position: relative;">
+                            <img v-lazy="draft.imgSrc[0]" alt="">
+                            <img class="caogao_img" src="../../../image/qualityproblem/zl_img_caogao.png" alt="">
+                        </div>
+                        <div class="item_center aui-ellipsis-1" v-cloak>
+                            <p class="aui-ellipsis-1" v-if="draft.content" style="width:200px">{{draft.areaName}}</p>
+                            <p class="aui-ellipsis-1" v-if="draft.questionType">问题类型:&nbsp;&nbsp;{{draft.questionDetails}}</p>
+                            <p class="aui-ellipsis-1" v-if="draft.personliableName">责任人:&nbsp;&nbsp;{{draft.personliableName}}</p>
+                            <!-- <p>整改期限:&nbsp;&nbsp;
+                                <span style="color:#FF1515" v-cloak>(逾期11天)</span>
+                                <span v-cloak>剩余12天)</span>
+                            </p> -->
+
+                        </div>
+                        <div class="item_rt " :class="{'translate_rt40':isscreenState}">
+                            <div class="aui-ellipsis-1">
+                                <i class="aui-iconfont aui-icon-pencil"></i>
+
+                            </div>
+                            <!-- <span>2015-2-888</span> -->
+                        </div>
+                        <div class="del_btn" :class="[{'translate_rt40':isscreenState},{'hide':!isscreenState}]" v-text="btn_text" @click.stop="del_draftFn()"></div>
+                    </div>
+                </template>
+            </li>
+            <!-- v-if="openSafetyDetails.length" -->
+            <template id="" v-if="qualitybox.length">
+                <li class="list_item " @click="openqualityDetails(item)" tapmode v-for="item in qualitybox">
+                    <img v-lazy="item.compressImgUrl" alt="">
+                    <div class="item_center" v-cloak>
+                        <p  v-cloak class="aui-ellipsis-1" style="width:200px">{{item.title}}</p>
+                        <p  v-cloak class="aui-ellipsis-1">问题类型:&nbsp;&nbsp;{{item.questionDetails}}</p>
+                        <p v-cloak class="aui-ellipsis-1">责任人:&nbsp;&nbsp;{{item.personliableName}}</p>
+                        <p v-cloak class="aui-ellipsis-1" v-if="item.state != 3">整改期限:&nbsp;&nbsp;
+                            <span style="color:#FF1515" v-cloak v-if="(item.day<0)">(逾期{{item.day}}天)</span>
+                            <span v-cloak v-else>(剩余{{item.day}}天)</span>
+                        </p>
+
+                    </div>
+                    <div class="item_rt ">
+                        <div class="aui-ellipsis-1">
+                            <i class="aui-iconfont " :class="[item.state == 2?'aui-icon-date':item.state == 3?'aui-icon-correct':'aui-icon-pencil']"></i>
+                            <!-- <i class="aui-iconfont aui-icon-correct"></i>
+                            <i class="aui-iconfont aui-icon-pencil"></i> -->
+                        </div>
+                        <span v-text="item.updateTime">12</span>
+                    </div>
+                </li>
+            </template>
+
+        </ul>
+
+        <div class="noData" v-if="noData_img" v-cloak>
+            <img src="../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/layimg.js"></script>
+    <script src="../../../script/touchFn.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: 'http://iph.href.lu/879x200',
+            loading: '../../../image/lay_img.gif'
+        });
+        apiready = function() {
+            //下拉加载
+            $app.downrefresh(function() {
+                    vm.init(false);
+                    vm.drfatInit()
+                })
+                //监听新增退出事件
+            api.addEventListener({
+                name: 'refsh_quelity_list_event'
+            }, function(ret, err) {
+                if (ret) {
+                    vm.init(false);
+                    vm.drfatInit()
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //上垃加载
+            $app.uploding(function() {
+                vm.init(true)
+            })
+            api.addEventListener({
+                name: 'quality_screen_event'
+            }, function(ret, err) {
+                if (ret) {
+                    var info = $api.strToJson(ret.value.quality_screen_info)
+                    vm.currentPage = 1;
+                    vm.state = info.state; //选择状态
+                    vm.personliableName = info.personliable; //责任人
+                    vm.laborTeamName = info.Laborforceteam; //劳务队
+                    vm.startTime = info.startTime; //开始时间
+                    vm.endTime = info.endTime; //结束时间
+                    vm.init(false);
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    "btn_text": '删除', //删除按钮文本
+                    "draftBox": [], //草稿初始化
+                    "currentPage": 1, //当前页
+                    "state": "", //状态（ 2整改中 3已结束）
+                    "personliableName": "", //责任人姓名(用于筛选)
+                    "laborTeamName": "", //劳务队名称(用于筛选
+                    "startTime":"", //开始日期(用于筛选)
+                    "endTime": "", //结束日期(用于筛选)
+                    "queryStatus": "", //查询状态（传空表示查询和自己相关的列表，传1表示查询全部人的列表）
+                    "qualitybox": [], //请求数据集合
+                    "isscreenState": false, //控制删除样式
+                    "qualityStatiscURL": '' //质量统计地址
+                },
+
+                created: function() {
+                    this.init(false);
+                    this.drfatInit();
+                    this.qualitystatisctisInit();
+                },
+                mounted: function() {
+
+                    function leftfn() {
+                        vm.isscreenState = true
+                    }
+
+                    function rightfn() {
+                        vm.isscreenState = false
+                    }
+                    EventUtil.listenTouchDirection(document.getElementsByClassName('swiper_item')[0], false, leftfn, rightfn)
+
+
+                },
+                computed: {
+                    noData_img: function() {
+                        if (this.draftBox.length || this.qualitybox.length) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                },
+
+                methods: {
+                    //加载质量统计
+                    qualitystatisctisInit: function() {
+                        var params = {
+                            "projectId": $api.getStorage('enterpriseId'),
+                            "authId": authId,
+                            "authSecret": authSecret,
+                            "reportType": "1"
+                        }
+                        $app.post(
+                            true,
+                            // getQualityPersonliableCount,
+                            getQualityCountLink,
+                            params,
+                            function(ret) {
+                                console.log(ret.obj);
+                                vm.qualityStatiscURL = ret.obj;
+                                api.sendEvent({
+                                    name: 'qualityproblemStatistics_event',
+                                    extra: {
+                                        qualityproblemStatistics:ret.obj
+                                    }
+                                });
+
+                            }
+                        )
+                    },
+                    //打开新增质量安全检查带草稿
+                    openAdddraft: function() {
+                        api.openWin({
+                            name: 'qualityproblem_add',
+                            url: './qualityproblem_add.html',
+                            pageParam: {
+                                addDraft_comfig: true
+                            }
+                        });
+
+                    },
+                    //滑动删除草稿
+                    del_draftFn: function() {
+                        switch (this.btn_text) {
+                            case '删除':
+                                this.btn_text = '确认'
+                                break;
+                            case '确认':
+                                api.confirm({
+                                    msg: '是否删除草稿',
+                                    buttons: ['确定', '取消']
+                                }, function(ret, err) {
+                                    if (ret) {
+                                        var index = ret.buttonIndex;
+                                        if (index == 1) {
+                                            api.removePrefs({
+                                                key: 'savequality_add_draft'
+                                            });
+                                            vm.drfatInit();
+                                            vm.init();
+                                        } else {
+                                            vm.btn_text = '删除'
+                                        }
+                                    } else {
+                                        alert(JSON.stringify(err));
+                                    }
+                                });
+
+
+
+                                break;
+                            default:
+
+                        }
+                    },
+                    // 草稿初始化
+                    drfatInit: function() {
+                        api.getPrefs({
+                            key: 'savequality_add_draft'
+                        }, function(ret, err) {
+                            if (ret) {
+                                vm.btn_text = '删除';
+                                vm.isscreenState = false;
+                                if (ret.value) {
+                                    vm.draftBox = [];
+                                    vm.draftBox.push($api.strToJson(ret.value));
+                                } else {
+                                    vm.draftBox = [];
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+
+                    //数据请求列表初始化
+                    init: function(isFlag) {
+                        if (isFlag) { //判断上拉或下拉
+                            this.currentPage++;
+                        } else {
+                            this.currentPage = 1;
+                        }
+                        var params = {
+                            "showCount": PAGE_NUMBER,
+                            "currentPage": this.currentPage,
+                            "userId": $api.getStorage('userId'),
+                            "projectId": $api.getStorage('enterpriseId'),
+                            "state": this.state,
+                            "personliableName": this.personliableName,
+                            // "personliableName":'李姗姗',
+                            "laborTeamName": this.laborTeamName,
+                            "startTime": this.startTime,
+                            "endTime": this.endTime,
+                            "queryStatus": this.queryStatus
+
+                        }
+                        function callback(ret) {
+                            api.refreshHeaderLoadDone()
+
+                            if (isFlag) {
+                                if(ret.totalResult > vm.qualitybox.length){
+                                    vm.qualitybox = vm.qualitybox.concat(ret.obj)
+                                }else{
+                                    api.toast({
+                                        msg: '暂无更多数据...',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+
+                                }
+                            } else {
+                                vm.qualitybox = ret.obj;
+                            }
+                        }
+                        $app.post(
+                            true,
+                            qualityList,
+                            params,
+                            callback
+                        )
+
+                    },
+                    //打开详情
+                    openqualityDetails: function(item) {
+                        api.openWin({
+                            name: 'qualitydetail_frame',
+                            url: './qualitydetail_frame.html',
+                            reload: true,
+                            pageParam: {
+                                qualitydetailinfo: item
+                            }
+                        });
+
+                    },
+
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

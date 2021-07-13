@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <style>
+    html,
+    body {
+      font-family: PingFang SC;
+      font-weight: 500;
+    }
+
+    .nav_video {
+      display: flex;
+      justify-content: flex-start;
+      ;
+      flex-wrap: wrap;
+      align-items: center;
+
+    }
+
+    .nav_item {
+
+      width: 33.3%;
+      padding: 3px;
+      position: relative;
+
+    }
+
+    .nav_item div {
+      position: relative;
+      background: rgba(181, 181, 181, 0.4);
+    }
+
+    .nav_item video {
+      width: 100%;
+      height: 90px;
+
+    }
+
+    .nav_stack {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 15px;
+      background: rgba(27, 27, 27, 0.8);
+      font-size: 9px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 1);
+      text-align: center;
+      padding: 0 5px;
+    }
+
+    .txt_online {
+      color: #00994C
+    }
+
+    .nav_item .untreated {
+      width: 30px;
+      height: 13px;
+      line-height: 13px;
+      font-size: 10px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 1);
+      text-align: center;
+      border-radius: 2px;
+      background: rgba(125, 125, 125, 1);
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      z-index: 100
+    }
+
+    .nav_item .processed {
+      background: rgba(0, 142, 255, 1);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <ul class="nav_video">
+      <li class="nav_item" @click="enevtinfoFn(item)" v-if="item.status == 0" v-for="(item,index) in aICaptureInfoList">
+        <div class="untreated ">
+          未处理
+        </div>
+        <div>
+          <img src="http://47.92.149.108/attendacefile/012383-6BDB2C-6D8CEE/20200703/1593728102172.jpg" style="width: 80px; height: 80px; margin-left: 20px;" alt="">
+          <div class="nav_stack" v-text="item.eventText">
+            抓拍事件
+          </div>
+        </div>
+      </li>
+      <li class="nav_item" @click="enevtinfoFn(item)" v-if="item.status ==1" v-for="(item,index) in aICaptureInfoList">
+        <div class="untreated processed">
+          已处理
+        </div>
+        <div>
+          <img :src="item.imgAddr" style="width: 80px; height: 80px; margin-left: 20px;" alt="">
+          <div class="nav_stack" v-text="item.eventText">
+            抓拍事件
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+
+  <script type="text/javascript" src="../../../../script/api.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script type="text/javascript" src="../../../../script/vue.js"></script>
+  <script>
+    apiready = function () {
+      // 下拉刷新
+      $app.downrefresh(function () {
+        app.pageNo = "1";
+        app.aICaptureInfoList = [];
+        app.getAICaptureInfoList();
+      })
+
+      // ///上拉加载
+      $app.uploding(
+        function () {
+          app.getAICaptureInfoList();
+        }
+      )
+      var app = new Vue({
+        el: '#app',
+        data: {
+          cameraId: "",
+          eventType: "",
+          startDate: "",
+          endDate: "",
+          projectId: $api.getStorage('enterpriseId'),
+          status: "",
+          pageNo: "1",
+          pageSize: "9",
+          aICaptureInfoList: [],
+          count: null,
+        },
+        created: function () {
+          this.getAICaptureInfoList();
+          var that = this;
+          //筛选事件抓拍回掉
+          api.addEventListener({
+            name: 'captureevents'
+          }, function (ret, err) {
+            if (ret) {
+              console.log("++++++" + JSON.stringify(ret))
+              that.pageNo = "1"
+              that.aICaptureInfoList = [];
+              that.startTime = ret.value.searchInfo.startTime;
+              that.endDate = ret.value.searchInfo.endTime;
+              that.eventType = ret.value.searchInfo.eventType;
+              that.status = ret.value.searchInfo.status;
+              that.cameraId = ret.value.searchInfo.cameraId;
+              that.getAICaptureInfoList();
+            }
+          });
+          //处理抓拍事件回掉
+          api.addEventListener({
+            name: 'captureEventEditURL'
+          }, function (ret, err) {
+            if (ret) {
+              that.pageNo = "1"
+              that.aICaptureInfoList = [];
+              that.getAICaptureInfoList();
+            }
+          });
+        },
+        methods: {
+          //查询AI抓拍事件列表
+          getAICaptureInfoList: function () {
+            var that = this;
+            var prame = {
+              cameraId: this.cameraId,
+              eventType: this.eventType,
+              startDate: this.startDate,
+              endDate: this.endDate,
+              projectId: $api.getStorage('enterpriseId'),
+              status: this.status,
+              pageNo: this.pageNo,
+              pageSize: this.pageSize
+            };
+            console.log("请求参数：" + JSON.stringify(prame));
+            $app.post(
+              true,
+              getAICaptureInfoListURL,
+              prame,
+              function (ret) {
+                if (that.aICaptureInfoList.length >= ret.obj.count) {
+                  api.toast({
+                    msg: '没有数据啦！',
+                    duration: 2000,
+                    location: 'bottom'
+                  });
+                  return false;
+                }
+                ret.obj.list.map(function (item) {
+                  switch (item.eventType) {
+                    case "1":
+                      item.eventText = "区域入侵"
+                      break;
+                    case "2":
+                      item.eventText = "越界侦测"
+                      break;
+                    case "3":
+                      item.eventText = "人员聚集"
+                      break;
+                    case "4":
+                      item.eventText = "人员倒地"
+                      break;
+                    case "5":
+                      item.eventText = "人员离岗"
+                      break;
+                    case "6":
+                      item.eventText = "人员攀高"
+                      break;
+                    case "7":
+                      item.eventText = "烟火检测"
+                      break;
+                    case "8":
+                      item.eventText = "未带安全帽"
+                      break;
+                    case "9":
+                      item.eventText = "未系安全带"
+                      break;
+                    case "10":
+                      item.eventText = "抽烟识别"
+                      break;
+                    case "11":
+                      item.eventText = "人行道车行道识别"
+                      break;
+                    case "12":
+                      item.eventText = "渣土车清洗识别"
+                      break;
+                    case "13":
+                      item.eventText = "材料称重识别"
+                      break;
+                  }
+                });
+                that.aICaptureInfoList = that.aICaptureInfoList.concat(ret.obj.list);
+                that.pageNo++;
+                console.log("返回数据：" + JSON.stringify(that.aICaptureInfoList));
+              }
+            )
+          },
+          //打开已处理
+          handleEventFn: function () {
+            api.openWin({
+              name: 'handleEvent',
+              url: './handleEvent.html',
+              pageParam: {
+              }
+            });
+          },
+          //打开未处理
+          enevtinfoFn: function (enevtinfo) {
+            api.openWin({
+              name: 'enevtinfo',
+              url: './enevtinfo.html',
+              pageParam: {
+                enevtinfo: enevtinfo
+              }
+            });
+          }
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

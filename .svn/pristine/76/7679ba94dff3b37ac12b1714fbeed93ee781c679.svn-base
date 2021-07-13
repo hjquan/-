@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../commonUi/aui/css/aui.css">
+    <style>
+        .txt_cl_FF1515 {
+            color: #FF1515 !important;
+        }
+
+        .txt_position {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="aui-list aui-media-list" v-if="messageinfo.length">
+
+            <li class="aui-list-item aui-list-item-middle" v-for="item in messageinfo" tapmode @click="openDetails(item)">
+                <div class="aui-media-list-item-inner">
+                    <div class="aui-list-item-media" style="width: 3rem;">
+                        <img :src="item.msgModule == 'notice' ? '../image/enterprice/notice.png':'../image/enterprice/check.png'" class="aui-img-round aui-list-img-sm">
+                    </div>
+                    <div class="aui-list-item-inner aui-list-item-arrow">
+                        <div class="aui-list-item-text" v-cloak>
+                            <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" style="width:60%" v-cloak>{{item.msgTitle}}</div>
+                            <div class="aui-list-item-right"v-cloak>{{item.createTime}}</div>
+                        </div>
+                        <div class="aui-list-item-text" v-cloak>
+
+                            <p style=width:80%; class="aui-ellipsis-1" v-cloak>{{item.msgDetail}}</p>
+                            <span style="color:#FF1515" v-if="item.isRead == 0">new</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+        <div class="noData" v-else>
+            <img src="../image/noData.png" alt="">
+            <p>还没有相关数据哦~</p>
+        </div>
+    </div>
+    <script src="../script/api.js"></script>
+    <script src="../script/sha1.js"></script>
+    <script src="../script/common.js"></script>
+    <script src="../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            api.addEventListener({
+                name: 'waitChangge'
+            }, function(ret, err){
+                if( ret ){
+                    vm.init(false)
+                }
+            });
+
+            vm.init(false)
+            api.setRefreshHeaderInfo({
+                visible: true,
+                loadingImg: 'widget://image/refresh.png',
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err) {
+                vm.init(false)
+            });
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 0 //设置距离底部多少距离时触发，默认值为0，数字类型
+                }
+            }, function(ret, err) {
+                vm.init(true)
+            });
+
+
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                messageinfo: [],
+                currentPage: '1'
+            },
+            methods: {
+                init: function(loadMore) {
+                    if (loadMore) {
+                        this.currentPage++;
+                    } else {
+                        this.currentPage = 1
+                    }
+
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        getTodoMessageArraysURL, {
+                            userId: $api.getStorage('userId'),
+                            enterpriseId: $api.getStorage('enterpriseId'),
+                            showCount: PAGE_NUMBER,
+                            currentPage: vm.currentPage
+                        },
+                        function(ret) {
+                            api.refreshHeaderLoadDone();
+                            if (loadMore) {
+                                if (ret.totalResult > vm.messageinfo.length) {
+                                    if(ret.obj){
+                                        var filterData = ret.obj.filter(function(item){
+                                            if(item.msgModule == 'securityCheck' || item.msgModule == 'notice'){
+                                                return item
+                                            }
+                                        })
+                                        filterData.forEach(function(item){
+                                            vm.messageinfo.push(item)
+                                        })
+                                    }
+
+                                } else {
+                                    api.toast({
+                                        msg: '没有更多数据了...',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+
+                                }
+                            } else {
+                                if(ret.obj){
+                                    var filterData = ret.obj.filter(function(item){
+                                        if(item.msgModule == 'securityCheck' || item.msgModule == 'notice'){
+                                            return item
+                                        }
+                                    })
+                                    vm.messageinfo = filterData;
+                                }
+                            }
+                        }
+                    )
+                },
+                openDetails:function(item){
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        updateMessageReadTimeURL,
+                        {
+                            "msgId":item.msgId,
+	                        "userId": $api.getStorage('userId')
+                        },
+                        function(ret){
+                            setTimeout(function(){
+                                api.openWin({
+                                    name: 'InspectionDetails',
+                                    url: './ledger/InspectionDetails.html',
+                                    pageParam: {
+                                        enterCheckId:item.objectId
+                                    }
+                                });
+                            },500)
+
+                        }
+                    )
+
+                }
+
+            }
+        })
+    </script>
+</body>
+
+</html>

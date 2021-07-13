@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        i {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #058FFD
+        }
+
+        .img_h {
+            width: 18px;
+            height: 18px;
+        }
+
+        footer {
+            width: 100%;
+            height: 49px;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0px 1px 2px 2px rgba(227, 227, 231, 1);
+            display: flex;
+            flex-direction: column;
+            /*justify-content: center;*/
+            align-items: center;
+            text-align: center;
+            font-family: PingFangSC-Regular, PingFang SC;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+        }
+
+        footer p {
+            height: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(85, 85, 86, 1);
+        }
+
+        footer i {
+            color: #058FFD;
+            font-size: 18px !important;
+        }
+
+        .img_f {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">安全问题</div>
+            <a class="aui-pull-right aui-btn">
+                <img class="img_h" src="../../../image/qualityproblem/shuaixuan.png" tapmode onclick="opensecurity(1)" alt=""> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="aui-iconfont aui-icon-plus" tapmode onclick="opensecurity(2)"></i>
+
+            </a>
+        </header>
+        <footer onclick="openstatistics()" tapmode id="footer" v-if="btnRole">
+            <!-- <i class="aui-iconfont aui-icon-pencil"></i> -->
+            <img class="img_f" src="../../../image/qualityproblem/zl_icon_tongji.png" alt="">
+            <p>统计</p>
+        </footer>
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+    <script>
+        var zlUrl = '';//质量统计
+        apiready = function() {
+            api.parseTapmode();
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            var footer_h = $api.offset($api.byId('footer'));
+
+            var app = new Vue({
+                el:'#app',
+                data:{
+                    btnRole:false,//用户当前按钮权限集合
+                },
+                created:function(){
+                    this.btnRole = $api.getStorage('enterpriseSelectCurren').role.buttonRights.indexOf('securityCount') != -1 ? true : false;
+                    var frame_h = this.btnRole ? api.winHeight - offset.h - footer_h.h : 'auto';
+                    api.openFrame({
+                        name: 'securitylist_frame',
+                        url: './securitylist_frame.html',
+                        rect: {
+                            x: offset.l,
+                            y: offset.h,
+                            w: 'auto',
+                            h: frame_h
+
+                        },
+                        pageParam: {},
+                        bounces: true,
+                        bgColor: 'rgba(0,0,0,0)',
+                        vScrollBarEnabled: true,
+                        hScrollBarEnabled: true
+                    });
+                },
+
+                // methods:function(){}
+            })
+
+
+            api.addEventListener({
+                name: 'securityproblemStatistics_event'
+            }, function(ret, err){
+                if( ret ){
+                    zlUrl = ret.value.securityproblemStatistics
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+        }
+
+        function opensecurity(data) {
+            var jumpUrl = data == 1 ? './security_screen.html' : './securityproblem_add.html';
+            if (data === 1) {
+                api.openFrame({
+                    name: jumpUrl,
+                    url: jumpUrl,
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {},
+                    bounces: false,
+                    bgColor: 'transparent',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+
+            } else {
+                api.openWin({
+                    name: jumpUrl,
+                    url: jumpUrl,
+                    pageParam: {
+                        // name: 'test'
+                    }
+                });
+            }
+
+
+
+        }
+        //打开统计
+        function openstatistics(){
+
+            api.openTabLayout({
+                name: 'securityproblem',
+                url: zlUrl,
+                title: '安全问题统计',
+                hideNavigationBar: false,
+                navigationBar: {
+                    background: '#058FFD',
+                    color: '#fff',
+                }
+            });
+
+        }
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            background-color:transparent;
+            width: 100%;
+            height: 100vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+        }
+
+        .content {
+            height: 100vh;
+            background-color:rgba(245,245,245,.6);
+            position: relative;
+        }
+        .fixed{
+            position: fixed;
+            top: 0;
+            width: 60%;
+            z-index: 1000;
+            background-color: #F5F5F5;
+        }
+        .rt {
+            width: 60%;
+            min-height: 98vh;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ebeced;
+            overflow-y: auto;
+            padding: 5px;
+            position: relative;
+            z-index: 50;
+        }
+
+        h2 {
+            font-weight: 500;
+            color: #323233;
+            line-height: 15px;
+            padding: 10px
+        }
+        .show{
+            background-color: #fff;
+            width: 100%;
+            padding: 10px 0;
+            margin-top:90px;
+        }
+        .item{
+            height: 55px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+        }
+
+        .item_lf{
+            width:32px;
+            height:32px;
+            background:rgba(50,50,51,1);
+            border-radius: 16px;
+            text-align: center;
+            line-height: 32px;
+            color:#fff;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .item_rt{
+            width: 80px;
+            text-align: center;
+            color: #b9b9b9;
+            font-size: 11px;
+        }
+        .item_rt p:first-child{
+            color:#323233;
+            font-size: 15px;
+        }
+        .beforeLine:after{
+            content:'';
+            position: absolute;
+            bottom: 0;
+            left:50%;
+            transform: translateX(-50%);
+            height: 1px;
+            background:#eee;
+            width: 60%;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .noData img{
+            width: 50px;
+            height:50px;
+        }
+
+        #search{
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+        .lay{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(245,245,245,.8);
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <div class="lay" @click="closeFn"></div>
+        <div class="rt">
+            <div class="fixed">
+                <h2>单人统计</h2>
+                <div class="aui-searchbar" id="search">
+                    <div class="aui-searchbar-input aui-border-radius" tapmode onclick="">
+                        <i class="aui-iconfont aui-icon-search"></i>
+                        <form action="javascript:void(0);">
+                            <input type="search" placeholder="请输入行姓名" id="search-input" v-model="filterInput" @input="changeInput()">
+                        </form>
+                    </div>
+                    <div class="aui-searchbar-cancel" tapmode @click="closeFn()">取消</div>
+                </div>
+            </div>
+            <ul class="show" v-if="info.length">
+                <li class="item beforeLine" v-for="item in info" v-if="item" tapmode @click="openItemFn(item)">
+                    <div class="item_lf" v-text="item.name.substring(item.name.length-2,item.name.length)">张三</div>
+                    <div class="item_rt">
+                        <p class="aui-ellipsis-1" v-text="item.name">张三</p>
+                        <p class="aui-ellipsis-1" v-text="item.position">张三</p>
+                    </div>
+                </li>
+
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../../script/sha1.js"></script>
+<script src="../../../script/api.js"></script>
+<script src="../../../script/vue.js"></script>
+<script src="../../../script/common.js"></script>
+<script>
+    apiready = function() {
+        $api.fixStatusBar($api.dom('.fixed'));
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                info:[],
+                filterInput:'',//过滤条件
+                filterData:[]
+            },
+            created: function() {
+                this.init()
+            },
+            methods: {
+                init:function(){
+
+                    ajaxPost(
+                        true,
+                        '加载中',
+                        getProjectUserList,
+                        {
+                            'projectId':$api.getStorage('enterpriseId')
+                        },
+                        function(ret){
+
+                            vm.info = ret.obj.projectUserList;
+                            vm.filterData = ret.obj.projectUserList;
+                        }
+
+                    )
+                },
+                changeInput:function() {
+                    this.info = this.filterData.filter(function(item) {
+
+                        var itemName = item.name;
+                        if (itemName.indexOf(vm.filterInput) != -1) {
+                            return item
+                        }
+                    })
+                    if (!this.info.length) {
+                        this.filterData = this.filterData
+                    }
+
+                },
+                closeFn:function(){
+                    api.closeFrame();
+
+                },
+                openItemFn:function(data){
+                    api.sendEvent({
+                        name: 'logLeftperson',
+                        extra: {
+                            logPerson: data
+                        }
+                    });
+                    setTimeout(function(){
+                        api.closeFrame();
+
+                    },500)
+
+                }
+
+
+            }
+        })
+    }
+</script>
+
+</html>

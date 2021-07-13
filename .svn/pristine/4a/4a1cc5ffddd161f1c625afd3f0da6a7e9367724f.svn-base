@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            font-family: PingFang SC;
+            font-weight: 500;
+            background: rgba(245, 245, 245, 1);
+        }
+
+        .box-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            align-items: center;
+            position: relative;
+            background-color: #fff
+        }
+
+        .b_b_line:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #F5F5F5;
+        }
+
+        .box-item span {
+            font-size: 14px;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .box-item p {
+            font-size: 14px;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <ul class="box">
+            <li class="box-item b_b_line">
+                <span>设备种类</span>
+                <p>塔机起重机</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>设备照片(选填)</span>
+                <p>塔机起重机</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>品牌型号</span>
+                <img class="logo" src="../../../image/logo.png" alt="">
+            </li>
+            <li class="box-item b_b_line">
+                <span>备案号</span>
+                <p>川esb</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>自编号</span>
+                <p>1#</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>进场时间</span>
+                <p>2020-01-23 12:02:23</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>出厂时间</span>
+                <p></p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>租聘单位</span>
+                <p>高地设备租聘单位</p>
+            </li>
+            <li class="box-item b_b_line">
+                <span>使用单位</span>
+                <p>建设单位</p>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function() {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    nav_txt: '', //nav文本
+                    cur_nav_i: 0,
+                },
+                created: function() {
+                    this.nav_txt = [{
+                        txt: '实时数据',
+                        type: 0,
+                    }, {
+                        txt: '运行数据',
+                        type: 1,
+                    }, {
+                        txt: '基本数据',
+                        type: 2,
+                    }, ]
+                },
+                methods: {
+                    //点击切换当前nav
+                    curtoggleFn: function(data, i) {
+                        this.cur_nav_i = i;
+                    }
+
+                },
+            })
+
+        }
+    </script>
+
+</body>
+
+</html>

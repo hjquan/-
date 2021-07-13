@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .top {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 34px;
+        }
+
+        .t_rt {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .t_rt h2 {
+            font-size: 18px;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .t_rt p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        /*//nav*/
+
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav_item {
+            position: relative;
+            width: 33.3%;
+        }
+
+        .lf_line:after {
+            position: absolute;
+            content: '';
+            width: 1px;
+            height: 45px;
+            background: rgba(181, 181, 181, 1);
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle {
+            width: 15px;
+            height: 15px;
+            background: rgba(238, 238, 238, 1);
+            border: 2px solid rgba(255, 0, 0, 1);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .nav_item:nth-child(2) .circle {
+            border: 2px solid #009944;
+        }
+
+        .nav_item:last-child .circle {
+            border: 2px solid #B5B5B5
+        }
+
+        /*//show*/
+
+        .show {
+            display: flex;
+            justify-content: space-between;
+            ;
+            align-items: center;
+            padding: 10px 20px;
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #EEEEEE;
+            margin-bottom: 10px;
+        }
+
+        .show .rt,
+        .show .lf {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .notifce {
+            width: 13px;
+            height: 16px;
+        }
+
+        /*meau_box*/
+
+        .meau_box {
+            padding-top: 10px;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content: center;
+            border-top: 1px solid #eee;
+        }
+
+        .meau_item {
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .img_bg_circel {
+            width: 50px;
+            height: 50px;
+            background: rgba(5, 143, 253, 0.2);
+            border-radius: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .meau_item img {
+            width: 25px;
+            height: 25px;
+        }
+
+        .meau_item p {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .t_rt p {
+            color: #058FFD
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="top">
+            <img :src="projectInfo.logo" alt="" class="logo">
+            <div class="t_rt">
+                <h2 v-text="projectInfo.projectName">龙湖紫都</h2>
+                <!-- <h2 v-text="projectInfo.projectName">龙湖紫都</h2> -->
+                <p @click="equipmentlistFn()" class="color_primer">塔机总数:&nbsp;<span v-text="count">5</span> <i
+                        class="aui-iconfont aui-icon-right"></i></p>
+            </div>
+        </div>
+        <ul class="nav ">
+            <li class="nav_item lf_line">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>异常</span>
+                </div>
+                <p v-text="abnormityCount">2</p>
+            </li>
+            <li class="nav_item lf_line">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>正常</span>
+                </div>
+                <p v-text="normalCount">2</p>
+            </li>
+            <li class="nav_item ">
+                <div class="title">
+                    <div class="circle"></div>
+                    <span>离线</span>
+                </div>
+                <p v-text="offLineCount">2</p>
+            </li>
+        </ul>
+        <ul class="meau_box">
+
+            <li class="meau_item" @click="runmonitorFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/yx.png" alt="">
+                </div>
+                <p>运行监控</p>
+            </li>
+
+
+            <li class="meau_item" @click="opendailymanagement()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/towercrane/rcgl.png" alt="">
+                </div>
+                <p>日常管理</p>
+            </li>
+            <li class="meau_item" @click="repairs()">
+                <div v-if="repairOrderListFalge" class="aui-dot"></div>
+                <div class="img_bg_circel">
+                    <img src="../../../image/elevator/elevator_4.png" alt="">
+                </div>
+                <p>报修任务</p>
+            </li>
+            <li class="meau_item" @click="maintain()">
+                <div v-if="healthOrderListFlage" class="aui-dot"></div>
+                <div class="img_bg_circel">
+                    <img src="../../../image/elevator/elevator_9.png" alt="">
+                </div>
+                <p>保养任务</p>
+            </li>
+            <li class="meau_item" tapmode @click="usermanagementFn()">
+                <div class="img_bg_circel">
+                    <img src="../../../image/elevator/elevator_person.png" alt="">
+                </div>
+                <p>用户管理</p>
+            </li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    projectInfo: null,   //项目信息
+                    count: 0,   //总数
+                    abnormityCount: 0, //异常数
+                    normalCount: 0, //正常数
+                    offLineCount: 0, //离线数
+                    callCount: null,  //报警次数
+                    repairOrderListFalge: 0,  //报修数
+                    healthOrderListFlage: 0,//保养数
+                },
+                created: function () {
+                    //获取塔机数量状态
+                    this.getDeviceNumAndStatus();
+                    this.getTowerDeviceLists();
+                    //获取项目信息详情
+                    this.getProjectinfo();
+                    //保修数据
+                    this.getRepairOrderList();
+                    //保养数据
+                    this.getHealthOrderList();
+                },
+                methods: {
+                    // 保养数据
+                    getHealthOrderList: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getHealthOrderListURL, {
+                            projectId:  $api.getStorage(
+                                'enterpriseId'),
+                            flag: "0"
+                        },
+                            function (ret) {
+                                that.healthOrderListFlage = 0;
+                                ret.obj.map(function (item) {
+                                    switch (item.stateName) {
+                                        case "待接单":
+                                            that.healthOrderListFlage++;
+                                            break;
+                                    }
+                                });
+                            }
+                        )
+                    },
+                    //保修数据
+                    getRepairOrderList: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getRepairOrderListURL, {
+                            projectId:  $api.getStorage(
+                                'enterpriseId'),
+                            flag: "0"
+                        },
+                            function (ret) {
+                                that.repairOrderListFalg = 0;
+                                ret.obj.map(function (item) {
+                                    switch (item.stateName) {
+                                        case "待接单":
+                                            that.repairOrderListFalge++;
+                                            break;
+                                    }
+                                });
+                            }
+                        )
+                    },
+                    //获取项目信息详情
+                    getProjectinfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getProjectinfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取项目信息详情:" + JSON.stringify(ret.obj));
+                                that.projectInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //获取塔机列表
+                    getTowerDeviceLists: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getTowerListInfoURL,
+                            {
+                                projectId:  $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取塔机列表:" + JSON.stringify(ret.obj));
+                                ret.obj.list.map(function (item) {
+                                    item.photoUrl = item.urlPrefix + item.towerPhoto;
+                                    item.entryTime = $app.timeStampTurnTime(item.entryTime).slice(0, 10);
+                                    item.exitTime = $app.timeStampTurnTime(item.exitTime).slice(0, 10);
+                                });
+                                that.count = ret.obj.list.length;
+                            }
+                        )
+                    },
+                    //获取塔机数量
+                    getDeviceNumAndStatus: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getDeviceNumAndStatusURL,
+                            {
+                                projectId:  $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取塔机数量状态:" + JSON.stringify(ret.obj));
+                                ret.obj.map(function (item) {
+                                    switch (item.status) {
+                                        case "0":
+                                            that.normalCount = item.count;
+                                            break;
+                                        case "2":
+                                            that.abnormityCount = item.count;
+                                            break;
+                                        case "4":
+                                            that.offLineCount = item.count;
+                                            break;
+                                    }
+                                });
+
+                            }
+                        )
+                    },
+                    //用户管理
+                    usermanagementFn: function () {
+                        api.openWin({
+                            name: 'usermanagementFn',
+                            url: './usermanagement/userlist.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //报修
+                    repairs: function () {
+                        api.openWin({
+                            name: 'repairs',
+                            url: './repairs/index.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //保养
+                    maintain: function () {
+                        api.openWin({
+                            name: 'maintain',
+                            url: './maintain/index.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //设备列表
+                    equipmentlistFn: function () {
+
+                        api.openWin({
+                            name: 'equipmentlist',
+                            url: '../towercarne/equipmentlist.html',
+                            pageParam: {}
+                        });
+                    },
+
+                    //运行监控
+                    runmonitorFn: function () {
+                        api.openWin({
+                            name: 'operationmonitoring',
+                            url: '../towercarne/operationmonitoring/list.html',
+                            pageParam: {}
+                        });
+                    },
+                    //日常管理
+                    opendailymanagement: function () {
+                        api.openWin({
+                            name: 'dailymanagement',
+                            url: '../towercarne/dailymanagement/index.html',
+                            pageParam: {}
+                        });
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+.main_box {
+    margin-top: 10px;
+}
+
+.mian_item {
+    height: 45px;
+    padding: 15px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.mian_item p {
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(51, 51, 51, 1);
+}
+
+.mian_item p:last-child {
+    color: rgba(153, 153, 153, 1);
+    margin-right: 18px;
+}
+
+.mian_item i {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}
+
+.border_bottom_after:after {
+    content: '';
+    position: absolute;
+    width: 95%;
+    height: 1px;
+    background: rgba(240, 240, 240, 1);
+    left: 50%;
+    bottom: 0px;
+    transform: translateX(-50%);
+}
+
+.cancelBtn {
+    width: 80%;
+    line-height: 46px;
+    text-align: center;
+    height: 46px;
+    background: rgba(5, 143, 253, 1);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+    margin: 54px auto 0px;
+}
+
+.hover {
+    opacity: 0.6;
+}
+.select_item{
+    display: flex;
+    justify-content: space-between;
+    line-height: 45px;
+
+}
+label{
+    color:#333;
+}
+.select_item span{
+    color: #999;
+}
+.main_box ul{
+    padding: 15px;
+    background-color: #fff
+}
+.main_box ul li{position: relative;}
+.main_box ul label input{
+    vertical-align: middle;
+    margin-right:5px;
+}

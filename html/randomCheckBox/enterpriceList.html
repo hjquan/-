@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/inspectiontems.css">
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode onclick="javascript:api.closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">项目检查</div>
+        </header>
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode>
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="请输入搜索内容" v-model="listIf" id="search-input" @input="filterData">
+                </form>
+            </div>
+            <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+        </div>
+        <div class="main_box">
+
+            <ul>
+                <li class="aui-list-item border_bottom_after" v-for="(item,index) in enterList" tapmode @click="openEnterList(item)">
+                    <div class="select_item" :class="{'afterTxt':item.expireStatus != 0}">
+                        <!-- <label><input class="aui-radio"  type="radio" name="radio"></label> -->
+                        <span v-cloak>{{item.projectName}}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar( $api.dom('header') );
+            vm.init()
+        };
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                enterList:'',//企业中的项目信息
+                copyEnterList:'',
+                listIf:''
+            },
+            mounted:function(){
+
+            },
+            methods:{
+                init:function(){
+                    ajaxPost(true,
+                        '数据拉取中...',
+                        getProjectListURL,
+                        {'enterpriseId':$api.getStorage('enterpriseId')},
+                        function(ret){
+                            vm.enterList = ret.obj;
+                            vm.copyEnterList = ret.obj
+                        }
+                    )
+                },
+                openEnterList:function(item){
+                    if(item.expireStatus == 0){//判断当前项目是否过期
+                        api.sendEvent({
+                            name: 'randomListItem',
+                            extra: {
+                                'enterpriceInfo':item
+                            }
+                        });
+
+                        api.openWin({
+                            name: 'randomCheck',
+                            url:'./randomCheck.html'
+                        });
+                    }else{
+                        api.toast({
+                            msg: item.projectName+'已过期,请重新选择',
+                            duration: 3000,
+                            location: 'bottom'
+                        });
+
+                        return false;
+                    }
+
+
+                },
+                filterData:function(){
+                    var copyList = $api.strToJson($api.jsonToStr(this.enterList));
+                    this.enterList = $api.strToJson($api.jsonToStr(this.copyEnterList));
+                    var filterList = vm.copyEnterList.filter(function(item){
+                        var itemName = item.projectName;
+                        if(itemName.indexOf(vm.listIf) != -1){
+                            return item
+                        }else{
+                            return false
+                        }
+                    })
+                    if(this.listIf == ''){
+                        this.enterList = this.copyEnterList
+                    }else{
+                        this.enterList = filterList
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

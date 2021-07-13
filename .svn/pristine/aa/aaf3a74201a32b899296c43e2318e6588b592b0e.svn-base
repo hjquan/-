@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+
+            font-family: PingFang SC;
+            font-weight: 500;
+
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .list_item {
+            width: 95%;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px;
+            margin-top: 10px;
+            line-height: 40px;
+            padding: 0 20px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .name_key {
+            font-size: 10px;
+            color: rgba(136, 136, 136, 1);
+            margin-right: 20px;
+        }
+
+        .name_val {
+            font-size: 12px;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .state {
+            font-size: 12px;
+            color: rgba(255, 126, 0, 1);
+        }
+
+        .date {
+            font-size: 10px;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <ul class="list" v-if="healthOrderList.length !==0 ">
+            <li class="list_item" @click="openrepairder_detail(item)" v-for="(item,index) in healthOrderList">
+                <div class="top line_after_1">
+                    <div>
+                        <span class="name_key">预约保养</span>
+                    </div>
+                    <div class="state">已完成</div>
+                </div>
+                <div class="top ">
+                    <div>
+                        <span class="name_key">项目名称</span>
+                        <span class="name_val" v-text="projectInfo.projectName">龙湖紫都</span>
+                    </div>
+                    <!-- <div class="date">2020-07-16 02:05 </div> -->
+                </div>
+                <div class="top ">
+                    <div>
+                        <span class="name_key">保养设备</span>
+                        <span class="name_val" v-text="item.towerNo"></span><span class="name_val"></span>
+                    </div>
+                    <!-- <div class="date">2020-07-16 02:05 </div> -->
+                </div>
+                <div class="top ">
+                    <div>
+                        <span class="name_key">保养项目</span>
+                        <span class="name_val" v-text="item.healthName"></span>
+                    </div>
+                    <!-- <div class="date">2020-07-16 02:05 </div> -->
+                </div>
+                <div class="top ">
+                    <div>
+                        <span class="name_key">预约时间</span>
+                        <span class="name_val" v-text="item.healthName">保护装置</span>
+                    </div>
+                    <div class="date" v-text="item.createDate">2020-07-16 02:05 </div>
+                </div>
+            </li>
+        </ul>
+        <div class="noData" v-if="healthOrderList.length ==0 ">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    healthOrderList: [], //保养数据
+                    projectInfo: null,
+
+                },
+                created: function () {
+                    this.getHealthOrderList();
+                    //获取项目信息
+                    this.getProjectinfo();
+                    var that = this;
+                    api.addEventListener({
+                        name: 'healthEditURL'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.getHealthOrderList();
+                        }
+                    });
+                },
+                methods: {
+                    //获取项目信息
+                    getProjectinfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getProjectinfoURL, {
+                            projectId:  $api.getStorage(
+                                'enterpriseId'),
+                        },
+                            function (ret) {
+                                that.projectInfo = ret.obj;
+                                that.projectInfo = {
+                                    projectName: "海绵宝宝"
+                                }
+                            }
+                        )
+                    },
+                    // 保养数据
+                    getHealthOrderList: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getHealthOrderListURL, {
+                            projectId:  $api.getStorage(
+                                'enterpriseId'),
+                            flag: "0"
+                        },
+                            function (ret) {
+                                that.healthOrderList = [];
+                                ret.obj.map(function (item) {
+                                    switch (item.stateName) {
+                                        case "待接单":
+                                            item.state = 0;
+                                            break;
+                                        case "已完成":
+                                            item.state = 1;
+                                            that.healthOrderList.push(item);
+                                            break;
+                                        case "已接单":
+                                            item.state = 2;
+                                            break;
+                                        case "订单取消":
+                                            item.state = 3;
+                                            break;
+
+                                    }
+                                    item.createDate = $app.timeStampTurnTime(item.createDate);
+                                });
+                                console.log("保养已完成数据：" + JSON.stringify(that.healthOrderList));
+                            }
+                        )
+                    },
+                    //打开订单详情
+                    openrepairder_detail: function (item) {
+                        api.openWin({
+                            name: 'healthOrder_detail',
+                            url: './healthOrder_detail.html',
+                            pageParam: {
+                                healthOrderInfo: item,
+                            }
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

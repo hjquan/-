@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        .content-header {
+            width: 100%;
+            height: 3rem;
+            background-color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            padding-top: 0.5rem;
+            border-bottom: 1px #e3e4e5 solid;
+        }
+
+        .content-header-li {
+            width: 23%;
+            height: 2rem;
+            border: 1px #058FFD solid;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 2rem;
+            color: #058FFD;
+        }
+
+        .active {
+            background: #058FFD;
+            color: #FFFFFF;
+        }
+
+        .list {
+            width: 100%;
+            background-color: #FFFFFF;
+        }
+
+        .list li {
+            width: 100%;
+            height: 2.2rem;
+            border: 1px #e3e4e5 solid;
+            border-top: 0;
+            line-height: 2.2rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .list-right {
+            float: right;
+            color: #058FFD;
+        }
+
+        .list-left {
+            float: left;
+            width: 8rem;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .display-none {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+        <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title header_title" id="header_title" style="color:#555555">设备控制</div>
+    </header>
+    <div id="app">
+        <div class="content-header">
+            <li class="content-header-li active" onclick="randomSwitchBtn(this,1)">环境监测</li>
+            <li class="content-header-li " style="border-left: 0;" onclick="randomSwitchBtn(this,2)">雾炮喷淋</li>
+            <li class="content-header-li " style="border-left: 0;" onclick="randomSwitchBtn(this,3)">塔机喷淋</li>
+            <li class="content-header-li " style="border-left: 0;" onclick="randomSwitchBtn(this,4)">围挡喷淋</li>
+        </div>
+        <div class="list">
+            <li v-for="(item,index) in dustBasicInfo" v-if="item.deviceType == 1">
+                <div class="list-left" style="height: 2.1rem;" v-text="item.deviceName">设备名称</div>
+                <div class="list-right" @click="prompt(item,true)">编辑名称</div>
+            </li>
+        </div>
+        <div class="list display-none">
+            <li v-for="(item,index) in sprayDeviceList" v-if="item.deviceType == 1">
+                <div class="list-left" style="height: 2.1rem;" v-text="item.deviceName">设备名称</div>
+                <div class="list-right" style="margin-left: 0.5rem;" @click="control(item)">
+                    远程控制
+                </div>
+                <div class="list-right" @click="prompt(item,flase)">编辑名称</div>
+            </li>
+        </div>
+        <div class="list display-none">
+            <li v-for="(item,index) in sprayDeviceList" v-if="item.deviceType == 2">
+                <div class="list-left" style="height: 2.1rem;" v-text="item.deviceName">设备名称</div>
+                <div class="list-right" @click="prompt(item,flase)">编辑名称</div>
+                <div class="list-right" v-if="item.workStatus ==0" @click="sprayControl(item,'1')"
+                    style="margin-right: 0.5rem; color: #008000;">
+                    点击启动</div>
+                <div class="list-right" v-if="item.workStatus ==1" @click="sprayControl(item,'2')"
+                    style="margin-right: 0.5rem; color: #FFA500;">
+                    点击停止</div>
+            </li>
+        </div>
+        <div class="list display-none">
+            <li v-for="(item,index) in sprayDeviceList" v-if="item.deviceType == 3">
+                <div class="list-left" style="height: 2.1rem;" v-text="item.deviceName">设备名称</div>
+                <div class="list-right" @click="prompt(item,flase)">编辑名称</div>
+                <div class="list-right" v-if="item.workStatus ==0" @click="sprayControl(item,'2')"
+                    style="margin-right: 0.5rem; color: #008000;">
+                    点击启动</div>
+                <div class="list-right" v-if="item.workStatus ==1" @click="sprayControl(item,'1')"
+                    style="margin-right: 0.5rem; color: #FFA500;">
+                    点击停止</div>
+            </li>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            api.parseTapmode();
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    deviceList: [],
+                    sprayDeviceList: [],//喷洒设备的list
+                    dustBasicInfo: [], //环境监测设备
+                },
+                created: function () {
+                    //获取环境监测设备基本信息
+                    this.getDustBasicInfo();
+                    //获取喷淋设备列表
+                    this.getSprayDeviceInfo()
+                },
+                methods: {
+                    //跳转
+                    control: function (sprayDeviceInfo) {
+                        api.openWin({
+                            name: 'control',
+                            url: 'control.html',
+                            bounces: false,
+                            pageParam: { sprayDeviceInfo: sprayDeviceInfo }
+                        });
+                    },
+                    //喷淋设备远程控制
+                    sprayControl: function (item, opType) {
+                        var that = this;
+                        var prame = {
+                            id: item.id,
+                            opType: opType
+                        };
+                        console.log("喷淋设备远程控制" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            sprayControlURL,
+                            prame,
+                            function (ret) {
+                                console.log("喷淋设备远程控制" + JSON.stringify(ret))
+                                that.getSprayDeviceInfo();
+                            }
+                        )
+                    },
+                    //获取喷淋设备列表
+                    prompt: function (item, flage) {
+                        var that = this;
+                        api.prompt({
+                            title: '修改设备名字',
+                            buttons: ['确定', '取消']
+                        }, function (ret, err) {
+                            console.log(JSON.stringify(ret))
+                            if (ret.buttonIndex == "1") {
+                                if (ret.text == "") {
+                                    api.toast({
+                                        msg: '设备名称不能为空',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    return false
+                                }
+                                if (flage) {
+                                    that.updateDustDeviceName(item, ret.text);
+                                } else {
+                                    that.updateSprayDeviceName(item, ret.text);
+                                }
+                            }
+                        });
+                    },
+                    //修改喷淋设备名称
+                    updateSprayDeviceName: function (item, deviceName) {
+                        var that = this;
+                        var prame = {
+                            id: item.id,
+                            deviceName: deviceName
+                        };
+                        console.log("修改喷淋设备名称" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            updateSprayDeviceNameURL,
+                            prame,
+                            function (ret) {
+                                console.log("修改喷淋设备名称" + JSON.stringify(ret))
+                                that.getSprayDeviceInfo();
+                            }
+                        )
+                    },
+                    //修改环境监测设备名称
+                    updateDustDeviceName: function (item, deviceName) {
+                        var that = this;
+                        var prame = {
+                            id: item.id,
+                            deviceName: deviceName,
+                            deviceType: item.deviceType
+                        };
+                        console.log("修改环境监测设备名称" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            updateDustDeviceNameURL,
+                            prame,
+                            function (ret) {
+                                console.log("修改环境监测设备名称" + JSON.stringify(ret))
+                                that.getDustBasicInfo();
+                            }
+                        )
+                    },
+                    //获取喷淋设备列表
+                    getSprayDeviceInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getSprayDeviceInfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取喷淋设备列表:" + JSON.stringify(ret))
+                                that.sprayDeviceList = ret.obj;
+                            }
+                        )
+                    },
+                    //获取环境监测设备基本信息
+                    getDustBasicInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getDustBasicInfoURL,
+                            {
+                                deviceId: '',
+                                iccid: '',
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取环境监测设备基本信息:" + JSON.stringify(ret))
+                                if (ret.obj) {
+                                    that.dustBasicInfo = ret.obj;
+                                }
+                            }
+                        )
+                    },
+                },
+            })
+        }
+        function closeWin() {
+            api.closeWin();
+
+        }
+        // 随意切换状态按钮
+        function randomSwitchBtn(tag, flage) {
+            if (tag == $api.dom('.content-header-li .active')) return;
+            var btnObj = $api.domAll('.content-header-li'),
+                index = 0;
+            for (var i = 0; i < btnObj.length; i++) {
+                if (tag === btnObj[i]) {
+                    index = i;
+                } else {
+                    $api.removeCls(btnObj[i], 'active');
+                }
+            }
+            $api.addCls(btnObj[index], 'active');
+
+            switch (flage) {
+                case 1:
+                    document.getElementsByClassName("list")[0].style.display = "block"
+                    document.getElementsByClassName("list")[1].style.display = "none"
+                    document.getElementsByClassName("list")[2].style.display = "none"
+                    document.getElementsByClassName("list")[3].style.display = "none"
+                    break;
+                case 2:
+                    document.getElementsByClassName("list")[1].style.display = "block"
+                    document.getElementsByClassName("list")[0].style.display = "none"
+                    document.getElementsByClassName("list")[2].style.display = "none"
+                    document.getElementsByClassName("list")[3].style.display = "none"
+                    break;
+                case 3:
+                    document.getElementsByClassName("list")[2].style.display = "block"
+                    document.getElementsByClassName("list")[1].style.display = "none"
+                    document.getElementsByClassName("list")[0].style.display = "none"
+                    document.getElementsByClassName("list")[3].style.display = "none"
+                    break;
+                case 4:
+                    document.getElementsByClassName("list")[3].style.display = "block"
+                    document.getElementsByClassName("list")[1].style.display = "none"
+                    document.getElementsByClassName("list")[2].style.display = "none"
+                    document.getElementsByClassName("list")[0].style.display = "none"
+                    break;
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>

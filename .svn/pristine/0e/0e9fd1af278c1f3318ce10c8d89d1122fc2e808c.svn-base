@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .main_box {
+            margin-top: 10px;
+        }
+
+        .mian_item {
+            height: 45px;
+            padding: 15px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .mian_item p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .mian_item p:last-child {
+            color: rgba(153, 153, 153, 1);
+            /*margin-right: 0px;*/
+        }
+
+        .mian_item i {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+
+        .border_bottom_after:after {
+            content: '';
+            position: absolute;
+            width: 95%;
+            height: 1px;
+            background: rgba(240, 240, 240, 1);
+            left: 50%;
+            bottom: 0px;
+            transform: translateX(-50%);
+        }
+        .border_bottom_after:last-child:after{height: 0;}
+        .cancelBtn {
+            width: 80%;
+            line-height: 46px;
+            text-align: center;
+            height: 46px;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 1);
+            margin: 54px auto 0px;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" onclick="javascript:api.closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">个人信息</div>
+        </header>
+        <div class="main_box">
+            <ul>
+                <li class="mian_item border_bottom_after">
+                    <p>单位</p>
+                    <p v-text=" seleType== 1? enterpriseSelectCurren.enterpriseName : enterpriseSelectCurren.projectName"></p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>职位</p>
+                    <p><span v-text="roleName"></span></p>
+                    <!-- <i class="aui-iconfont aui-icon-right"></i> -->
+                </li>
+                <li class="mian_item border_bottom_after ">
+                    <p>姓名</p>
+                    <p v-text="personalInfo.name"></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="copy()">
+                    <p>手机号</p>
+                    <p v-text="personalInfo.phone"></p>
+                </li>
+                <!-- <li class="mian_item" tapmode @click="copy()">
+                    <p>总缓存</p>
+                    <p v-text="TotalSpace"></p>
+                </li>
+                <li class="mian_item" tapmode @click="copy()">
+                    <p>已用缓存</p>
+                    <p v-text="CacheSize"></p>
+                </li>
+                <li class="mian_item" tapmode @click="copy()">
+                    <p>剩余缓存</p>
+                    <p v-text="FreeDiskSpace"></p>
+                </li> -->
+            </ul>
+            <div class="cancelBtn" tapmode="hover" v-text="isStatus ? '注销登录' :'注销中...' " @click="loginOut()"></div>
+        </div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    personalInfo: '',
+                    enterpriseSelectCurren: '',
+                    roleName: '',
+                    seleType: '',
+                    isStatus: true,
+                    TotalSpace:'',//总缓存
+                    CacheSize:'',//缓存大小
+                    FreeDiskSpace:''//剩余大小
+                },
+                created:function(){
+                    this.clearCacheFn()
+                },
+                methods: {
+                    //清除缓存
+                    clearCatche:function(){
+                        api.showProgress({
+                            title: '缓存清除中...',
+                            text: '先喝杯茶...',
+                            modal: true
+                        });
+                        api.clearCache(function() {
+                            api.hideProgress();
+                            vm.clearCacheFn();
+                            api.toast({
+                                msg: '清除完成'
+                            });
+                        });
+                    },
+                    //清除缓存clear
+                    clearCacheFn:function(){
+                        var _this = this;
+                        api.getTotalSpace(function(ret, err) {
+                            console.log('总缓存'+$api.jsonToStr(ret));
+                            _this.TotalSpace = _this.fromCatcheSize(ret.size,2);
+                        });
+                        api.getCacheSize(function(ret) {
+                            console.log('已用缓存'+$api.jsonToStr(ret));
+                            _this.CacheSize = _this.fromCatcheSize(ret.size,2);
+                        });
+                        api.getFreeDiskSpace(function(ret, err) {
+                            console.log('剩余'+$api.jsonToStr(ret));
+                            _this.FreeDiskSpace = _this.fromCatcheSize(ret.size,2);
+                        });
+                    },
+                    //转换缓存单位
+                    fromCatcheSize:function(size,length){
+                        if(size/(1024*1024) < 100){
+                            return ((size/(1024*1024)).toFixed(length)) +'M'
+                        }else{
+                            return ((size/(1024*1024*1024)).toFixed(length))+'G'
+                        }
+                    },
+                    loginOut: function() {
+                        vm.isStatus = false;
+                        api.showProgress({
+                            title: '注销中...',
+                            text: '请等待...',
+                            modal: true
+                        })
+                        api.toast({
+                            msg: '注销成功',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        setTimeout(function() {
+                            api.hideProgress();
+                            $api.clearStorage();
+                            api.closeToWin({
+                                name: 'root'
+                            });
+                        }, 500)
+                    },
+                    copy:function(){
+                        var clipBoard = api.require('clipBoard');
+                        clipBoard.set({
+                            value:this.personalInfo.phone
+                        }, function(ret, err) {
+                            if (ret) {
+                                clipBoard.get(function(ret, err) {
+                                    if (ret) {
+                                        api.toast({
+                                            msg: '复制成功',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            })
+            vm.personalInfo = $api.getStorage('enterLoginInfo');
+            vm.enterpriseSelectCurren = $api.getStorage('enterpriseSelectCurren');
+            vm.roleName = $api.getStorage('enterpriseSelectCurren').role.roleName;
+            vm.seleType = $api.getStorage('selectionType')
+        };
+    </script>
+</body>
+
+</html>

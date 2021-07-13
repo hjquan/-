@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            margin-top: 85px;
+            margin-bottom: 65px;
+        }
+
+        .succe_txt {
+            font-size: 18px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .btn_box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 80px;
+        }
+
+        .btn_item {
+            width: 150px;
+            height: 50px;
+            border: 1px solid rgba(5, 143, 253, 1);
+            border-radius: 3px;
+            line-height: 50px;
+            text-align: center;
+            color: #058FFD;
+        }
+
+        .btn_item:first-child {
+            margin-right: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <img src="../../../../image/towercrane/order.png" alt="">
+        <p class="succe_txt">成功提交订单</p>
+        <div class="btn_box">
+            <div class="btn_item" @click="openIndex()">返回首页</div>
+            <div class="btn_item" @click="openrepairorderdetail()">查看订单</div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+
+
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                },
+                created: function () {
+                    api.closeWin({
+                        name: 'repairorder_detail'
+                    });
+                    api.closeFrame({
+                        name: 'repairorder_detail'
+                    });
+                },
+                methods: {
+
+                    //查看订单详情
+                    openrepairorderdetail: function () {
+                        api.openFrame({
+                            name: 'repairorder_detail',
+                            url: './repairorder_detail.html',
+                            pageParam: {
+                                repairOrderInfo: api.pageParam.repairOrderInfo
+                            }
+                        });
+                    },
+                    openIndex: function () {
+                        api.closeWin();
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

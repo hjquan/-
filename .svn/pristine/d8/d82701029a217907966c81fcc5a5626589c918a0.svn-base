@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #fff;
+            font-family:PingFangSC-Regular,PingFang SC;
+        }
+
+
+        #app{
+            padding: 0;
+        }
+
+        .beforeLine:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 1px;
+            background: #eee;
+            width: 100%;
+        }
+        .img_box{
+            width:100%;
+            min-height:200px;
+            max-height:  400px;
+            /*background:rgba(103,186,251,1);*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .img_box img{
+            box-shadow:0px 0px 2px 0px rgba(0,0,0,0.05);
+            border-radius:8px;
+        }
+        .txt_l{
+            width: 65px;
+            font-size:13px;
+            font-weight:400;
+            color:#B7B7BC;
+            margin-right: 5px;
+        }
+        .txt_r{
+            width:160px;
+            font-size:13px;
+            font-weight:400;
+            color:#323233;
+            text-align: left;
+        }
+        .main{
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .main li{
+            display: flex;
+            justify-content: flex-start;
+            align-content: center;
+            padding: 3px 0;
+        }
+    </style>
+</head>
+
+<body class="bg_f5">
+    <div class="container  main" id="app">
+        <div class="img_box">
+            <img :src="img_detail.drawing" alt="" class="img" id="targetImg"  style="position:relative;transform-origin:center">
+        </div>
+        <ul style="width:90%;margin: 25px 0">
+            <li><p class="txt_l">图纸名称:</p><p class="txt_r" v-text="img_detail.drawingName">抹灰</p></li>
+            <li><p class="txt_l">图纸类型:</p><p class="txt_r" v-text="img_detail.gaugeitemName"></p></li>
+            <li><p class="txt_l">部位:</p><p class="txt_r" v-text="img_detail.areaName"></p></li>
+            <li><p class="txt_l">上传人:</p><p class="txt_r" v-text="img_detail.createuserName"></p></li>
+            <li><p class="txt_l">上传时间:</p><p class="txt_r" v-text="img_detail.updateTime"></p></li>
+
+        </ul>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/hammer.js"></script>
+    <script>
+        apiready = function() {
+
+            api.addEventListener({
+                name: 'actul_imgdetail_edit_enevt'
+            }, function(ret, err){
+                if( ret ){
+                    vm.edit()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+            api.addEventListener({
+                name: 'actualmeasurement_del_img_event'
+            }, function(ret, err){
+                if( ret ){
+                    api.closeWin()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    'img_detail':'',//详情
+                },
+                watch: {
+
+                },
+                computed: {
+                    //控制提交按钮状态
+
+
+                },
+                mounted: function() {
+                    this.initHammer()
+                },
+                created: function() {
+                    this.img_detail = api.pageParam.img_detail;
+                },
+                methods: {
+                    //缩放拖拽
+                    initHammer: function() {
+                        var _this = this;
+                        var elm = document.getElementById('targetImg');
+                        const hammertime = new Hammer(elm, {});
+                        hammertime.get('pinch').set({
+                            enable: true
+                        });
+                        var posX = 0,
+                            posY = 0,
+                            scale = 1,
+                            last_scale = 1,
+                            last_posX = 0,
+                            last_posY = 0,
+                            max_pos_x = 0,
+                            max_pos_y = 0,
+                            transform = '';
+                        const el = elm;
+
+                        hammertime.on('doubletap pan pinch panend pinchend', function(ev) {
+                            if (ev.type === 'doubletap') {
+                                transform = 'translate3d(0, 0, 0) ' + 'scale3d(2, 2, 1) ';
+                                scale = 2;
+                                last_scale = 2;
+                                _this.scaleBase = 2;
+                                try {
+                                    if (window.getComputedStyle(el, null).getPropertyValue('-webkit-transform').toString() !== 'matrix(1, 0, 0, 1, 0, 0)') {
+                                        transform =
+                                            'translate3d(0, 0, 0) ' +
+                                            'scale3d(1, 1, 1) ';
+                                        scale = 1;
+                                        last_scale = 1;
+                                        _this.scaleBase = 1;
+                                    }
+                                } catch (err) {}
+                                el.style.webkitTransform = transform;
+                                transform = '';
+                            }
+
+                            // pan
+                            if (scale !== 1) {
+                                posX = last_posX + ev.deltaX;
+                                posY = last_posY + ev.deltaY;
+                                max_pos_x = Math.ceil((scale - 1) * el.clientWidth / 2);
+                                max_pos_y = Math.ceil((scale - 1) * el.clientHeight / 2);
+                                if (posX > max_pos_x) {
+                                    posX = max_pos_x;
+                                }
+                                if (posX < -max_pos_x) {
+                                    posX = -max_pos_x;
+                                }
+                                if (posY > max_pos_y) {
+                                    posY = max_pos_y;
+                                }
+                                if (posY < -max_pos_y) {
+                                    posY = -max_pos_y;
+                                }
+                            }
+
+
+                            // pinch
+                            if (ev.type === 'pinch') {
+                                scale = Math.max(.999, Math.min(last_scale * (ev.scale), 4));
+                            }
+                            if (ev.type === 'pinchend') {
+                                last_scale = scale;
+                                _this.scaleBase = scale;
+                            }
+
+                            // panend
+                            if (ev.type === 'panend') {
+                                last_posX = posX < max_pos_x ? posX : max_pos_x;
+                                last_posY = posY < max_pos_y ? posY : max_pos_y;
+                                _this.translateX = last_posX;
+                                _this.translateY = last_posY
+                            }
+
+                            if (scale !== 1) {
+                                transform =
+                                    'translate3d(' + posX + 'px,' + posY + 'px, 0) ' +
+                                    'scale3d(' + scale + ', ' + scale + ', 1)';
+                            }
+
+                            if (transform) {
+                                el.style.webkitTransform = transform;
+                            }
+                        });
+                    },
+                    // 编辑
+                    edit:function(){
+                        var _this = this;
+                        api.openWin({
+                            name: 'adddraw',
+                            url: './adddraw.html',
+                            pageParam: {
+                                img_detail:api.pageParam.img_detail
+                            }
+                        });
+
+                    }
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

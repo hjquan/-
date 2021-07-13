@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        /* 新增样式 */
+        html,
+        body {
+            background-color: transparent;
+            width: 100%;
+            min-height: 96vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+        }
+
+        .content {
+            min-height: 96vh;
+            width: 100%;
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+
+        .left {
+            height: 100%;
+            width: 20%;
+            position: absolute;
+            background: rgba(135, 137, 142, 1);
+            opacity: 0.2;
+        }
+
+        .rt {
+            width: 80%;
+            min-height: 96vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(245, 245, 245, 1);
+            background: #fff;
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px
+        }
+
+        .btnBox {
+            width: 80%;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .rt .inpt {
+            width: 18.5rem;
+            height: 3rem;
+            background: rgba(249, 249, 251, 1);
+            border-radius: 2px;
+            text-align: left;
+            padding-left: 15px;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(183, 183, 188, 1);
+        }
+
+        .header-name {
+            height: 3rem;
+            background-color: #F0EFF2;
+            padding-left: 1rem;
+            line-height: 3rem;
+            width: 100%;
+        }
+
+        .button {
+            background-color: #F7F4F8;
+            font-size: 0.rem;
+            border: 0;
+            color: #787878;
+            margin-left: 1.2rem;
+            height: 2.5rem;
+            width: 4.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .button1 {
+            background-color: #F7F4F8;
+            font-size: 0.rem;
+            border: 0;
+            color: #787878;
+            margin-left: 1.2rem;
+            height: 2.5rem;
+            width: 4.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .active {
+            color: #fff;
+            background-color: #0492FC;
+        }
+
+        .time-div {
+            width: 18.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <div class="left" onclick="closeSearchGoStorage()"></div>
+        <div class="rt">
+            <div class="header-name">
+                <h1>筛选</h1>
+            </div>
+            <div class="mt_10">
+                <h2>状态</h2>
+                <div>
+                    <button class="button" onclick="randomSwitchBtn(this,1)">待审批</button>
+                    <button class="button" onclick="randomSwitchBtn(this,0)">通过</button>
+                    <button class="button" onclick="randomSwitchBtn(this,2)">拒绝</button>
+                    <button class="button" onclick="randomSwitchBtn(this,3)">已撤销</button>
+                    <button class="button active" onclick="randomSwitchBtn(this,4)">不限</button>
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>类型</h2>
+                <div>
+                    <button class="button1" onclick="selectBtn(this,1)">补卡</button>
+                    <button class="button1" onclick="selectBtn(this,3)">请假</button>
+                    <button class="button1" onclick="selectBtn(this,2)">出差</button>
+                    <button class="button1 active" onclick="selectBtn(this,4)">不限</button>
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>发起人</h2>
+                <div>
+                    <input type="text" placeholder="输入姓名" v-model="applyUserName" class="inpt time startTime">
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>申请日期</h2>
+                <div>
+                    <div class="time startTime time-div" tapmode @click="beginTimeFn()"
+                        v-text="startTime ? startTime : '开始日期'">
+                    </div>
+                    <div class="time entime time-div" tapmode @click="endTimeFn()" v-text="endTime ? endTime : '结束日期'">
+                    </div>
+                </div>
+            </div>
+            <div class="btnBox">
+                <div class="btn" tapmode @click="rotate()">重置</div>
+                <div class="btn active" tapmode @click="submit()">确定</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/sha1.js"></script>
+<script type="text/javascript" src="../../../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<script>
+    var applyType = null; //申请类型
+    var flowStatus = null; //状态
+    apiready = function () {
+        $api.fixStatusBar($api.byId('app'));
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                startTime: '', //筛选开始时间
+                endTime: '', //筛选结束时间
+                resInfo: [], //请求类型数据
+                typeTxt: '', //类型选择展示
+                deviceTxt: '', //选择设备
+                applyUserName: null, //申请人姓名
+            },
+            created: function () {
+            },
+            methods: {
+                //重置按钮
+                rotate: function () {
+                    this.startTime = '',
+                        this.endTime = '',
+                        this.typeTxt = '',
+                        this.deviceTxt = ''
+                    //重置按钮选择
+                    var btnObj = $api.domAll('.button1')
+                    for (var i = 0; i < btnObj.length; i++) {
+                        $api.removeCls(btnObj[i], 'active');
+                    }
+                    $api.addCls(btnObj[3], 'active');
+
+                    var btnObj = $api.domAll('.button')
+                    for (var i = 0; i < btnObj.length; i++) {
+                        $api.removeCls(btnObj[i], 'active');
+                    }
+                    $api.addCls(btnObj[4], 'active');
+
+                },
+                submit: function () {
+                    var searchInfo = {
+                        startTime: this.startTime,
+                        endTime: this.endTime,
+                        applyType: applyType,
+                        flowStatus: flowStatus,
+                        applyUserName: this.applyUserName
+                    }
+                    api.sendEvent({
+                        name: 'searchInfo',
+                        extra: {
+                            searchInfo: searchInfo
+                        }
+                    });
+                    setTimeout(function () {
+                        api.closeFrame();
+
+                    }, 500)
+                },
+                // starttimeFn: function () {
+
+                //     var d = new Date();
+
+                //     var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + '  ' +
+                //         '00' + ':' + '00' + ':' + '00';
+                //     vm.startTime = time;
+
+
+                // },
+                beginTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var seconds = d.getSeconds() + '';
+                            seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                            var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d
+                                .getDate() + '  ' + d.getHours() + ':' + d.getMinutes() + ':' +
+                                seconds;
+                            vm.startTime = time;
+
+                        }
+
+                    })
+                },
+                endTimeFn: function () {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date(vm.startTime).getTime()
+                            if (currenD > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                // vm.endTime = null
+                            } else {
+                                var seconds = d.getSeconds() + '';
+                                seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                                var time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d
+                                    .getDate() + '  ' + d.getHours() + ':' + d.getMinutes() +
+                                    ':' + seconds;
+                                vm.endTime = time;
+                            }
+                        }
+                    })
+                },
+                typeFn: function () {
+                    if (!$api.getStorage('getTowerAlarmTypeInfo')) {
+                        ajaxGet(
+                            true,
+                            '加载中...',
+                            getTowerAlarmType,
+                            '',
+                            function (ret) {
+                                $api.setStorage('getTowerAlarmTypeInfo', ret.obj);
+                                vm.resInfo = ret.obj;
+                                vm.openactionSheet($api.getStorage('getTowerAlarmTypeInfo'))
+                            }
+                        )
+                    } else {
+                        vm.openactionSheet($api.getStorage('getTowerAlarmTypeInfo'))
+                    }
+
+                },
+                openactionSheet: function (content) {
+                    var btnBox = content.map(function (item) {
+                        return item.alarmName
+                    })
+                    api.actionSheet({
+                        title: '类型选择',
+                        // cancelTitle: '这里是取消按钮',
+                        // destructiveTitle: '红色警告按钮',
+                        buttons: btnBox
+                    }, function (ret, err) {
+                        if (ret) {
+                            console.log(JSON.stringify(ret));
+                            console.log(btnBox[ret.buttonIndex - 1]);
+                            vm.typeTxt = content[ret.buttonIndex - 1]
+                            console.log($api.jsonToStr(content[ret.buttonIndex - 1]));
+                        } else { }
+                    });
+                },
+                selctdevice: function () {
+                    var device = $api.getStorage('getTowerDeviceListsInfo');
+                    console.log($api.jsonToStr(device));
+                    var deviceBox = device.map(function (item) {
+                        return item.deviceName
+                    })
+                    api.actionSheet({
+                        title: '设备选择',
+                        buttons: deviceBox
+                    }, function (ret, err) {
+                        if (ret) {
+                            vm.deviceTxt = device[ret.buttonIndex - 1]
+                        } else { }
+                    });
+
+                },
+                close: function () {
+                    api.closeFrame()
+                },
+            }
+        })
+    }
+
+    function closeSearchGoStorage() {
+        api.closeFrame({
+            name: 'searchApolyFor'
+        });
+    }
+    function selectBtn(tag, flage) {
+        if (tag == $api.dom('.button1.active')) return;
+        var btnObj = $api.domAll('.button1'),
+            index = 0;
+        for (var i = 0; i < btnObj.length; i++) {
+            if (tag === btnObj[i]) {
+                index = i;
+            } else {
+                $api.removeCls(btnObj[i], 'active');
+            }
+        }
+        $api.addCls(btnObj[index], 'active');
+        switch (flage) {
+            case 1:
+                applyType = '1';
+                break;
+            case 2:
+                applyType = '2';
+                break;
+            case 3:
+                applyType = '3';
+                break;
+            case 4:
+                applyType = null;
+                break;
+
+        }
+    }
+    // 随意切换状态按钮
+    function randomSwitchBtn(tag, flage) {
+        if (tag == $api.dom('.button.active')) return;
+        var btnObj = $api.domAll('.button'),
+            index = 0;
+        for (var i = 0; i < btnObj.length; i++) {
+            if (tag === btnObj[i]) {
+                index = i;
+            } else {
+                $api.removeCls(btnObj[i], 'active');
+            }
+        }
+        $api.addCls(btnObj[index], 'active');
+
+        switch (flage) {
+            case 0:
+                flowStatus = '0';
+                break;
+            case 1:
+                flowStatus = '1';
+                break;
+            case 2:
+                flowStatus = '2';
+                break;
+            case 3:
+                flowStatus = "已撤销";
+                break;
+            case 4:
+                flowStatus = null;
+                break;
+
+        }
+    }
+</script>
+
+</html>

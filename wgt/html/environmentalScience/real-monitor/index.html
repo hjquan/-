@@ -1,0 +1,310 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        #app {
+            width: 95%;
+            background: rgba(0, 142, 255, 1);
+            border-radius: 10px;
+            margin: 8px auto;
+            padding-bottom: 20px;
+        }
+
+        .show {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .show p {
+            font-size: 18px;
+            margin: 0 50px;
+        }
+
+        .show h2 {
+            font-size: 36px
+        }
+
+        .show img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .show * {
+            color: #fff
+        }
+
+        .date {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .date span {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .date i {
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_show {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .show_item {
+            width: 33.3%;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .show_item div {
+            width: 110px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 5px;
+            border-radius: 5px
+        }
+
+        .show_item h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item h3 {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_title {
+            height: 10px;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+            margin: 10px 0;
+            line-height: 30px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+        <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title header_title" id="header_title" style="color:#555555">环境监测</div>
+    </header>
+    <div id="app">
+        <div class="date">
+            <div class="">
+                <span v-text="startDate">2020-05-12 02:34</span>&nbsp;
+                <i class="aui-iconfont aui-icon-recovery" @click="getDustBasicInfo()"></i>
+            </div>
+            <div class="rt" @click="switchDevideFn()">
+                <span>设备：</span><span v-text="deviceName"></span>&nbsp;
+                <i class="aui-iconfont aui-icon-more"></i>
+            </div>
+        </div>
+        <div class="show">
+            <img src="../../../../image/logo.png" alt="">
+            <p>晴</p>
+            <span style="font-size: 2rem;" v-text="dustRealTimeInfo.temperature"></span> <span
+                style="font-size: 1rem; margin-top: 1rem;">℃</span>
+        </div>
+        <div class="footer">
+            <ul class="f_show">
+                <li class="show_item" @click="trendchartFn(0)">
+                    <div>
+                        <h2>温度</h2>
+                        <h2>(℃)</h2>
+                        <h2 v-text="dustRealTimeInfo.temperature">23</h2>
+                    </div>
+                </li>
+                <li class="show_item" @click="trendchartFn(1)">
+                    <div class="danger">
+                        <h2>PM2.5</h2>
+                        <h2>(μg/m³)</h2>
+                        <h2 v-text="dustRealTimeInfo.pm2">25</h2>
+                    </div>
+                </li>
+                <li class="show_item" @click="trendchartFn(2)">
+                    <div>
+                        <h2>PM 10</h2>
+                        <h2>(μg/m³)</h2>
+                        <h2 v-text="dustRealTimeInfo.pm10">25</h2>
+                    </div>
+                </li>
+                <li class="show_item" @click="trendchartFn(3)">
+                    <div>
+                        <h2>风速</h2>
+                        <h2>(m/s)</h2>
+                        <h2 v-text="dustRealTimeInfo.windspeed">25</h2>
+                    </div>
+                </li>
+                <li class="show_item" @click="trendchartFn(4)">
+                    <div>
+                        <h2>噪声</h2>
+                        <h2>(dB)</h2>
+                        <h2 v-text="dustRealTimeInfo.noise"></h2>
+                    </div>
+                </li>
+                <li class="show_item" @click="trendchartFn(5)">
+                    <div>
+                        <h2>湿度</h2>
+                        <h2>(RH）</h2>
+                        <h2 v-text="dustRealTimeInfo.humidity">25</h2>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <p class="f_title">温馨提示：点击相应版块可查看趋势图</p>
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            api.parseTapmode();
+            var bMap = api.require('bMap');
+            bMap.getLocation({
+                accuracy: '100m',
+                autoStop: true,
+                filter: 1
+            }, function (ret, err) {
+                if (ret.status) {
+                }
+            });
+            bMap.getNameFromCoords({
+                lon: 116.38,
+                lat: 40.98
+            }, function (ret, err) {
+                if (ret.status) {
+                    alert(JSON.stringify(ret))
+                }
+            });
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    startDate: $app.formDate(false, '-', true).slice(0, 17),
+                    deviceName: null,
+                    deviceInfo: {},
+                    dustRealTimeInfo: {},
+                },
+                created: function () {
+                    //获取环境监测设备基本信息
+                    this.getDustBasicInfo();
+                    var that = this;
+                    api.addEventListener({
+                        name: 'switchDevide_frame'
+                    }, function (ret, err) {
+                        that.deviceInfo = ret.value.deviceInfo;
+                        that.deviceName = that.deviceInfo.deviceName
+                        that.getDustRealTimeInfo();
+                    });
+                },
+                methods: {
+                    //获取环境监测设备基本信息
+                    getDustBasicInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getDustBasicInfoURL,
+                            {
+                                deviceId: '',
+                                iccid: '',
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取环境监测设备基本信息:" + JSON.stringify(ret))
+                                that.deviceName = ret.obj[0].deviceName;
+                                that.deviceInfo = ret.obj[0];
+                                that.getDustRealTimeInfo();
+                            }
+                        )
+                        that.startDate = $app.formDate(false, '-', true).slice(0, 17);
+                    },
+                    //获取环境监测实时数据
+                    getDustRealTimeInfo: function (deviceId) {
+                        var that = this;
+                        console.log("请求参数：+" + that.deviceInfo.deviceId);
+                        $app.post(
+                            true,
+                            getDustRealTimeInfoURL,
+                            {
+                                deviceId: that.deviceInfo.deviceId + '',
+                            },
+                            function (ret) {
+                                console.log("获取环境监测设备基本信息:" + JSON.stringify(ret))
+                                that.dustRealTimeInfo = ret.obj
+                            }
+                        )
+                    },
+
+                    //切换设备
+                    switchDevideFn: function () {
+                        api.openWin({
+                            name: 'switchDevideFn',
+                            url: './switchDevide.html',
+                            pageParam: {}
+                        });
+                    },
+                    //趋势图
+                    trendchartFn: function (flage) {
+                        api.openWin({
+                            name: 'trendchart',
+                            url: './trendchart.html',
+                            pageParam: {
+                                selectFlage: flage,
+                                deviceId: this.deviceInfo.deviceId
+                            }
+                        });
+                    }
+                },
+            })
+        }
+        function closeWin() {
+            api.closeWin();
+
+        }
+    </script>
+
+</body>
+
+</html>

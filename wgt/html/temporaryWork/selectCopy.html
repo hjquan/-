@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F7F4F8;
+        }
+
+        .search {
+            height: 2rem;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search {
+            height: 1.5rem;
+            width: 90%;
+            background: #ffffff;
+            margin-top: 0.5rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-left: 5%;
+        }
+
+        .list-ojc {
+            width: 100%;
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+        }
+
+        .list-ojc-div {
+            width: 100%;
+            height: 1.5rem;
+            margin-top: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .radius-check {
+            width: 18px;
+            height: 18px;
+            border: 1px solid rgba(199, 199, 204, 1);
+            border-radius: 50%;
+            float: left;
+            margin-right: 0.5rem;
+            color: #ffffff;
+        }
+
+        .float-left {
+            float: left;
+            background-clip: padding-box;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .content {
+            padding-bottom: 9.5%;
+        }
+
+        .footer {
+            height: 2rem;
+            width: 100%;
+            background-color: #ffffff;
+            border-top: 1px #B1B8BF solid;
+            position: fixed;
+            bottom: 0;
+            padding-top: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .footer-right {
+            float: right;
+        }
+
+        .footer-btn-right {
+            float: right;
+            height: 2rem;
+            width: 4rem;
+            background-color: #0590FF;
+            color: #ffffff;
+            margin-top: -0.5rem;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .add-btn {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="content">
+            <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+                <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+                </a>
+                <div class="aui-title header_title" style="color: #000000;" id="header_title">选择抄送人</div>
+                <a class="aui-pull-right">
+                    <div class="add-btn" @click="submit()">确认</div>
+                </a>
+            </header>
+            <!-- <div class="aui-searchbar-input aui-border-radius search" tapmode click="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="请输入搜索内容" id="search-input" v-model="searchData"
+                        @input="getSearchData()">
+                </form>
+            </div> -->
+            <div class="list-ojc">
+                <div class="list-ojc-div" v-for="(items,index) in ruleObjInfo" :key="index">
+                    <div class="aui-list-item-left">
+                        <label><input type="checkbox" class="aui-checkbox float-left" name="sex" value="男生"
+                                :checked="items.selectFlage" @click="changeValue(items)"></label>
+                    </div>
+                    <div class=" aui-list-item-title"><span v-text="items.name"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleObjInfo: [],//考勤规则对象: null,//考勤规则对象
+                    ruleObj: [],
+                    obj: null,
+                    searchData: null,
+                    selectFlage: null,
+                },
+                created: function () {
+                    this.getRuleObjInfo();
+                },
+                methods: {
+                    //搜索数据
+                    getSearchData: function () {
+                        var newRuleObjInfo = this.ruleObj;
+                        var arr = [];
+                        var reg = new RegExp(this.searchData);
+                        if (!this.searchData) {
+                            this.ruleObjInfo = newRuleObjInfo;
+                        }
+                        for (var i = 0; i < newRuleObjInfo.length; i++) {
+                            //如果字符串中不包含目标字符会返回-1
+                            if (newRuleObjInfo[i].position.match(reg)) {
+                                arr.push(newRuleObjInfo[i]);
+                            }
+                        }
+                        this.ruleObjInfo = arr;
+                    },
+                    //获取对象
+                    getRuleObjInfo: function () {
+                        var that = this;
+                        // console.log("______" + $api.getStorage('enterpriseId'))
+                        $app.post(
+                            true,
+                            allgetUserList, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            areaId: "1",
+                            userType: "all"
+                        },
+                            function (ret) {
+                                console.log(JSON.stringify(ret));
+                                that.ruleObjInfo = ret.obj;
+                                that.ruleObj = ret.obj;
+                                that.ruleObjInfo.map(function (items) {
+                                    items.selectFlage = false;
+                                })
+                                console.log(JSON.stringify(that.ruleObjInfo));
+                            }
+                        )
+                    },
+                    //
+                    changeValue: function (items) {
+                        // console.log("选择标识：" + items.selectFlage)
+                        var that = this;
+                        this.ruleObjInfo.map(function (item) {
+                            items.selectFlage = false;
+                        });
+                        items.selectFlage = true;
+                    },
+                    //返回上一个页面
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //保存数据
+                    submit: function () {
+                        var that = this;
+                        var copyUserId = "";
+                        var copyUserName = "";
+                        this.ruleObjInfo.map(function (item) {
+                            if (item.selectFlage) {
+                                that.newRule = item
+                                copyUserName = copyUserName + "," + item.name;
+                                copyUserId = copyUserId + "," + item.userId;
+                            }
+                        });
+                        copyUserName = copyUserName.slice(1);
+                        copyUserId = copyUserId.slice(1);
+                        console.log("选中的数据" + JSON.stringify(copyUserName));
+                        console.log("选中的数据" + JSON.stringify(copyUserId));
+                        api.sendEvent({
+                            name: 'selectCopy',
+                            extra: {
+                                copyUserName: copyUserName,
+                                copyUserId: copyUserId,
+                            }
+                        });
+                        api.closeWin();
+                    },
+                },
+            })
+        } 
+    </script>
+</body>
+
+</html>

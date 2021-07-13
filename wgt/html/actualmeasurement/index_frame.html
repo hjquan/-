@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+    html,body{height: 100%;box-sizing: border-box;}
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .color_999 {
+            color: #999;
+        }
+        .txt_t{color: #323233;}
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 60vh;
+        }
+
+        .noData img {
+            margin-top: 30px;
+            width: 100px;
+            height: 100px;
+        }
+        .aui-content .aui-list-item-inner .txt_t_r{
+            font-size: 14px;
+            color: #B4B4B4;
+        }
+        .aui-content .aui-list-item-inner .txt_b{
+            color: #7E7E80;
+        }
+        .w_80{width: 70%}
+        .footer{
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 45px;
+            line-height: 45px;
+            background-color: #fff;
+        }
+        .footer .item{
+            font-size: 14px;
+            color: #323233;
+            line-height: 14px;
+        }
+        .txt_b_l{color: #7E7E80;font-size: 14px;}
+        #app{height: 100%;box-sizing: border-box;}
+        .md_50{margin-bottom: 50px;}
+        .active{
+            color:#F47575 !important
+        }
+    </style>
+</head>
+
+<body>
+    <div class=" aui-margin-b-15" style="margin-top:5px;"  id="app">
+        <div class="aui-card-list-content" v-if="list.length" v-cloak>
+            <ul class="aui-list aui-media-list ">
+                <li class="aui-list-item aui-list-item-middle" v-for="(item,index) in list" tapmode @click="openDetailFn(item)">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-inner ">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title aui-font-size-16 txt_t aui-ellipsis-1 w_70" v-text="item.title" ></div>
+                            </div>
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1 w_70 txt_b_l " :class="{'active': item.areaNoPass}"  v-cloak>
+                                    {{item.areaNoPass ? '不合格:' : '合格'}} &nbsp;{{item.areaNoPass ?  item.areaNoPass : ''}}
+                                </div>
+                                <div class="aui-list-item-right txt_b"  v-text="item.updateTime">08:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="noData" v-else>
+            <img src="../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //上拉加载
+            $app.uploding(
+                function(){
+                    vm.init(true)
+                }
+            )
+
+            //下拉刷新
+            $app.downrefresh(
+                function(){
+                    vm.init(false)
+                }
+            )
+            //监听筛选事件
+            api.addEventListener({
+                name: 'actual_scren_info_event'
+            }, function(ret, err){
+                if( ret ){
+                    console.log( JSON.stringify( ret ) );
+                    var data = ret.value.screen_info || '';
+                    vm.areaId = data.area_id || '';
+                    vm.areaName =data.area_name || '';
+                    vm.componentId = data.check.parent_id  || '';
+                    vm.startDate = data.startTime || '' ;
+                    vm.endDate = data.endTime || '';
+                    vm.isQualified = data.state || '';
+                    vm.gaugeItemId = data.check.dictionaries_id || '';
+                    vm.init(false)
+                }else{
+                }
+            });
+
+            // 监听修改数据事件刷新
+            api.addEventListener({
+                name: 'actul_update_list_envet'
+            }, function(ret, err){
+                if( ret ){
+                    vm.init(false)
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    "list":[],//列表数据集合
+                    "projectId": $api.getStorage('enterpriseId'),
+                    // "showCount": 5,
+                    "currentPage": 1,
+                    "areaId": "",
+                    "areaName": "",
+                    "componentId": "",
+                    "startDate": "",
+                    "endDate": "",
+                    "isQualified": "",
+                    "gaugeItemId": ""
+                },
+                created:function(){
+                    this.init()
+                },
+                methods:{
+                    //打开详情
+                    openDetailFn:function(item){
+                        api.openWin({
+                            name: 'actual_list_item_detail',
+                            url: './list_item_detail.html',
+                            pageParam: {
+                                actual_list_detail: item
+                            }
+                        });
+                    },
+                    init:function(isFlag){
+                        var _this = this;
+                        isFlag ? this.currentPage++ : this.currentPage=1;
+                        var params ={
+                            "projectId": this.projectId,
+                            "showCount": PAGE_NUMBER,
+                            "currentPage": this.currentPage,
+                            "areaId": _this.areaId,
+                            "areaName": _this.areaName,
+                            "componentId": _this.componentId,
+                            "startDate": _this.startDate,
+                            "endDate": _this.endDate,
+                            "isQualified": _this.isQualified,
+                            "gaugeItemId": _this.gaugeItemId,
+                            // "queryStatus":''
+
+                        }
+                        console.log($api.jsonToStr(params));
+
+                        $app.post(
+                            true,
+                            actualmeasurementList,
+                            params,
+                            function(ret){
+                                // console.log($api.jsonToStr(ret));
+                                api.refreshHeaderLoadDone()
+                                if(isFlag){
+                                    if(ret.totalResult >= _this.list.length){
+                                        _this.list = _this.list.concat(ret.obj)
+                                    }else{
+                                        api.toast({
+                                            msg: '没有更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else{
+                                    _this.list = ret.obj;
+                                }
+                            }
+                        )
+                    },
+                },
+
+            })
+
+        }
+    </script>
+</body>
+
+</html>

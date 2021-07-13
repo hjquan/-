@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        /*.list_item > *{
+            flex: 1
+        }*/
+        .total {
+
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .total p {
+            color: rgba(0, 153, 76, 1);
+            margin-right: 50px;
+        }
+
+        .total p.off {
+            color: rgba(149, 149, 149, 1);
+        }
+
+        .circel {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(0, 153, 68, 1);
+            border-radius: 50%;
+        }
+
+        .offline {
+            border: 2px solid rgba(153, 153, 153, 1);
+        }
+
+        .danger .total p {
+            color: #FF0000
+        }
+
+        .danger .circel {
+            border: 2px solid #FF0000;
+        }
+
+        .wrning .total p {
+            color: #F18D00
+        }
+
+        .wrning .circel {
+            border: 2px solid #F18D00;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list" v-if="getJackupsInfo.length">
+            <li class="list_item danger" @click="opentowerData(item)" v-if="item.dsAlarm == 2"
+                v-for="(item,index) in getJackupsInfo">
+                <div class="lf ">
+                    <div class="circel "></div>&nbsp;&nbsp;
+                    <span class="name">塔机一号</span>
+                </div>
+                <div class="total">
+                    <p class="off ">正在顶升</p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li class="list_item danger" @click="opentowerData(item)" v-if="item.dsAlarm == 1"
+                v-for="(item,index) in getJackupsInfo">
+                <div class="lf ">
+                    <div class="circel " style="border-color: #F18E00;"></div>&nbsp;&nbsp;
+                    <span class="name">塔机一号</span>
+                </div>
+                <div class="total">
+                    <p class="off " style="coloor:#F18E00">正在顶升</p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li class="list_item danger" @click="opentowerData(item)" v-if="item.dsAlarm == 0"
+                v-for="(item,index) in getJackupsInfo">
+                <div class="lf ">
+                    <div class="circel " style="border-color:#00994C;"></div>&nbsp;&nbsp;
+                    <span class="name">塔机一号</span>
+                </div>
+                <div class="total">
+                    <p class="off " style="color:#00994C;">正在顶升</p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+        </ul>
+        <div class="noData" v-if="!getJackupsInfo.length">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: '../../../../image/err.jpg',
+            loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function () {
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    getJackupsInfo: [],//顶升监控列表
+
+                },
+                mounted: function () {
+                },
+                created: function () {
+                    // 获取顶升监控列表
+                    this.getJackupsList();
+                },
+                methods: {
+                    // 获取顶升监控列表
+                    getJackupsList: function () {
+                        var that = this;
+                        var prame = {
+                            projectId:  $api.getStorage('enterpriseId'),
+                        };
+                        $app.post(
+                            true,
+                            getJackupsListURL,
+                            prame,
+                            function (ret) {
+                                console.log("获取顶升监控列表:" + JSON.stringify(ret));
+                                that.getJackupsInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //打开详情
+                    opentowerData: function (item) {
+                        api.openWin({
+                            name: 'tower_data',
+                            url: './tower_data.html',
+                            pageParam: {
+                                towerRunMonitor: item
+                            }
+                        });
+
+                    },
+
+                    //打开新页面
+                    deviceInfoFn: function (data) {
+                        api.openWin({
+                            name: 'deviceInfo',
+                            url: './deviceInfo.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

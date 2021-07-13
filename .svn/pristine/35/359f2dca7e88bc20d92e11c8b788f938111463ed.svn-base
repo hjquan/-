@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        /* 新增样式 */
+        html,
+        body {
+            background-color: transparent;
+            width: 100%;
+            min-height: 96vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+        }
+
+        .content {
+            min-height: 96vh;
+            width: 100%;
+            background-color: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+
+        .left {
+            height: 100%;
+            width: 40%;
+            position: absolute;
+            background: rgba(135, 137, 142, 1);
+            opacity: 0.2;
+        }
+
+        .rt {
+            width: 60%;
+            min-height: 96vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(245, 245, 245, 1);
+            background: #fff;
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px
+        }
+
+        .btnBox {
+            width: 60%;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .rt .inpt {
+            width: 18.5rem;
+            height: 3rem;
+            background: rgba(249, 249, 251, 1);
+            border-radius: 2px;
+            text-align: left;
+            padding-left: 15px;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(183, 183, 188, 1);
+        }
+
+        .header-name {
+            height: 3rem;
+            background-color: #F0EFF2;
+            padding-left: 1rem;
+            line-height: 3rem;
+            width: 100%;
+        }
+
+        .button {
+            background-color: #F7F4F8;
+            font-size: 0.rem;
+            border: 0;
+            color: #787878;
+            margin-left: 1.2rem;
+            height: 2.5rem;
+            width: 4.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .button1 {
+            background-color: #F7F4F8;
+            font-size: 0.rem;
+            border: 0;
+            color: #787878;
+            margin-left: 1.2rem;
+            height: 2.5rem;
+            width: 4.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .active {
+            color: #fff;
+            background-color: #0492FC;
+        }
+
+        .time-div {
+            width: 200px;
+        }
+
+        .show {
+            width: 200px;
+            height: 35px;
+            line-height: 35px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <div class="left" onclick="closeSearchGoStorage()"></div>
+        <div class="rt">
+            <div class="header-name">
+                <h1>筛选</h1>
+            </div>
+            <div class="mt_10">
+                <h2>选择设备</h2>
+                <div>
+                    <p class="show" @click="selectCameraId()"><span>不限</span><i class="aui-iconfont aui-icon-right"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>申请日期</h2>
+                <div>
+                    <div class="time startTime time-div" tapmode @click="beginTimeFn()"
+                        v-text="startTime ? startTime : '开始日期'">
+                    </div>
+                    <div class="time entime time-div" tapmode @click="endTimeFn()" v-text="endTime ? endTime : '结束日期'">
+                    </div>
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>选择类型</h2>
+                <div>
+                    <p class="show" @click="selectEventType()"><span v-text="eventText ? eventText : '不限'"></span><i
+                            class="aui-iconfont aui-icon-right"></i></p>
+                </div>
+            </div>
+            <div class="mt_10">
+                <h2>选择状态</h2>
+                <div>
+                    <p class="show" @click="selectCategory()"><span v-text="statusText ? statusText : '不限'"></span><i
+                            class="aui-iconfont aui-icon-right"></i></p>
+                </div>
+            </div>
+            <div class="btnBox">
+                <div class="btn" tapmode @click="rotate()">重置</div>
+                <div class="btn active" tapmode @click="submit()">确定</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../script/sha1.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<script>
+    var applyType = null; //申请类型
+    var flowStatus = null; //状态
+    apiready = function () {
+        $api.fixStatusBar($api.byId('app'));
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                startTime: '', //筛选开始时间
+                endTime: null,
+                eventType: null,
+                eventText: null,
+                status: null,
+                statusText: null,
+                cameraId: null,
+            },
+            created: function () {
+            },
+            methods: {
+                selectEventType: function () {
+                    var that = this
+                    api.actionSheet({
+                        title: '选择类型',
+                        cancelTitle: '取消',
+                        buttons: ['渣土车识别清洗', '材料称重车牌识别', '区域预警', '未带安全帽抓拍', '未系安全带抓拍', '烟雾报警抓拍', '人员聚集抓拍', '离岗抓拍', '人形车形道抓拍']
+                    }, function (ret, err) {
+                        that.eventType = ret.buttonIndex;
+                        switch (ret.buttonIndex - 1) {
+                            case 0:
+                                that.eventText = '渣土车识别清洗';
+                                break;
+                            case 1:
+                                that.eventText = '材料称重车牌识别';
+                                break;
+                            case 2:
+                                that.eventText = '区域预警';
+                                break;
+                            case 3:
+                                that.eventText = '未带安全帽抓拍';
+                                break;
+                            case 4:
+                                that.eventText = '未系安全带抓拍';
+                                break;
+                            case 5:
+                                that.eventText = '烟雾报警抓拍';
+                                break;
+                            case 6:
+                                that.eventText = '人员聚集抓拍';
+                                break;
+                            case 7:
+                                that.eventText = '离岗抓拍';
+                                break;
+                            case 8:
+                                that.eventText = '人形车形道抓拍';
+                                break;
+                        }
+                    });
+                },
+                selectCategory: function () {
+                    var that = this
+                    api.actionSheet({
+                        title: '选择状态',
+                        cancelTitle: '取消',
+                        buttons: ['待处理', '已处理', '无需处理']
+                    }, function (ret, err) {
+                        that.status = ret.buttonIndex - 1;
+                        switch (ret.buttonIndex - 1) {
+                            case 0:
+                                that.statusText = '待处理';
+                                break;
+                            case 1:
+                                that.statusText = '已处理';
+                                break;
+                            case 2:
+                                that.statusText = '无需处理';
+                                break;
+                        }
+                    });
+                },
+                //重置按钮
+                rotate: function () {
+                    this.startTime = '';
+                    this.endTime = '';
+                    this.eventText = '';
+                    this.statusText = '';
+                    this.cameraId = '';
+                },
+                submit: function () {
+                    var searchInfo = {
+                        startTime: this.startTime,
+                        endTime: this.endTime,
+                        eventType: this.eventType,
+                        status: this.status,
+                        cameraId: this.cameraId,
+                    }
+                    api.sendEvent({
+                        name: 'captureevents',
+                        extra: {
+                            searchInfo: searchInfo
+                        }
+                    });
+                    setTimeout(function () {
+                        api.closeFrame();
+
+                    }, 500)
+                },
+                beginTimeFn: function () {
+                    var that = this;
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var seconds = d.getSeconds() + '';
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date()//当前时间年月日
+                            var currenD = new Date(that.endTime).getTime()
+                            console.log(JSON.stringify(curenDate.getTime()))
+                            if (selectTime > curenDate.getTime()) {
+                                api.toast({
+                                    msg: '选择不能大于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (that.endTime) {
+                                if (selectTime > currenD) {
+                                    api.toast({
+                                        msg: '选择不能大于结束日期',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    return false;
+                                }
+                            }
+                            seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                            var time = d.getFullYear() + '-' + that.add0(d.getMonth() + 1) + '-' + that.add0(d
+                                .getDate()) + '  ' + that.add0(d.getHours()) + ':' + that.add0(d.getMinutes()) + ':' +
+                                seconds;
+                            that.startTime = time;
+                        }
+                    })
+                },
+                add0: function (num) {
+                    if (num < 10) {
+                        return '0' + num;
+                    } else {
+                        return num;
+                    }
+                },
+                endTimeFn: function () {
+                    var that = this;
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function (ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date(that.startTime).getTime()
+                            if (currenD > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于开始日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                // vm.endTime = null
+                            } else {
+                                var seconds = d.getSeconds() + '';
+                                seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                                var time = d.getFullYear() + '-' + that.add0(d.getMonth() + 1) + '-' + that.add0(d
+                                    .getDate()) + '  ' + that.add0(d.getHours()) + ':' + that.add0(d.getMinutes()) + ':' +
+                                    seconds;
+                                that.endTime = time;
+                            }
+                        }
+                    })
+                },
+                close: function () {
+                    api.closeFrame()
+                },
+            }
+        })
+    }
+
+    function closeSearchGoStorage() {
+        api.closeFrame({
+            name: 'screen'
+        });
+    }
+
+</script>
+
+</html>

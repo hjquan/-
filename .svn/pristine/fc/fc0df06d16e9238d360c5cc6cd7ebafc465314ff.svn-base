@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>找回密码</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <!-- <script src="./script/rem.js"></script> -->
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .flex {
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-flex;
+        }
+
+        .fx_r_c {
+            justify-content: center;
+        }
+
+        .fx_c_c {
+            align-items: center;
+        }
+
+        .hover {
+            opacity: .5
+        }
+
+        #app {
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pwd_box {
+            margin-top: 10px;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .pwd_box li {
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .pwd_box input {
+            width: 90%;
+            height: 50px;
+            border: 1px solid rgba(230, 230, 230, 1);
+            border-radius: 3px;
+            margin: 10px auto;
+            padding-left: 6px;
+            color: #333;
+        }
+
+        #submit {
+            color: #fff;
+            font-weight: bold;
+            position: absolute;
+            bottom: -130px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .icon {
+            position: absolute;
+            right: 35px;
+            bottom: 13px;
+            font-size: 30px
+        }
+
+        .btnActive {
+            background: #058FFD !important;
+            color: #fff;
+        }
+
+        .retrieveBtn {
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(5, 143, 253, 1);
+            background-color: #fff;
+            border: none;
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="aui-content">
+        <header class="aui-bar aui-bar-nav aui-bar-light" style="background: #fff;">
+            <a class="aui-pull-left aui-btn" @click="backLogin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="color:rgba(51,51,51,1);">修改密码</div>
+        </header>
+        <ul class="pwd_box ">
+            <li class="flex">
+                <input type="password" id="oldPwd" class="pwdInput" v-model="oldPwd" placeholder="输入原密码">
+                <i class="icon  aui-iconfont aui-icon-hide" tapmode @click="toggleIcon('input1')" id="input1"></i>
+
+            </li>
+            <li class="flex">
+                <input type="password" v-model="newPwd" class="pwdInput" id="newPwd" placeholder="设置新密码(6-12位)">
+                <i class="icon  aui-iconfont aui-icon-hide" tapmode @click="toggleIcon('input2')" id="input2"></i>
+            </li>
+            <li class="flex">
+                <input type="password" v-model="comfirgPwd" id="comfirgPwd" class="pwdInput" placeholder="确认新密码(6-12位)">
+                <i class="icon aui-iconfont aui-icon-hide" tapmode @click="toggleIcon('input3')" id="input3"></i>
+            </li>
+            <li class="clearfix">
+                <button class="retrieveBtn" tapmode @click="openForgetPwd()">找回密码?</button>
+            </li>
+            <li class="flex">
+                <input tapmode="hover" tapmode type="button" :class="{'btnActive':isLoginFlag}" @click="setpwd()" id="submit" value="确定">
+            </li>
+
+        </ul>
+
+
+    </div>
+
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar( $api.dom('header') );
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    iconFlag: 0, //密码是否可见
+                    oldPwd: '',
+                    newPwd: '', //new密码
+                    comfirgPwd: '' //验证密码
+                },
+                computed: {
+                    isLoginFlag: function() {
+                        if (this.oldPwd && this.newPwd && this.comfirgPwd) {
+                            $api.removeAttr($api.byId('submit'), 'disabled');
+                            return true;
+                        } else {
+                            $api.attr($api.byId('submit'), 'disabled', 'disabled');
+                            return false;
+                        }
+                    }
+                },
+                created: function() {
+                    this.isLoginFlag
+                },
+                methods: {
+                    backLogin: function() { //关闭当前window页面(返回)
+                        api.closeWin();
+                    },
+
+                    openForgetPwd: function() {
+                        api.openWin({
+                            name: 'forgetPwd',
+                            url: '../user/forgetPwd.html',
+                            pageParam: {
+                                name: 'test'
+                            }
+                        });
+
+                    },
+                    toggleIcon:function(id){ //控制密码是否可见
+
+                        var el = $api.byId(id);
+                        var InputEl = $api.prev(el);
+
+                        if($api.hasCls(el,'aui-icon-hide')){
+                            $api.removeCls(el, 'aui-icon-hide');
+                            $api.addCls(el, 'aui-icon-display');
+                            $api.attr(InputEl, 'type', 'text');
+
+                        }else{
+                            $api.removeCls(el, 'aui-icon-display');
+                            $api.addCls(el, 'aui-icon-hide');
+                            $api.attr(InputEl, 'type', 'password');
+                        }
+
+                    },
+                    setpwd: function() { //修改密码
+                        var isFlag = $api.trim(this.oldPwd) && $api.trim(this.newPwd) && $api.trim(this.comfirgPwd);
+                        if (!isFlag) {
+                            api.toast({
+                                msg: '不能为空...',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+                        if (checkName(this.newPwd) && checkName(this.comfirgPwd) && checkName(this.oldPwd)) {
+                            api.toast({
+                                msg: '不能输入特殊字符...',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+                        if (this.oldPwd == this.newPwd) {
+                            api.toast({
+                                msg: '新密码不能同旧密码一样',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        if (!pwdReg(this.newPwd) || !pwdReg(this.comfirgPwd) || !pwdReg(this.oldPwd)) {
+                            api.toast({
+                                msg: '密码需要输入6~12位',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+                        if (this.newPwd != this.comfirgPwd) {
+                            api.toast({
+                                msg: '密码不一致',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+
+                        api.ajax({
+                            url: appEditPassWordURL,
+                            method: 'post',
+                            headers: header,
+                            data: {
+                                body: {
+                                    userId: $api.getStorage('userId'),
+                                    "oldPassWord": this.oldPwd,
+                                    "newPassWord": this.newPwd
+                                }
+
+                            }
+                        }, function(ret, err) {
+                            if (ret.status == 1) {
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                vm.oldPwd = '';
+                                vm.newPwd = '';
+                                vm.comfirgPwd = '';
+                                api.sendEvent({
+                                    name: 'loginPhone',
+                                    extra: {
+                                    }
+                                });
+                                setTimeout(function(){
+                                    api.closeToWin({
+                                        name: 'root'
+                                    });
+
+                                },500)
+
+                            } else {
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                            }
+                        });
+
+                    }
+                }
+            })
+
+
+
+        }
+    </script>
+</body>
+
+</html>

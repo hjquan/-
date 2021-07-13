@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .bottom_before_line::before {
+            content: "";
+            display: block;
+            width: 90%;
+            height: 1px;
+            background: rgba(199, 199, 206, 1);
+            opacity: 0.36;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+        .txt_p {
+            color: #B7B7BC
+        }
+
+        .main_box {
+            background:rgba(249,249,251,1);
+        }
+
+        .list_item {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+        }
+
+        .lf {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            ;
+            align-items: center;
+        }
+
+        .title_txt {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+
+
+        .type_txt {
+            font-size: 17px;
+            color: rgba(0, 1, 14, 1);
+        }
+
+        .title_txt p {
+            font-size: 15px;
+            color: rgba(150, 150, 155, 1);
+        }
+
+        .rt {
+            font-size: 20px;
+            color: rgba(0, 1, 14, 1);
+        }
+
+        .selectBox {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            box-sizing: border-box;
+            padding: 2px 15px;
+            font-size: 17px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(19, 147, 250, 1);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .s_rt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            width: 108px;
+            height: 41px;
+            line-height: 41px;
+            text-align: center;
+            background: rgba(19, 147, 250, 1);
+            border-radius: 0px 4px 4px 0px;
+            margin-left: 35px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .mian_item {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 15px;
+        }
+
+        .mian_item p {
+            font-size: 17px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(54, 54, 57, 1);
+            flex: 2
+        }
+
+        .mian_item div {
+            flex: 5
+        }
+
+        .footTile {
+            position: relative;
+        }
+
+        .footTile i {
+            /*background-color: #C7C7CC;*/
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            position: absolute;
+            right: 5px;
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .imgUpdate {
+            display: flex;
+            height: 100%;
+            padding: 18px 15px;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .imgUpdate img {
+            width: 52px;
+            height: 52px;
+        }
+
+        .imgUpdate div:last-child {
+            width: 52px;
+            height: 52px;
+            background-color: #F0F0F2;
+            font-size: 60px;
+            color: #C7C7CC;
+            border-radius: 3px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .imgItem {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .imgItem .del_close {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            top: -7px;
+            right: -7px;
+            line-height: 15px;
+            text-align: center;
+            color: #fff;
+            background: #FF1414;
+            font-size: 12px;
+        }
+
+        .mt_1 {
+            margin-top: 1px;
+        }
+
+        .title {
+            font-size: 17px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(68, 94, 150, 1);
+        }
+
+        .sub_til {
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(150, 150, 155, 1);
+        }
+        .list_box{
+          background-color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box">
+            <ul class="list_box">
+                <li class="list_item bottom_before_line">
+                    <div class="lf">
+                        <!-- <input class="aui-radio" type="checkbox" name=""> -->
+                        <div class="title_box">
+                            <p class="type_txt">钢筋</p>
+                            <div class="title_txt">
+                                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                                <p>单位:<span>kg</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rt">
+                        45
+                    </div>
+                </li>
+
+                <li class="list_item bottom_before_line">
+                    <div class="lf">
+                        <!-- <input class="aui-radio" type="checkbox" name=""> -->
+                        <div class="title_box">
+                            <p class="type_txt">钢筋</p>
+                            <div class="title_txt">
+                                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                                <p>单位:<span>kg</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rt">
+                        45
+                    </div>
+                </li>
+                <li class="list_item bottom_before_line">
+                    <div class="lf">
+                        <!-- <input class="aui-radio" type="checkbox" name=""> -->
+                        <div class="title_box">
+                            <p class="type_txt">钢筋</p>
+                            <div class="title_txt">
+                                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                                <p>单位:<span>kg</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rt">
+                        45
+                    </div>
+                </li>
+
+
+            </ul>
+            <ul class="mt_10">
+                <li class="mian_item title">入库信息</li>
+
+                <li class="mian_item " tapmode>
+                    <p>入库时间<span class="requid">*</span></p>
+                    <div class="footTile">
+                        <input type="text" v-model="temperature" placeholder="请输入" class="inputPosition" tapmode>
+                        <i class="aui-iconfont aui-icon-right"></i>
+                    </div>
+                </li>
+                <li class="mian_item " tapmode>
+                    <p>备注<span class="requid">*</span></p>
+                    <div class="footTile">
+                        <input type="text" disable placeholder="请输入" class="inputPosition" tapmode>
+
+                    </div>
+                </li>
+
+            </ul>
+            <div class="imgUpdate ">
+                <div class="imgItem" tapmode="hover">
+                    <i class="aui-iconfont aui-icon-close del_close" @click=removeImage(index) tapmode="hover"></i>
+                    <img src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+            </div>
+            <div class="noData" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    copySelctList: [],
+                    selctList: [], //拉取的列表数据
+                    listIf: '' //过滤条件
+                },
+                computed: {
+
+                },
+                methods: {
+                    //筛选
+                    changeInput: function() {
+                        var copyList = $api.strToJson($api.jsonToStr(this.selctList));
+                        this.selctList = $api.strToJson($api.jsonToStr(this.copySelctList));
+                        var filterList = vm.copySelctList.filter(function(item) {
+                            var itemName = item.enterpriseName;
+                            if (itemName.indexOf(vm.listIf) != -1) {
+                                return item
+                            } else {
+                                return false
+                            }
+                        })
+                        if (this.listIf == '') {
+                            this.selctList = this.copySelctList
+                        } else {
+                            this.selctList = filterList
+                        }
+                    },
+                }
+
+            })
+        }
+    </script>
+</body>
+
+</html>

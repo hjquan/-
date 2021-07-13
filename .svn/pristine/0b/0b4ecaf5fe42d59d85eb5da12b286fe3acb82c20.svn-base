@@ -1,0 +1,617 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background-color: #000;
+        }
+
+        .img {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .img img {
+            max-width: 90%;
+            max-height: 310px;
+            margin: 0 auto;
+            /*padding: 20px;*/
+        }
+
+        .img .dg_img {
+            position: absolute;
+            right: 20px;
+            top: 0px;
+        }
+
+        .img .dg_img img {
+            max-width: 24px;
+            max-height: 27px;
+        }
+
+        .img .dg_img p {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1)
+        }
+
+        /*show*/
+
+        .show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 15px;
+            margin-top: 20px;
+        }
+
+        .show-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .line {
+            width: 25px;
+            height: 5px;
+            background: rgba(253, 167, 38, 1);
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+
+        .line_danger {
+            background-color: #f00
+        }
+
+        .show-item p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .footer {
+            background-color: #000;
+            margin-bottom: 20px;
+        }
+
+        .date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .date h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .date i {
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_show {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .show_item {
+            width: 25%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .show_item div {
+            width: 85px;
+            height: 100px;
+            border: 1px solid rgba(4, 164, 69, 1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 5px;
+        }
+
+        .show_item div.danger {
+            border: 1px solid #f00;
+        }
+
+        .show_item h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item h3 {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .tiao-div {
+            width: 90% !important;
+            height: 0.5rem !important;
+            padding: 0 !important;
+            background-color: #ffffff;
+            position: absolute;
+            bottom: 0;
+            left: 0.2rem;
+        }
+
+        .jindu-div {
+            padding: 0 !important;
+            height: 100% !important;
+            width: 60% !important;
+            background-color: #FDA826;
+            border: 0 !important;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            color: #ffffff;
+            font-size: 0.5rem;
+            line-height: 0.5rem;
+        }
+
+        .tower1 {
+            max-width: 100%;
+            max-height: 310px;
+            position: relative;
+            display: block;
+            display: none;
+        }
+
+        .tower2 {
+            max-width: 100%;
+            max-height: 310px;
+            position: relative;
+            display: none;
+            padding-top: 2rem;
+        }
+
+        .tower3 {
+            max-width: 100%;
+            max-height: 310px;
+            position: relative;
+            display: none;
+        }
+
+        .tower1 span {
+            color: #ffffff;
+            font-size: 0.6rem;
+        }
+
+        .tower1 span:nth-child(2) {
+            position: absolute;
+            top: 0%;
+            left: 3%;
+        }
+
+        .tower1 span:nth-child(3) {
+            position: absolute;
+            top: 32%;
+            left: 3%;
+        }
+
+        .tower1 span:nth-child(4) {
+            position: absolute;
+            top: 32%;
+            left: 40%;
+        }
+
+        .tower1 span:nth-child(5) {
+            position: absolute;
+            top: 52%;
+            left: 68%;
+        }
+
+        .tower1 span:nth-child(6) {
+            position: absolute;
+            top: 25%;
+            left: 70%;
+        }
+
+        .tower2 span {
+            color: #ffffff;
+            font-size: 0.6rem;
+            padding-top: 5rem;
+        }
+
+        .tower2 span:nth-child(2) {
+            position: absolute;
+            top: -5%;
+            left: 3%;
+        }
+
+        .tower2 span:nth-child(3) {
+            position: absolute;
+            top: -5%;
+            left: 40%;
+        }
+
+        .tower2 span:nth-child(4) {
+            position: absolute;
+            top: 20%;
+            left: 67%;
+        }
+
+        .tower2 span:nth-child(5) {
+            position: absolute;
+            top: -5%;
+            left: 73%;
+        }
+
+        .tower3 span {
+            color: #ffffff;
+            font-size: 0.6rem;
+        }
+
+        .tower3 span:nth-child(2) {
+            position: absolute;
+            top: 13%;
+            left: 15%;
+        }
+
+        .tower3 span:nth-child(3) {
+            position: absolute;
+            top: 52%;
+            left: 15%;
+        }
+
+        .tower3 span:nth-child(4) {
+            position: absolute;
+            top: 46%;
+            left: 53%;
+        }
+
+        .tower3 span:nth-child(5) {
+            position: absolute;
+            top: 24%;
+            left: 80%;
+        }
+
+        .tower3 span:nth-child(6) {
+            position: absolute;
+            top: 29%;
+            left: 57%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="img">
+            <div class="dg_img" @click="openvideoFn()">
+                <img src="../../../../image/towercrane/diaogou.png" alt="吊钩">
+                <p>吊钩追踪</p>
+            </div>
+            <div class="tower1" id="tower1">
+                <img src="../../../../image/towercrane/tower_lg.png" alt="">
+                <span> 塔帽高：<span v-text="towerCapHeight"></span> m</span>
+                <span> 尾臂长：<span v-text="towerBarmLength"></span> m</span>
+                <span> 塔高：<span v-text="towerArmHeight"></span> m</span>
+                <span> 倍率：<span v-text="towerCapHeight"></span></span>
+                <span> 臂长：<span v-text="towerFarmLength"></span> m</span>
+            </div>
+            <div class="tower2" id="tower2">
+                <img src="../../../../image/towercrane/tower_lg2.png" alt="">
+                <span> 尾臂长：<span v-text="towerBarmLength"></span> m</span>
+                <span> 塔高：<span v-text="towerArmHeight"></span> m</span>
+                <span> 倍率：<span v-text="towerCapHeight"></span></span>
+                <span> 臂长：<span v-text="towerFarmLength"></span> m</span>
+            </div>
+            <div class="tower3" id="tower3">
+                <img src="../../../../image/towercrane/tower_lg3.png" alt="">
+                <span> 塔帽高：<span v-text="towerCapHeight"></span> m</span>
+                <span> 尾臂长：<span v-text="towerBarmLength"></span> m</span>
+                <span> 塔高：<span v-text="towerArmHeight"></span> m</span>
+                <span> 倍率：<span v-text="towerCapHeight"></span></span>
+                <span> 臂长：<span v-text="towerFarmLength"></span> m</span>
+            </div>
+            <div class="show">
+                <div class="show-item">
+                    <div class="line"></div>
+                    <p>预警</p>
+                </div>
+                <div class="show-item">
+                    <div class="line line_danger"></div>
+                    <p>报警</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="date">
+                <h2 v-text="newTime">2020-05-12 02:34</h2>&nbsp;
+                <i class="aui-iconfont aui-icon-recovery" @click="update()"></i>
+            </div>
+            <ul class="f_show">
+                <li class="show_item">
+                    <div class="ljStatealarm">
+                        <h2>力矩(tm)</h2>
+                        <h2 class="ljStatealarm-text" v-text="towerRealTimeInfo.moment"></h2>
+                    </div>
+                    <!-- <div class="tiao-div">
+                        <div class="jindu-div" style="background-color: #04A446;" id="shudu">
+                            60%
+                        </div>
+                    </div> -->
+                </li>
+                <li class="show_item">
+                    <!-- class="danger" 红色 -->
+                    <div class="czStatealarm">
+                        <h2>载重(t)</h2>
+                        <h2 class="czStatealarm-text" v-text="towerRealTimeInfo.realLoad">0.2</h2>
+                    </div>
+                    <!-- <div class="tiao-div">
+                        <div class="jindu-div" style="background-color: #04A446;" id="shudu">
+                            60%
+                        </div>
+                    </div> -->
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>额重(t)</h2>
+                        <h2 v-text="towerRealTimeInfo.ratedLoad">0.2</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="bfStatealarm">
+                        <h2>幅度(m)</h2>
+                        <h2 class="bfStatealarm-text" v-text="towerRealTimeInfo.danRange">0.2</h2>
+                        <!-- <h2 style="font-size: 0.6rem;">v：<span v-text="towerRealTimeInfo.moment"></span> m/s</h2> -->
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="gdStatealarm">
+                        <h2>高度(m)</h2>
+                        <h2 class="gdStatealarm-text" v-text="towerRealTimeInfo.height">2.4</h2>
+                        <!-- <h2 v-text="towerRealTimeInfo.realLoad">0.2</h2> -->
+                        <!-- <h2 style="font-size: 0.6rem;">v：<span v-text="towerRealTimeInfo.realLoad"></span>m/s</h2> -->
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="zjStatealarm">
+                        <h2>回转(°)</h2>
+                        <h2 class="zjStatealarm-text" v-text="towerRealTimeInfo.rotation">0.2</h2>
+                        <!-- <h2 style="font-size: 0.6rem;">v：<span v-text="towerRealTimeInfo.realLoad"></span>r/s</h2> -->
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="fsStatealarm">
+                        <h2>风速(m/s)</h2>
+                        <h2 class="fsStatealarm-text" v-text="towerRealTimeInfo.realLoad">0.2</h2>
+                    </div>
+                    <!-- <div class="tiao-div">
+                        <div class="jindu-div" id="shudu">
+                            60%
+                        </div>
+                    </div> -->
+                </li>
+                <li class="show_item">
+                    <div class="qjStateonlin">
+                        <h2>倾角(°)</h2>
+                        <!-- <h2>X：<span class="qjStateonlin-text" v-text="towerRealTimeInfo.realLoad"></span></h2>
+                        <h2>Y：<span class="qjStateonlin-text" v-text="towerRealTimeInfo.realLoad"></span></h2> -->
+                        <h2><span class="qjStateonlin-text" v-text="towerRealTimeInfo.evelation"></span></h2>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    nav_txt: '', //nav文本
+                    cur_nav_i: 0,
+                    towerRunMonitor: api.pageParam.towerRunMonitor, //
+                    towerRealTimeInfo: {
+                        moment: null,
+                        realLoad: null,
+                        ratedLoad: null,
+                        danRange: null,
+                        rotation: null,
+                        height: null,
+                        moment: null,
+                        moment: null,
+                        moment: null,
+                        moment: null,
+                        moment: null,
+                    }, //运行数据
+                    newTime: $app.formDate(false, '-', true).substring(0, 17),
+                    towerDeviceInfo: null,   //塔机信息
+                    towerCapHeight: null,
+                    towerBarmLength: null,
+                    towerArmHeight: null,
+                    towerFarmLength: null,
+                },
+                created: function () {
+                    //运行数据
+                    this.getTowerRealTimeInfo();
+                    this.getTowerInfoById();
+                    var that = this;
+                    var timer = setInterval(function () {
+                        that.getTowerInfoById();
+                        that.newTime = $app.formDate(false, '-', true).substring(0, 17);
+                    }, 60000)
+                },
+                methods: {
+                    //获取单个塔机详细信息
+                    getTowerInfoById: function () {
+                        var that = this;
+                        var prame = {
+                            towerId: this.towerRunMonitor.id,
+                            // towerId: this.towerDeviceInfo.id,
+
+                        };
+                        console.log("请求参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getTowerInfoByIdURL,
+                            prame,
+                            function (ret) {
+                                console.log("返回数据：" + JSON.stringify(ret.obj));
+                                that.towerDeviceInfo = ret.obj
+                                that.towerCapHeight = that.towerDeviceInfo.towerCapHeight;
+                                that.towerBarmLength = that.towerDeviceInfo.towerBarmLength;
+                                that.towerArmHeight = that.towerDeviceInfo.towerArmHeight;
+                                that.towerFarmLength = that.towerDeviceInfo.towerFarmLength;
+                                that.updateDom();
+                            }
+                        )
+                    },
+                    updateDom: function () {
+                        this.towerDeviceInfo.towerType = 2;
+                        if (this.towerDeviceInfo.towerType == 3) {
+                            document.getElementById("tower1").style.display = "none";
+                            document.getElementById("tower2").style.display = "none";
+                            document.getElementById("tower3").style.display = "block";
+                        }
+                        if (this.towerDeviceInfo.towerType == 2) {
+                            document.getElementById("tower1").style.display = "none"
+                            document.getElementById("tower2").style.display = "block";
+                            document.getElementById("tower3").style.display = "none";
+                        }
+                    },
+                    openvideoFn: function () {
+                        var that = this;
+                        api.openWin({
+                            name: 'video',
+                            url: '../video/index.html',
+                            pageParam: {
+                                towerDeviceInfo: that.towerDeviceInfo
+                            }
+                        });
+                    },
+                    //运行数据
+                    getTowerRealTimeInfo: function () {
+                        var that = this;
+                        console.log(this.towerRunMonitor.ccid.toString() + "")
+                        var prame = {
+                            ccid: this.towerRunMonitor.ccid.toString(),
+                        };
+                        $app.post(
+                            true,
+                            getTowerRealTimeInfoURL,
+                            prame,
+                            function (ret) {
+                                console.log("塔机运行数据：" + JSON.stringify(ret))
+                                that.towerRealTimeInfo = ret.obj[0];
+                                that.towerRealTimeInfoUI(that.towerRealTimeInfo);
+                            }
+                        )
+                    },
+                    //根据数据刷新页面
+                    towerRealTimeInfoUI: function (date) {
+                        switch (date.ljStatealarm) {
+                            case 1:
+                                document.getElementsByClassName("ljStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("ljStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 2:
+                                document.getElementsByClassName("ljStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("ljStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.czStatealarm) {
+                            case 1:
+                                document.getElementsByClassName("czStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("czStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 2:
+                                document.getElementsByClassName("czStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("czStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.gdStatealarm) {
+                            case 1 || 2:
+                                document.getElementsByClassName("gdStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("gdStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 3 || 4:
+                                document.getElementsByClassName("gdStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("gdStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.zjStatealarm) {
+                            case 1 || 2:
+                                document.getElementsByClassName("zjStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("zjStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 3 || 4:
+                                document.getElementsByClassName("zjStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("zjStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.fsStatealarm) {
+                            case 1:
+                                document.getElementsByClassName("fsStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("fsStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 2:
+                                document.getElementsByClassName("fsStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("fsStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.qjStateonlin) {
+                            case 1:
+                                document.getElementsByClassName("qjStateonlin")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("qjStateonlin-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 2:
+                                document.getElementsByClassName("qjStateonlin")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("qjStateonlin-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                        switch (date.bfStatealarm) {
+                            case 1 || 2:
+                                document.getElementsByClassName("bfStatealarm")[0].setAttribute('style', 'border: 1px solid rgba(253, 167, 38, 1);');
+                                document.getElementsByClassName("bfStatealarm-text")[0].setAttribute('style', 'color: rgba(253, 167, 38, 1);');
+                                break;
+                            case 3 || 4:
+                                document.getElementsByClassName("bfStatealarm")[0].setAttribute('style', 'border: 1px solid #f00;');
+                                document.getElementsByClassName("bfStatealarm-text")[0].setAttribute('style', 'color: #f00;');
+                                break;
+                        }
+                    },
+                    shud: function () {
+                        var df = "50%"
+                        document.getElementById("shudu").style.setProperty('width', df, 'important');
+                    },
+                    //刷新
+                    update: function () {
+                        //运行数据
+                        this.getTowerRealTimeInfo();
+                        this.newTime = $app.formDate(false, '-', true).substring(0, 17)
+                    }
+                },
+            })
+        }
+    </script>
+</body>
+
+</html>

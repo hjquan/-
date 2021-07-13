@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../css/voice.css"> -->
+    <link rel="stylesheet" href="../../../css/pj.css">
+    <style>
+        body,html{height: 100%}
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .person{padding: 10px;position: relative;padding-right: 15px;background-color: #fff}
+
+        .person,.lf{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lf img{
+            width: 50px;
+            height: 50px;
+            margin-right: 15px
+        }
+        .name{color: #000;font-size: 15px;}
+        .iphone{color: #555;font-size: 12px;}
+
+
+        .list_item{
+            margin-top: 5px;
+            width: 100%;
+            border-radius: 15px;
+            /*height: 250px;*/
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 1px 1px #ccc;
+        }
+        .item_top{
+            padding:0 15px;
+            height: 75px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+
+        }
+        .bg_f5{
+            background-color: #f5f5f5;
+        }
+        .logo{margin-right: 35px;}
+
+        /*.logo img{margin-bottom: 2px;width: 31px;height: 31px;}*/
+        .logo_rt p{
+            font-size:14px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(0,0,0,1);
+            padding: 5px 0;
+        }
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%);
+        }
+        .item_center{
+            padding:  15px;
+            position: relative;
+        }
+        .center_img{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .center_img img{
+            width: 60px;
+            height: 60px;
+            margin-right: 5px;
+        }
+        .item_center h1{
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(85,85,85,1);
+            margin-bottom: 13px;
+        }
+
+        .food{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            padding: 0 15px;
+        }
+        .mt_3{
+            margin-bottom: 3px;
+        }
+        .fs_30{
+            font-size: 30px;
+            color: #FF0000;
+        }
+        .del{
+            color:#FF0000;
+            font-size:20px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+        }
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+            <ul class="bg">
+                <li class="person border_bottom_after">
+                    <div class="lf">
+                        <img :src="pageParam.urlPrefix+pageParam.photo" alt="">
+                        <div>
+                            <h3 class="name" v-text="pageParam.name">张三</h3>
+                            <p class="iphone" v-text="pageParam.mobile">13541870165</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="list_detail bg_f5 mt_3" v-if="evaluateList.length">
+                <li class="list_item mt_3" v-for="item in evaluateList">
+
+                    <div class="item_top line_after_1">
+                        <i  class=" del aui-iconfont aui-icon-trash" tapmode @click="evaluateDelFn(item)" v-if="isCurPerson(item)"></i>
+                        <div class="logo">
+                            <!-- <img :src="item.picture" alt=""> -->
+                            <i class="iconfont  fs_30" :class="[item.level == '好评' ? 'icon-haopingxiaolian-xianxing' : item.level == '中评' ? 'icon-zhongping' :  'icon-bad']"></i>
+                            <p v-text="item.level">好评</p>
+                        </div>
+                        <div class="logo_rt">
+                            <p><span>所属项目</span>: <span v-text="currenProject">奥海*江悦府</span></p>
+                        </div>
+                    </div>
+                    <div class="item_center line_after_1">
+                        <h1 v-text="item.content">做事仔细，玩弄不供</h1>
+                        <div class="center_img">
+                            <img :src="item.picture" alt="" @click="imgSee(item.picture)">
+                            <!-- <img src="../../../image/logo.png" alt=""> -->
+                        </div>
+                    </div>
+                    <div class="food">
+                        <p>评价人：<span v-text="item.appraiser">刘明</span></p>
+                        <p v-text="item.date">2020-05-26</p>
+                    </div>
+                </li>
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../image/noData.png" alt="">
+                <p>暂无评论~</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        var vm;
+        apiready = function() {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');;
+            var photoBrowser = api.require('photoBrowser');
+            //删除草稿
+
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    pageParam:'',//接收跨页面值
+                    evaluateList:'',//评价列表
+                    currenProject:'',//所属项目
+
+                },
+                watch: {
+
+                },
+                computed: {
+
+
+
+                },
+                mounted: function() {
+
+
+                },
+                created: function() {
+                    this.currenProject = $api.getStorage('currentProject');
+                    this.pageParam = api.pageParam.personInfo;
+                    this.init()
+                },
+                methods: {
+                    //判断是不是当前评论人
+                    isCurPerson:function(data){
+                        console.log(data.creator == $api.getStorage('userId'));
+                        return data.creator == $api.getStorage('userId') ? true : false;
+
+                    },
+                    //删除评论
+                    evaluateDelFn:function(data){
+                        var _this = this;
+                        api.confirm({
+                            title: '提示',
+                            msg: '确定删除此评论',
+                            buttons: ['确定', '取消']
+                        }, function(ret, err) {
+                            var index = ret.buttonIndex;
+                            if(index == 1){
+                                var params = {
+                                    id:data.id,
+                                    creator:$api.getStorage('userId')
+                                }
+                                $app.post(
+                                    true,
+                                    evaluateDel,
+                                    params,
+                                    function(ret){
+                                        console.log($api.jsonToStr(ret));
+                                        api.toast({
+                                            msg: ret.msg,
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+                                        _this.init()
+                                        // setTimeout(function(){
+                                        //     api.closeWin()
+                                        // },500)
+
+                                    }
+                                )
+                            }
+                        });
+
+                    },
+                    //获取评价
+                    init:function(){
+                        var _this =this;
+                        var params = {
+                            user:{
+                                id:api.pageParam.personInfo.id
+                            }
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            getEvaluateList,
+                            params,
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.evaluateList = ret.obj;
+
+                            }
+                        )
+                    },
+
+
+                    // //图片查看
+                    imgSee: function(url, index) {
+
+                        photoBrowser.open({
+                            images: [url],
+                            // activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

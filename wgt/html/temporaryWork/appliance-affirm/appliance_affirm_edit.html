@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height">
+        <header class="aui-bar aui-bar-nav bg_f " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <section class="aui-title">零星机械使用确认</section>
+        </header>
+        <section class="content">
+
+        </section>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            api.openFrame({
+                name: 'appliance_affirm_edit_frame',
+                url: './appliance_affirm_edit_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    confirmId: api.pageParam.confirmId
+                },
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/voice.css">
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+
+
+        .video-conten {
+            width: 100%;
+            height: 300px;
+            border: 1px #ffffff solid;
+        }
+
+        .contron {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+            background: rgba(27, 27, 27, 0.8);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10px;
+        }
+
+
+        .contron>* {
+            flex: 1;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+        }
+
+        .contron img {
+            height: 15px;
+            width: 15px;
+            margin: 0 auto;
+        }
+
+        .nav_video {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            /*flex-wrap: wrap;*/
+            align-items: center;
+            padding: 13px 5px;
+            overflow: scroll;
+        }
+
+        .nav_item {
+            position: relative;
+            flex: 0 0 120px;
+            margin-right: 6px;
+        }
+
+        .nav_item video {
+            width: 100%;
+            height: 67px;
+            background: rgba(181, 181, 181, 0.4);
+        }
+
+        .nav_stack {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: rgba(27, 27, 27, 0.8);
+            font-size: 9px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .txt_online {
+            color: #00994C
+        }
+
+        .tab_box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
+        }
+
+        .tab_item {
+            width: 25%;
+            height: 75px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circel_meau {
+            width: 50px;
+            height: 50px;
+            background: rgba(5, 143, 253, 0.2);
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .tab_item img {
+            width: 25px;
+            height: 20px;
+        }
+
+        .tab_item p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .circel {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 40px;
+            border: 8px solid #eee
+        }
+
+        .circel i {
+            font-size: 18px;
+            font-weight: 900
+        }
+
+        .badge {
+            width: 8px;
+            height: 8px;
+            background-color: #f00;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="video-conten">
+
+        </div>
+        <ul class="nav_video">
+            <li class="nav_item" v-for="(item,index) in cameraListInfo" @click="selectVideo(item)">
+                <video :poster="item.posterAddress">
+                    <source src="movie.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="nav_stack">
+                    <div>设备1: <span>摄像机位1</span> </div>
+                    <div class="txt_online">在线</div>
+                </div>
+            </li>
+            <li v-if="cameraListInfo.length !== 6">
+                <div class="circel"><i class="aui-iconfont aui-icon-plus" @click="addHomeVideo()"></i></div>
+            </li>
+        </ul>
+        <ul class="tab_box">
+            <li class="tab_item" @click="realtimemonitoringFn()">
+                <div class="circel_meau">
+                    <img src="../../../image/videosurveillance/realtime.png" alt="">
+                </div>
+                <p>实时监控</p>
+            </li>
+            <li class="tab_item" @click="replayTheaterFn()">
+                <div class="circel_meau">
+                    <img src="../../../image/videosurveillance/replayTheater.png" alt="">
+                </div>
+                <p>录像回放</p>
+            </li>
+            <li class="tab_item" @click="captureFn()">
+                <div class="circel_meau">
+                    <div class="badge"></div>
+                    <img src="../../../image/videosurveillance/captureevents.png" alt="">
+                </div>
+                <p>抓拍事件</p>
+            </li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+
+            // var moviePlayer = api.require('moviePlayer');
+            // moviePlayer.open({
+            //     rect: {
+            //         x: 0,
+            //         y: api.pageParam.offseth,
+            //         w: api.frameWidth,
+            //         h: 300
+            //     },
+            //     showBack: false,
+            //     // path: 'https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218114723HDu3hhxqIT.mp4',
+            //     path: 'http://www.w3school.com.cn/example/html5/mov_bbb.mp4',
+            //     autoPlay: true
+            // }, function (ret, err) {
+            //     if (ret) {
+            //         // alert(JSON.stringify(ret));
+            //         // } else {
+            //         // alert(JSON.stringify(err));
+            //     }
+            //     console.log(JSON.stringify(ret))
+            //     console.log(JSON.stringify(err))
+            // });
+
+            var moviePlayer = api.require('moviePlayer');
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    cameraListInfo: [], //摄像机数组
+                    approveCamera: {},  //用户选择的视频
+                    videoPath: ""
+                },
+                created: function () {
+                    this.getAICaptureInfoList();
+                },
+                methods: {
+                    //用户选择的视频
+                    selectVideo: function (item) {
+                        var that = this;
+                        this.approveCamera = item;
+                        videoPath = that.approveCamera.playAddr
+                    },
+                    //添加首页视频显示
+                    addHomeVideo: function () {
+                        api.openWin({
+                            name: 'add_video',
+                            url: './add_video.html',
+                            pageParam: {}
+                        });
+                    },
+                    //查询视频列表
+                    getAICaptureInfoList: function () {
+                        var that = this;
+                        var prame = {
+                            projectId: $api.getStorage('enterpriseId'),
+                            cranesId: "",
+                            type: "100",
+                            isHomePage: "1"
+                        };
+                        console.log("请求参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getCameraListInfoURL,
+                            prame,
+                            function (ret) {
+                                if (ret.obj) {
+                                    that.cameraListInfo = ret.obj;
+                                    that.approveCamera = that.cameraListInfo[0];
+                                    that.videoPath = that.cameraListInfo[0].playAddr
+                                }
+                                that.openVideo();
+                            }
+                        )
+                    },
+                    openVideo: function () {
+                        var that = this;
+                        moviePlayer.open({
+                            rect: {
+                                x: 0,
+                                y: api.pageParam.offseth,
+                                w: api.frameWidth,
+                                h: 300
+                            },
+                            styles: {
+                                head: {
+                                    bg: 'rgba(161,161,161,0.5)',
+                                    height: 44,
+                                    y: 20,
+                                    title: {
+                                        size: 20,
+                                        color: '#fff',
+                                        width: 40,
+                                        leftMargin: 10
+                                    },
+                                    backSize: 30,
+                                    backImg: 'widget://image/back.png',
+                                    customButtons: [{
+                                        w: 30,
+                                        h: 30,
+                                        rightMagin: 10,
+                                        img: 'widget://image/image/collect.png',
+                                        imgSelected: 'fs://image/collectSelected.png',
+                                    }]
+                                },
+                                foot: {
+                                    bg: 'rgba(0,0,0,0.5)',
+                                    height: 44,
+                                    palyBtn: {
+                                        size: 20,
+                                        playImg: 'widget://image/play.png',
+                                        pauseImg: 'widget://image/pause.png',
+                                        marginLeft: 5
+                                    },
+                                    currentTimeLabel: {
+                                        textSize: 14,
+                                        textColor: "#FFF",
+                                        textWidth: 43,
+                                        marginLeft: 5
+                                    },
+                                    seekBar: {
+                                        sliderImg: 'widget://image/circle.png',
+                                        sliderW: 20,
+                                        sliderH: 20,
+                                        progressColor: '#696969',
+                                        progressSelected: '#76EE00',
+                                        marginLeft: 10,
+                                        marginRight: 10
+                                    },
+                                    totalTimeLabel: {
+                                        textSize: 14,
+                                        textColor: "#FFF",
+                                        textWidth: 43,
+                                        marginRight: 5
+                                    },
+                                    fullscreenBtn: {
+                                        size: 20,
+                                        verticalImg: 'widget://image/vertical.png',
+                                        horizontalImg: 'widget://image/horizontal.png',
+                                    }
+                                }
+                            },
+                            showBack: false,
+                            // path: 'http://hls01open.ys7.com/openlive/a870f8d36bca40eea9a598fc0efc7056.m3u8',
+                            path: that.videoPath,
+                            autoPlay: true
+                        }, function (ret, err) {
+                            if (ret) {
+                                // alert(JSON.stringify(ret));
+                                // } else {
+                                // alert(JSON.stringify(err));
+                            }
+                            console.log("+++++++++++++++++++++:" + JSON.stringify(that.videoPath));
+                        });
+                    },
+                    //打开设备台账
+                    equipmentAccountFn: function () {
+                        api.openWin({
+                            name: 'equipmentAccount',
+                            url: './equipmentAccount/index.html',
+                            pageParam: {}
+                        });
+                    },
+                    //录像回放
+                    replayTheaterFn: function () {
+                        api.openWin({
+                            name: 'replayTheater',
+                            url: './replayTheater/index.html',
+                            pageParam: {}
+                        });
+                    },
+                    //时时监控
+                    realtimemonitoringFn: function () {
+                        api.openWin({
+                            name: 'realtimemonitoringFn',
+                            url: './realtimemonitoring/list_detail.html',
+                            pageParam: {}
+                        });
+                    },
+                    //打开抓拍事件
+                    captureFn: function () {
+                        api.openWin({
+                            name: 'captureevents',
+                            url: './captureevents/index.html',
+                            pageParam: {}
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

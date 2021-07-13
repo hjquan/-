@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../../commonUi/iosSelect/iosSelect.css"> -->
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: #fff;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_45 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn_box {
+            width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .btn_item {
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            background: #d2d2d2;
+            /*border: 1px solid rgba(5, 143, 253, 1);*/
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+            color: #fff;
+        }
+
+        .btn_active {
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .mian_item .write {
+            text-align: right;
+            padding-right: 10px;
+            position: relative;
+        }
+
+        .require {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 0, 0, 1);
+        }
+
+        .show {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+
+        }
+
+        .show_item {
+            width: 275px;
+            height: 45px;
+            border: 1px solid rgba(210, 210, 210, 1);
+            border-radius: 5px;
+            margin-top: 7px;
+            text-align: center;
+            line-height: 35px;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+            display: flex;
+            justify-content: center;
+            ;
+            align-items: center;
+            padding: 0 5px;
+            position: relative;
+        }
+
+        .show_item input {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #d2d2d2;
+            border-radius: 3px;
+            margin: 0 5px;
+            text-align: center;
+            color: #058FFD;
+            font-size: 10px;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%);
+        }
+
+        .show_item .workeTime {
+            width: 60px;
+        }
+
+        .mian_item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+            position: relative;
+        }
+
+        .mian_item p {
+            flex: 150px;
+        }
+
+        .layout {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 10;
+        }
+
+        .btnBox {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 45px;
+            background-color: #fff;
+            text-align: center;
+            padding: 0 15px;
+
+        }
+
+        .btn {
+            flex: 0 0 60px;
+            color: #000;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 3px;
+        }
+
+        .btn:last-child {
+            color: #fff;
+            background-color: #058FFD;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">新增班组</div>
+                <!-- <a class="aui-pull-right aui-btn" >
+                    <span class="btn color_d5" tapmode >评价</span>
+                </a> -->
+            </header>
+
+        </div>
+        <div class="main_box mb_45">
+
+
+            <ul>
+                <li class="mian_item line_after_1">
+                    <p>班组名称<span class="require">*</span></p>
+                    <input class="write" type="text" v-model="ruleinfo.ruleName" placeholder="请输入">
+                </li>
+                <li class="mian_item line_after_1" @click="selectObj()">
+                    <p>所属单位<span class="require">*</span></p>
+                    <input class="write" type="text" v-model="ruleinfo.unitName" placeholder="请选择" disabled>
+                </li>
+                <li class="mian_item " tapmode>
+                    <p>选择考勤规则</p>
+                    <!-- <input class="write" type="text" v-model="ruleinfo.ruleName" placeholder="请输入"> -->
+                    <span></span>
+                </li>
+                <li class="addcontent">
+                    <ul class="show ">
+                        <li class="show_item line_after_1" tapmode @click="gotoworkFn()">
+                            <span>上班时间&nbsp;&nbsp;<span class="require">*</span></span>&nbsp;&nbsp;
+                            <input type="text" readonly v-model="ruleinfo.workStartDate" class="txt_blue workeTime">
+                        </li>
+                        <li class="show_item" tapmode @click="gooffworkFn()">
+                            <span>下班时间&nbsp;&nbsp;<span class="require">*</span></span>&nbsp;&nbsp;
+                            <input type="text" readonly v-model="ruleinfo.workEndDate" class="txt_blue workeTime">
+                        </li>
+
+                    </ul>
+                    <ul class="show">
+                        <li class="show_item">
+                            <span>加班计算 (下班后</span>
+                            <input type="tel" maxlength="2" v-model="ruleinfo.overtiameComeHour" class="txt_blue">
+                            <span>分钟，开始计算加班)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>迟到计算 (上班后</span>
+                            <input type="tel" maxlength="2" v-model="ruleinfo.belateComeTime" class="txt_blue">
+                            <span>分钟，开始计算迟到)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>早退计算 (下班前</span>
+                            <input type="tel" maxlength="2" v-model="ruleinfo.earlierComeTime" class="txt_blue">
+                            <span>分钟，开始计算早退)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>旷工计算 (上班后</span>
+                            <input type="tel" maxlength="2" v-model="ruleinfo.stayawayAll" class="txt_blue">
+                            <span>分钟，开始计算旷工)</span>
+                        </li>
+
+
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="btn_box">
+                <div class="btn_item "
+                    :class="{'btn_active':ruleinfo.workStartDate && ruleinfo.workEndDate && ruleinfo.ruleName}" tapmode
+                    @click="submitRole()">确定</div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            $api.fixStatusBar($api.dom('header'));
+            var UICustomPicker = api.require('UICustomPicker');
+            $api.fixStatusBar($api.dom('.layout'));
+            //监听上下班自定义事件
+            api.addEventListener({
+                name: 'addteam_time_event'
+            }, function (ret, err) {
+                if (ret) {
+                    console.log($api.jsonToStr(ret));
+                    var data = ret.value
+                    if (data.aaddteam_timeme) {
+                        vm.ruleinfo.workStartDate = data.workerDate
+                    } else {
+                        vm.ruleinfo.workEndDate = data.workerDate
+                    }
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleinfo: '',//考勤规则
+                    isworkerType: 0,//记录上班还是下班时间录入（0上班）1下班
+                    selectOjcInfo: "",   //选择的单位信息
+                },
+                created: function () {
+                    var data = api.pageParam.addteaminfo;
+                    var that = this;
+                    this.ruleinfo = {
+                        ruleName: '', //考勤名称/班组名称
+                        elastic: '0', //考勤类型
+                        overtiameComeHour: '', //加班时间
+                        belateComeTime: '', //迟到时间
+                        earlierComeTime: '', //早退时间
+                        stayawayAll: '', //旷工时间
+                        workStartDate: '', //工作开始时间
+                        workEndDate: '', //工作结束时间
+                        projectId: $api.getStorage('enterpriseId'),//项目编号
+                        unitId: '',
+                        unitName: '',
+                    }
+                    if (data) {
+                        this.ruleinfo.id = "";
+                        this.getByIdRuleFn(data.id);
+                    }
+                    api.addEventListener({
+                        name: 'new-realname-selectOjc'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.selectOjcInfo = ret.value.selectOjcInfo;
+                            that.ruleinfo.unitId = ret.value.selectOjcInfo.id;
+                            that.ruleinfo.unitName = ret.value.selectOjcInfo.name;
+                        }
+                    });
+                },
+                methods: {
+                    selectObj: function () {
+                        api.openWin({
+                            name: 'selectObj',
+                            url: 'new-realname/selectObj.html',
+                        });
+                    },
+
+                    //下班时间
+                    gooffworkFn: function () {
+                        var _this = this;
+                        this.isworkerType = 1;
+                        api.openFrame({
+                            name: 'addteam_time',
+                            url: './addteam_time.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                aaddteam_timeme: false
+                            },
+                            // bounces: true,
+                            bgColor: 'transparent',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    //上班时间
+                    gotoworkFn: function () {
+                        var _this = this;
+                        api.openFrame({
+                            name: 'addteam_time',
+                            url: './addteam_time.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                aaddteam_timeme: true
+                            },
+                            // bounces: true,
+                            bgColor: 'transparent',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+
+
+
+                    //通过id获取规则
+                    getByIdRuleFn: function (id) {
+                        var _this = this;
+                        $app.post(
+                            true,
+                            ruleInfoById,
+                            { 'id': id },
+                            function (ret) {
+                                var data = ret.obj;
+                                _this.ruleinfo.id = ret.obj.id;
+                                _this.ruleinfo.ruleName = data.ruleName;
+                                _this.ruleinfo.overtiameComeHour = data.overtiameComeHour;
+                                _this.ruleinfo.belateComeTime = data.belateComeTime;
+                                _this.ruleinfo.earlierComeTime = data.earlierComeTime;
+                                _this.ruleinfo.stayawayAll = data.stayawayAll;
+                                _this.ruleinfo.workStartDate = data.workStartDate;
+                                _this.ruleinfo.workEndDate = data.workEndDate;
+                                _this.ruleinfo.unitName = data.unitName;
+                                _this.ruleinfo.unitId = data.unitId;
+                            }
+                        )
+                    },
+
+                    //提交数据u
+                    submitRole: function () {
+                        var _this = this;
+                        var data = api.pageParam.addteaminfo;
+                        if (!this.ruleinfo.workStartDate || !this.ruleinfo.workEndDate || !this.ruleinfo.ruleName) return false;
+                        var params, url;
+                        if (!data) {//新增
+                            params = this.ruleinfo;
+                            url = realNameruleAdd;
+                            console.log("asdsadsadsadsad" + JSON.stringify(this.ruleinfo));
+                            console.log('add');
+                        } else {
+                            params = this.ruleinfo;
+                            url = ruleEdit;
+                            console.log('edit');
+                        }
+                        console.log("请求参数" + $api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            url,
+                            params,
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                setTimeout(function () { api.closeWin() }, 500)
+                            }
+                        )
+                    }
+                }
+            })
+
+
+        };
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

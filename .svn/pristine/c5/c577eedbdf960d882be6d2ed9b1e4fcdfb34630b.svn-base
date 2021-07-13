@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .txtbasis {
+            color: #333;
+            /*font-size: 14px;*/
+        }
+
+        .navbar {
+            display: flex;
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            font-size: 15px;
+            padding-left: .75rem;
+        }
+
+        .headerPosition {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .main {
+            margin-top: 80px;
+            margin-bottom: 20px;
+            min-height: 60vh;
+        }
+
+        .nodata {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nodata p {
+            font-size: 18px;
+            color: #999;
+        }
+
+        .nodata i {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .ratate {
+            -webkit-transition-property: -webkit-transform;
+            -webkit-transition-duration: 1s;
+            -moz-transition-property: -moz-transform;
+            -moz-transition-duration: 1s;
+            -webkit-animation: rotate 3s linear infinite;
+            -moz-animation: rotate 3s linear infinite;
+            -o-animation: rotate 3s linear infinite;
+            animation: rotate 3s linear infinite;
+        }
+
+        @-webkit-keyframes rotate {
+            from {
+                -webkit-transform: rotate(0deg)
+            }
+            to {
+                -webkit-transform: rotate(360deg)
+            }
+        }
+
+        @-moz-keyframes rotate {
+            from {
+                -moz-transform: rotate(0deg)
+            }
+            to {
+                -moz-transform: rotate(359deg)
+            }
+        }
+
+        @-o-keyframes rotate {
+            from {
+                -o-transform: rotate(0deg)
+            }
+            to {
+                -o-transform: rotate(359deg)
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg)
+            }
+            to {
+                transform: rotate(359deg)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light headerPosition" id="header">
+            <div class="aui-pull-left aui-btn">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <!-- <a class="aui-pull-right aui-btn" tapmode @click="backIndex()">
+                    <span class="aui-iconfont aui-icon-close"></span>
+                </a> -->
+            </div>
+            <div class="aui-title header_title" v-text="checkType == 1?'分项检查':'随机检查'"></div>
+            <a class="aui-pull-right aui-btn" tapmode @click="backIndex()">
+
+            </a>
+        </header>
+        <div class="main">
+            <!-- <ul class="navbar">
+                <li>安全管理<span>&nbsp;\&nbsp;</span> </li>
+                <li>安全管理</li>
+            </ul> -->
+            <div class="aui-card-list-content">
+                <ul class="aui-list aui-media-list" v-if="basisData">
+                    <li class="aui-list-item aui-list-item-middle" v-for="(item) in basisData" tapmode @click="openOneBasis(item)">
+                        <div class="aui-media-list-item-inner">
+                            <div class="aui-list-item-inner aui-list-item-arrow txtbasis" v-cloak>
+                                {{item.name}}
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <!-- <div class="nodata" v-else>
+                    <i class="aui-iconfont aui-icon-recovery ratate"></i>
+                    <p>数据加载中,请稍等...</p>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+
+    <script>
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            // 底部适配？
+            $api.fixTabBar($api.dom('.main'));
+            vm.init();
+            vm.checkType = $api.getStorage('checkType');
+        }
+
+        function closeWin() {
+            api.closeWin();
+
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                basisData: '',
+                checkType: ''
+            },
+            methods: {
+                backIndex: function() {
+                    api.closeToWin({
+                        name: 'Index'
+                    });
+                },
+                init: function() {
+                    var isbasis = api.getPrefs({
+                        sync: true,
+                        key: 'basis'
+                    })
+
+                    if (!isbasis) {
+                        setTimeout(function(){
+                            api.showProgress({
+                                style: 'default',
+                                animationType: 'fade',
+                                title: '努力加载中...',
+                                text: '先喝杯茶...',
+                                modal: true
+                            });
+                        },100)
+                        ajaxPost(
+                            false,
+                            '加载中...',
+                            showDictListURL, {
+                                'dictCode': '11'
+                            },
+                            function(ret) {
+                                setTimeout(function(){
+                                    api.hideProgress();
+
+                                },500)
+                                api.setPrefs({
+                                    key: 'basis',
+                                    value: ret.obj
+                                });
+                                vm.basisData = ret.obj;
+                            }
+                        )
+                    } else {
+                        api.showProgress({
+                            style: 'default',
+                            animationType: 'fade',
+                            title: '努力加载中...',
+                            text: '先喝杯茶...',
+                            modal: true
+                        });
+                        setTimeout(function(){
+                            api.hideProgress();
+
+                        },500)
+                        vm.basisData = JSON.parse(isbasis);
+
+                    }
+                },
+                openOneBasis: function(item) {
+                    if (item.name_en == 'end') {
+                        api.sendEvent({
+                            name: 'basisEvent',
+                            extra: {
+                                lastBsis: item
+                            }
+                        });
+
+                        api.openWin({
+                            name: 'randomCheck',
+                            url: './randomCheck.html',
+                            pageParam: {
+                                'lastBsis': item,
+                                'basis_bz': api.pageParam.basis_bz,
+                                'dictionaries_id': api.pageParam.dictionaries_id
+                            }
+                        });
+                    } else {
+                        var navigationBar = [];
+                        navigationBar.push(item.name);
+                        $api.setStorage('navigationBar', navigationBar);
+                        api.openWin({
+                            name: 'basis_02',
+                            url: './basis_02.html',
+                            reload: true,
+                            pageParam: {
+                                'lastBsis': item,
+                                'basis_bz': item.bz,
+                                'dictionaries_id': item.dictionaries_id,
+                                navigationBar: navigationBar
+                            }
+                        });
+
+                    }
+
+
+                }
+            }
+
+        })
+    </script>
+</body>
+
+</html>

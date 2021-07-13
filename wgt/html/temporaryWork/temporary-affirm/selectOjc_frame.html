@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/addlog.css" />
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F7F4F8;
+        }
+
+        .content {
+            margin-top: 1rem;
+            width: 100%;
+            margin-bottom: 3.2rem;
+        }
+
+        .search {
+            height: 2rem;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search {
+            height: 1.5rem;
+            width: 90%;
+            background: #ffffff;
+            margin-top: 0.5rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-left: 5%;
+            margin-bottom: 0.5rem;
+        }
+
+        .list-ojc {
+            width: 100%;
+        }
+
+        .list-ojc-div {
+            width: 100%;
+            /* height: 3.5rem; */
+            overflow: hidden;
+            background: #ffffff;
+            border-bottom: 1px #F5F5F5 solid;
+            display: flex;
+            margin-bottom: 0.2rem;
+            padding: 0.8rem 0.5rem;
+        }
+
+        .list-item-left {
+            width: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .list-text {
+            width: 90%;
+            padding-left: 1rem;
+
+        }
+
+        .list-header {
+            font-weight: bold;
+            width: 100%;
+            height: 1.3rem;
+            line-height: 1.2rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .list-text-font {
+            /* color: #a6a6a6; */
+            font-size: 13px;
+            width: 100%;
+            height: 1.3rem;
+            line-height: 1.2rem;
+        }
+
+        .list-content {
+            width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .list-text-header {
+            display: flex;
+        }
+
+        .list-text-left {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .list-text-centent {
+            width: 3rem;
+        }
+
+        .list-text-button {
+            width: 2.2rem;
+            height: 1rem;
+            border: 1px #008000 solid;
+            font-size: 0.6rem;
+            color: #008000;
+            border-radius: 3px;
+            text-align: center;
+            border-color: #008000;
+        }
+
+        .list-text-time {
+            font-size: 0.6rem;
+            color: #a6a6a6;
+        }
+
+        .list-text-right {
+            width: 3rem;
+        }
+
+        .footer {
+            height: 3rem;
+            width: 100%;
+            background-color: #ffffff;
+            border-top: 1px #B1B8BF solid;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .footer-left {
+            flex: 1;
+            text-align: center;
+        }
+
+        .submite {
+            width: 5rem;
+            color: #2a82e4;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="content">
+            <div class="list-ojc" v-if="temporaryFlage">
+                <div class="list-ojc-div" v-for="(items,index) in temporary" :key="index">
+                    <div class="list-item-left">
+                        <input type="checkbox" class="aui-checkbox float-left" ref="check" @change="changeValue(items)"
+                            v-model="items.selectFlage">
+                    </div>
+                    <div class="list-text" @click="clickApply(items)">
+                        <div class="list-text-header">
+                            <div class="list-text-left">
+                                <div class="list-header" v-text="items.subjectMatterName">其他无效成本
+                                </div>
+                                <div class="list-text-font">申请人：<span v-text="items.createUserName">海绵宝宝</span>
+                                </div>
+                            </div>
+                            <div class="list-text-centent">
+                                <div class="list-text-button">
+                                    已通过
+                                </div>
+                            </div>
+                            <div class="list-text-time">
+                                <span class="list-text-time" v-text="items.createTime">2020-10-12</span>
+                            </div>
+                        </div>
+                        <div class=" list-text-font list-content">出工班组：<span
+                                v-text="items.workerTeamName">杂工班组杂工班组杂工班组杂工班组杂工班组</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="noData" v-if="!temporaryFlage">
+                <img src="../../../../image/noData.png" alt="">
+                <p>还没有相关数据哦~</p>
+            </div>
+        </div>
+        <div class="footer">
+            <span class="footer-left">最多可关联10个申请单</span>
+            <span class="submite" @click="submit()">确定 （<span v-text="count">2</span>）</span>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    temporary: [],//考勤规则对象: null,//考勤规则对象
+                    selectFlage: null,
+                    searchData: null,
+                    showCount: "100",
+                    currentPage: 1,
+                    temporaryFlage: true,
+                    count: 0,
+                    createUserName: "",
+                    startTime: "",
+                    endTime: "",
+                },
+                created: function () {
+                    this.getWorkerConfirmArrays()
+                    //筛选条件
+                    var that = this;
+                    api.addEventListener({
+                        name: 'user-screen'
+                    }, function (ret, err) {
+                        if (ret) {
+                            console.log(JSON.stringify(ret));
+                            that.createUserName = ret.value.createUserName;
+                            that.startTime = ret.value.startTime;
+                            that.endTime = ret.value.endTime;
+                            that.getWorkerConfirmArrays();
+                        }
+                    });
+                },
+                methods: {
+                    clickApply: function (items) {
+                        api.openWin({
+                            name: 'temporary',
+                            url: '../temporary/temporary_edit.html',
+                            bounces: false,
+                            pageParam: { applyId: items.applyId }
+                        });
+                    },
+                    submit: function () {
+                        var applyInfoArr = [];
+                        this.temporary.map(function (item) {
+                            if (item.selectFlage) {
+                                applyInfoArr.push(item);
+                            }
+                        });
+                        api.sendEvent({
+                            name: 'applyInfoArr',
+                            extra: {
+                                applyInfoArr: applyInfoArr
+                            }
+                        });
+                        api.closeWin();
+                    },
+                    changeValue: function (item) {
+                        var that = this;
+                        that.count = 0
+                        that.temporary.map(function (item) {
+                            if (item.selectFlage) {
+                                that.count = that.count + 1
+                            }
+                        });
+                        return false;
+                    },
+                    //获取用工使用确认列表
+                    getWorkerConfirmArrays: function () {
+                        var that = this;
+                        var prame = {
+                            showCount: this.showCount,
+                            currentPage: this.currentPage,
+                            projectId: $api.getStorage('enterpriseId'),
+                            userId: $api.getStorage('enterLoginInfo').userId,
+                            createUserName: this.createUserName,
+                            startTime: this.startTime,
+                            endTime: this.endTime,
+                            state: "2",
+                        };
+                        $app.post(
+                            false,
+                            getWorkerApplyArraysURL,
+                            prame,
+                            function (ret) {
+                                if (ret.obj.length) {
+                                    that.temporary = ret.obj;
+                                    that.temporary.map(function (item) {
+                                        item.selectFlage = false;
+                                    });
+                                } else {
+                                    that.temporaryFlage = false;
+                                }
+                            }
+                        )
+                    },
+                },
+            })
+        } 
+    </script>
+</body>
+
+</html>

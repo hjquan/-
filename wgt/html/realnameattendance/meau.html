@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            background-color: transparent;
+            height: 100%;
+        }
+
+        .aui-popup-content {
+            box-shadow: 0 0 1px #ccc;
+
+        }
+
+        .closeLay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="closeLay" @click="closeFn()"></div>
+        <div class="aui-popup aui-popup-top-right aui-popup-in " id="top-right">
+            <div class="aui-popup-arrow"></div>
+            <div class="aui-popup-content">
+                <ul class="aui-list aui-list-noborder">
+                    <li class="aui-list-item" tapmode @click="meauJump('0')">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-my aui-text-warning"></i>
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-middle">
+                            实名制登记
+                        </div>
+                    </li>
+                    <li class="aui-list-item" tapmode @click="meauJump('1')">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-my aui-text-info"></i>
+                        </div>
+                        <div class="aui-list-item-inner">
+                            新增班组
+                        </div>
+                    </li>
+                    <li class="aui-list-item" tapmode @click="meauJump('2')">
+                        <div class="aui-list-item-label-icon">
+                            <i class="aui-iconfont aui-icon-my aui-text-info"></i>
+                        </div>
+                        <div class="aui-list-item-inner">
+                            单位和班组管理
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+
+        apiready = function () {
+            new Vue({
+                el: '#app',
+                methods: {
+                    //关闭弹窗
+                    closeFn: function () {
+                        console.log('close');
+                        api.sendEvent({
+                            name: 'close_meau_event',
+                            extra: {
+                            }
+                        });
+
+
+                    },
+                    //弹窗菜单跳转
+                    meauJump: function (type) {
+                        switch (type) {
+                            case '0':
+                                api.openWin({
+                                    name: 'attendance_shotId',
+                                    url: './shotId.html',
+                                    pageParam: {}
+                                });
+                                break;
+                            case '1':
+                                api.openWin({
+                                    name: 'attendance_addteam',
+                                    url: './addteam.html',
+                                    pageParam: {}
+                                });
+                                break;
+                            case '2':
+                                api.openWin({
+                                    name: 'attendance_addteam',
+                                    url: 'new-realname/gangerManage.html',
+                                    pageParam: {}
+                                });
+                                break;
+                            default:
+
+                        }
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/nottificationDetails.css"/>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .noticeTitle{
+            padding:15px 5px 10px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size:16px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(51,51,51,1);
+            word-wrap: break-word;
+            word-break: normal;
+        }
+        .header{
+            position: fixed;
+            top: 0px;
+            left: 0;
+            width: 100%;
+        }
+        .noticeContent{
+            font-size: 14px;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+        .main_box{
+            margin-top: 65px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" onclick="javascript:api.closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">通知详情</div>
+        </header>
+        <div class="main_box" v-if="notiInfo" v-cloak>
+            <!-- <div class="box_item border_bottom_after">
+                <span class="">通知标题</span>
+                <span class="">标题</span>
+            </div>
+            <div class="box_item aui-list-item-arrow border_bottom_after">
+                <span class="">发送对象</span>
+                <span class="">21人</span>
+            </div> -->
+            <h2 class="noticeTitle" style="text-align:center" v-if="notiInfo.noticeTitle" v-cloak>{{notiInfo.noticeTitle}}</h2>
+            <p class="noticeContent" v-if="notiInfo.noticeContent" v-cloak>{{notiInfo.noticeContent}}</p>
+            <div class="imgUpdate border_bottom_after" v-if="notiInfo.imgUrl">
+                <img :src="item.compressUrl" alt="" v-for="(item,index) in notiInfo.imgUrl" @click="imgSee(notiInfo.imgUrl,index)">
+            </div>
+            <div class="box_item aui-list-item-arrow border_bottom_after" @click="openPerson()" >
+                <span class="">发送对象</span>
+                <span class="" v-cloak>{{personInfo.length}}人</span>
+            </div>
+            <div class="box_item border_bottom_after" v-if="notiInfo.createUserName">
+                <span class="" v-cloak> <i class="aui-iconfont aui-icon-home"></i>&nbsp;&nbsp; {{notiInfo.enterpriseName}}</span>
+            </div>
+            <div class="box_item border_bottom_after" v-if="notiInfo.createUserName">
+                <span class="" v-cloak><i class="aui-iconfont aui-icon-my"></i>&nbsp;&nbsp; {{notiInfo.createUserName}}</span>
+            </div>
+            <div class="box_item  border_bottom_after" v-if="notiInfo.createTime">
+                <span class="" v-cloak><i class="aui-iconfont aui-icon-date fs_"></i>&nbsp;&nbsp;{{notiInfo.createTime}}</span>
+            </div>
+        </div>
+    </div>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+        apiready = function(){
+            //侵入式导航栏
+            $api.fixStatusBar( $api.dom('header') );
+            var notiIfo = api.pageParam.notiIfo;
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    notiInfo:'',
+                    personInfo:[]//人员已读未读列表
+                },
+                methods:{
+                    init:function(){
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getNoticeMessageDetailURL,
+                            {
+                                "noticeId": notiIfo.noticeId || notiIfo.objectId,
+                                "userId": $api.getStorage('userId'),
+                                "companyId": $api.getStorage('enterpriseId')
+
+                            },
+                            function(ret){
+                                vm.notiInfo = ret.obj;
+                                api.sendEvent({
+                                    name: 'newCenterListFn',
+                                    extra: {
+                                    }
+                                });
+                                api.sendEvent({
+                                    name: 'peojectMsgCenterList',
+                                    extra: {
+                                    }
+                                });
+
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getReciveIsReadInfoURL, {
+                                        noticeId: vm.notiInfo.noticeId
+                                    },
+                                    function(ret) {
+                                        vm.personInfo = ret.obj;
+                                    }
+                                );
+                            }
+                        )
+                    },
+                    // //图片查看
+                    imgSee: function(url,index) {
+                        var imgBox = [];
+                        url.forEach(function(item){
+                            imgBox.push(item.srcUrl)
+                        })
+                        console.log($api.jsonToStr(imgBox));
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images:imgBox,
+                            activeIndex:index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+                    openPerson:function(){
+                        api.openWin({
+                            name: 'selectPerson',
+                            url: './selectPerson.html',
+                            pageParam: {
+                                'personInfo':vm.personInfo
+                            }
+                        });
+
+                    }
+                }
+            })
+            vm.init()
+        }
+    </script>
+</body>
+
+</html>

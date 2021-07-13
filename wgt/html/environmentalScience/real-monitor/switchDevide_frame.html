@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        /*.list_item > *{
+            flex: 1
+        }*/
+
+        .total {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .total p {
+            margin-right: 20px;
+        }
+
+        .daner {
+            color: #FF0000
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list" v-if="deviceInfoList.length !== 0">
+            <li class="list_item danger" v-for="(item,index) in deviceInfoList" @click="openlistdeatil(item)">
+                <div class="lf">
+                    <span class="name" v-text="item.deviceName">设备名称</span>
+                </div>
+            </li>
+        </ul>
+        <div class="noData" v-if="deviceInfoList.length == 0">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: '../../../../image/err.jpg',
+            loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function () {
+
+            //下拉刷新
+            $app.downrefresh(
+                function () {
+                    vm.getDustBasicInfo();
+                }
+            )
+            //
+            // ///上拉加载
+            // $app.uploding(
+            //     function(){
+            //         // vm.init(true)
+            //
+            //     }
+            // )
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    deviceInfoList: [],
+                },
+                created: function () {
+                    this.getDustBasicInfo();
+                },
+                methods: {
+                    //打开详情
+                    openlistdeatil: function (deviceInfo) {
+                        api.closeWin();
+                        api.sendEvent({
+                            name: 'switchDevide_frame',
+                            extra: {
+                                deviceInfo: deviceInfo
+                            }
+                        });
+                    },
+                    //获取环境监测设备基本信息
+                    getDustBasicInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getDustBasicInfoURL,
+                            {
+                                deviceId: '',
+                                iccid: '',
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+                                console.log("获取环境监测设备基本信息:" + JSON.stringify(ret))
+                                if (ret.obj) {
+                                    that.deviceInfoList = ret.obj;
+                                }
+                                api.refreshHeaderLoadDone();
+                            }
+                        )
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

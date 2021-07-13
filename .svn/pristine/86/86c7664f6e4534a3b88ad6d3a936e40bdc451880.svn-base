@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>login</title>
+    <link rel="stylesheet" href="./commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+    <div id="app" class="aui-content flex">
+        <div class="login_box flex fx_r_c">
+            <ul>
+                <li>
+                    <img src="./image/logo.png" alt="">
+                    <!--  tapmode onclick="openTest()" -->
+                </li>
+                <li>
+                    <p>账号</p>
+                    <input type="number" v-model.trim="phone" placeholder="请输入手机号">
+                     <i class="aui-iconfont aui-icon-close iconPosition" tapmode :class="{'hide':!phone}"  @click="clearInput()"></i>
+                </li>
+                <li>
+                    <p>密码</p>
+                    <input type="password" @keyup.enter="login()" v-model.trim="passWord" placeholder="请输入密码" id="toggleInput">
+                    <i class="aui-iconfont aui-icon-display iconPosition" tapmode :class="{'hide':!passWord}"  @click="toggleInput()"></i>
+                </li>
+                <li>
+                    <p tapmode="hover" style="color:#058FFD" onclick="openPwd()">忘记密码?</p>
+                </li>
+                <li>
+                    <input type="button" tapmode="hover" id="loginBtn" value="登录" :class="{'btnActive':isLoginFlag}" @click.enter="login()">
+                </li>
+                <div>
+                    <p>登录即代表您已同意
+                        <span  class="a_link" tapmode onclick="openagreement(2)">《隐私协议》</span>和<span class="a_link" tapmode onclick="openagreement(1)">《用户协议》</span>
+                    </p>
+                    <!-- <p><input class="aui-radio" type="checkbox" name="radio1" checked v-model="chckedtwo"> &nbsp;<span tapmode onclick="openagreement(2)" >隐私协议</span></p> -->
+                    <!-- onclick="openagreement(2)" -->
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <script src="./script/sha1.js"></script>
+    <script src="./script/api.js"></script>
+    <script src="./script/vue.js"></script>
+    <script src="./script/common.js"></script>
+    <script src="./script/commonJs/login.js"></script>
+    <script src="./script/permission.js"></script>
+</body>
+</html>

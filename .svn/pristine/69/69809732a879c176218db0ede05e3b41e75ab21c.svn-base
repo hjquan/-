@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+
+</head>
+
+<body>
+
+    <div id="app">
+        <img src="../../../image/towercrane/trendchart.png" alt="">
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function() {
+
+
+        }
+    </script>
+
+</body>
+
+</html>

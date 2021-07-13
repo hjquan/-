@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" href="../commonUi/aui/css/aui.css">
+    <title>应用</title>
+    <style>
+        body {
+            background: #fff;
+            height: 100%
+        }
+
+        .top {
+            width: 90%;
+            margin: 10px auto;
+            height: 110px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 6px rgba(204, 204, 204, 0.6);
+        }
+
+        .top img {
+            width: 55px;
+            height: 55px;
+        }
+
+        .top li {
+            position: relative;
+        }
+
+        .center {
+            width: 90%;
+            margin: 0px auto;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px 25px;
+            text-align: center;
+        }
+
+        .title {
+            width: 90%;
+            margin: 0px auto;
+            color: #333;
+        }
+
+        .center li {
+            width: 55px;
+            margin-right: 15px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .center li:nth-child(4n) {
+            margin-right: 0px;
+        }
+
+        .center li p {
+            font-size: 12px;
+        }
+
+        .bage_position {
+            top: 0px;
+            right: -15px;
+            left: auto;
+        }
+
+        .tab_box {
+            margin-top: 22px;
+            min-height: 300px;
+        }
+
+        .tab_item {
+            /*float: left;*/
+            width: calc(100%/4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .aui-tab-item {
+            color: #999;
+        }
+
+        .aui-tab-item.aui-active {
+            color: #058FFD;
+            border-bottom: 2px solid #058FFD;
+        }
+
+        .tab_show {
+            width: 90%;
+            margin: 10px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .tab_top {
+            margin-bottom: 25px;
+            width: 90%;
+            margin: 10px auto;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .tab_top div {
+            margin-right: 10px;
+        }
+
+        .tab_show img {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 5px;
+        }
+
+        .aui-tab-item {
+            width: 80px;
+            font-size: 13px;
+        }
+
+        .tab_show p {
+            height: 15px;
+            line-height: 15px;
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .aui-clearfix:after {
+            display: table;
+            content: '';
+            height: 0;
+            width: 0;
+            clear: both;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <ul class="top">
+            <li onclick="openedToBe()" tapmode>
+                <div class="aui-badge bage_position" v-if="messageNumber.todoMsgTotal"
+                    v-text="messageNumber.todoMsgTotal < 99 ? messageNumber.todoMsgTotal: '99+'"></div>
+                <img src="../image/frame1/frame3.png" alt="">
+                <p>待处理</p>
+            </li>
+            <li onclick="openNew()" tapmode>
+                <div class="aui-badge bage_position" v-if="messageNumber.unReadMsgTotal"
+                    v-text="messageNumber.unReadMsgTotal < 99 ? messageNumber.unReadMsgTotal: '99+'"></div>
+                <img src="../image/frame1/frame1.png" alt="">
+                <p>待阅读</p>
+            </li>
+            <li onclick="openEquipment()" tapmode>
+                <div class="aui-badge bage_position" v-if="messageNumber.unReadWarningMsgTotal"
+                    v-text="messageNumber.unReadWarningMsgTotal < 99 ? messageNumber.unReadWarningMsgTotal: '99+'">
+                </div>
+                <img src="../image/frame1/frame2.png" alt="">
+                <p>设备报警</p>
+            </li>
+        </ul>
+        <!-- v-if="item.menu_order == 2" -->
+
+        <div class="tab_box  aui-clearfix" id="tab_box">
+            <div class="aui-tab tab_top" id="tab">
+                <div tapmode class="aui-tab-item" :class="{'aui-active':index == currenIndex}"
+                    v-for="(item,index) in menuBox" @click="toggletabTop(item,index)" v-cloak>{{item.menu_name}}</div>
+                <!-- <div class="aui-tab-item">v-if="(item.menu_order == 2 || item.menu_order == 3 || item.menu_order == 4) && item.submenu"</div>
+                <div class="aui-tab-item">智慧物联</div> -->
+            </div>
+            <div class="">
+                <ul class="tab_show aui-clearfix" v-if="currenItem.length">
+                    <li class="tab_item"="v-for(item,index) in currenItem" @click="openMenuItem(meau,item)" tapmode>
+                        <img :src="meau[first_menuorder-1][item.menu_order-1].meau_img" alt="">
+                        <p v-text="item.menu_name"></p>
+                    </li>
+                </ul>
+
+                <div class="noData" v-else>
+                    <img src="../image/noData.png" alt="">
+                    <p>暂无菜单权限哦~</p>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+    <script src="../script/sha1.js"></script>
+    <script src="../script/api.js"></script>
+    <script src="../script/common.js"></script>
+    <script src="../script/vue.js"></script>
+    <script src="../script/touchFn.js"></script>
+    <script>
+        apiready = function () {
+
+
+            api.addEventListener({
+                name: 'currenProject'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.getMessageNumber();
+                }
+            });
+
+            api.addEventListener({
+                name: 'refshMessageNumber'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.getMessageNumber();
+                }
+            });
+
+            api.addEventListener({
+                name: 'frame1Init'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.init()
+                }
+            });
+            api.addEventListener({
+                name: 'waitChangge'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.getMessageNumber()
+                }
+            });
+
+
+
+            function slidertrFn() {
+                if (vm.currenIndex == 0) {
+                    vm.currenIndex = vm.menuBox.length - 1;
+                    var itemdata = vm.menuBox[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                } else {
+
+                    vm.currenIndex--;
+                    var itemdata = vm.menuBox[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                }
+
+            }
+            function sliderlfFn() {
+                if (vm.currenIndex < vm.menuBox.length - 1) {
+                    vm.currenIndex++;
+                    var itemdata = vm.menuBox[vm.currenIndex];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                } else {
+                    vm.currenIndex = 0;
+                    var itemdata = vm.menuBox[0];
+                    vm.toggletabTop(itemdata, vm.currenIndex)
+                }
+            }
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    meau: '',//菜单图片路径匹配集合
+                    menuBox: '', //菜单信息
+                    currenIndex: 0,
+                    first_menuorder: '',//菜单一级标识
+                    first_menuorder: '', //顶部选择的menu_order
+                    currenItem: [],
+                    messageNumber: '' //获取消息数据
+                },
+                created: function () {
+                    this.init();
+                    this.getMessageNumber();
+                    this.meau = [
+                        [],
+                        [
+                            {
+                                name: '',
+                                src: '',
+                                meau_img: '',
+                                isDeveloped: false//是否开发
+                            },
+                            {
+                                name: '',
+                                src: '',
+                                meau_img: '',
+                                isDeveloped: false//是否开发
+                            },
+                            {
+                                name: '安全检查',
+                                src: './ledger/MyExamination.html',
+                                meau_img: '../image/menu/02_03.png',
+                                isDeveloped: true//是否开发
+                            },
+                            {
+                                name: '通知',
+                                src: './msg/index.html',
+                                meau_img: '../image/menu/02_04.png',
+                                isDeveloped: true//是否开发
+                            },
+                            {
+                                name: '检查台账',
+                                src: './ledger/index.html',
+                                meau_img: '../image/menu/02_05.png',
+                                isDeveloped: true//是否开发
+                            }
+                        ],
+                        [],
+                        [
+                            {
+                                name: '塔机',
+                                src: './epsTower/index.html',
+                                meau_img: '../image/towerCrane.png',
+                                isDeveloped: true//是否开发
+                            }
+                        ]
+                    ]
+                },
+                mounted: function () {
+                    //监听左右滑动事件切换菜单
+                    EventUtil.listenTouchDirection(document.getElementById('tab_box'), false, sliderlfFn, slidertrFn)
+                },
+                methods: {
+                    //获取消息数量
+                    getMessageNumber: function () {
+                        var _this = this;
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getAllMessageNumTotalURL, {
+                            "userId": $api.getStorage('userId'),
+                            "enterpriseId": $api.getStorage('enterpriseId')
+                        },
+                            function (ret) {
+                                _this.messageNumber = ret.obj;
+                            }
+                        )
+                    },
+
+                    //菜单跳转
+                    openMenuItem: function (url, menuOrder) {
+                        var meauInfo = url[this.first_menuorder - 1][menuOrder.menu_order - 1];
+                        console.log($api.jsonToStr(meauInfo));
+                        var menuURl = meauInfo.src;
+                        if (!meauInfo.isDeveloped) {
+                            api.alert({
+                                title: '提示',
+                                msg: '功能完善中...',
+                            }, function (ret, err) {
+
+                            });
+                            return false
+
+                        }
+                        if (menuURl) {
+                            api.openWin({
+                                name: 'checked',
+                                url: menuURl,
+                                pageParam: {
+                                    jumpCheck: '1'
+                                }
+                            });
+                        }
+                    },
+                    //菜单初始化
+                    init: function () {
+                        if ($api.getStorage('menuIfo')) {
+                            this.menuBox = $api.getStorage('menuIfo');
+
+                            this.toggletabTop(this.menuBox[0], 0)
+                        }
+                    },
+                    //菜单头部选择
+                    toggletabTop: function (item, index) {
+                        var _this = this;
+                        this.currenIndex = index;
+                        if (!item) return;
+                        this.first_menuorder = item.menu_order;
+                        if (item.submenu) {
+                            _this.first_menuorder = item.menu_order;
+                            var filterMenu = item.submenu.filter(function (item) {
+                                // if (item.menu_order == 3 || item.menu_order == 4 || item.menu_order == 5) {
+                                //     return item
+                                // }
+                                // 塔机菜单
+                                if ((_this.first_menuorder == 2 && (item.menu_order == 5 || item.menu_order == 4 || item.menu_order == 3)) || (_this.first_menuorder == 4 && item.menu_order == 1)) {//
+                                    return item
+                                }
+                            })
+                            _this.currenItem = filterMenu
+                        }
+                    },
+
+
+                },
+
+            })
+
+
+            // api.addEventListener({
+            //     name: 'noticeclicked'
+            // }, function(ret, err) {
+            //     vm.init();
+            // });
+            api.addEventListener({
+                name: 'refreInit1'
+            }, function (ret, err) {
+                if (ret) {
+                    console.log('2');
+                    vm.getMessageNumber();
+                    vm.init();
+                }
+            });
+        }
+
+        function openedToBe() {
+            api.openWin({
+                name: 'nedToBe',
+                url: './index.html',
+                pageParam: {}
+            });
+        }
+        //设备报警
+        function openEquipment() {
+            api.openWin({
+                name: 'equipment',
+                url: './equipment/index.html',
+                pageParam: {}
+            });
+
+        }
+
+        function openNew() {
+            api.openWin({
+                name: 'new',
+                url: './news/new.html',
+                pageParam: {}
+            });
+
+        }
+    </script>
+
+</body>
+
+</html>

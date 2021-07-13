@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+        /*.triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }*/
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="">
+                    <input type="search" placeholder="请输入搜索内容" id="search-input" v-model.trim="listIf" @input="changeInput()">
+                </form>
+            </div>
+            <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+        </div>
+        <div class="main_box">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list" v-if="selctList.length">
+
+                        <li class="aui-list-item aui-list-item-middle" v-for="item in selctList" tapmode @click="openledgerItem(item)">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-inner aui-list-item-arrow">
+                                    <div class="aui-list-item-text aui-font-size-13 flex_start aui-ellipsis-1" style="color:rgba(102,102,102,1);" v-text="item.projectName">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
+                    </ul>
+                    <div class="noData" v-else>
+                        <img src="../../image/noData.png" alt="">
+                        <p>没有相关数据~</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                currentPage: '1',
+                copySelctList: [],
+                selctList: [], //拉取的列表数据
+                listIf: '', //过滤条件
+                itemName: '' //企业或项目名称
+            },
+            computed: {
+
+            },
+            methods: {
+                init: function(loadMore) {
+                    if (loadMore) {
+                        this.currentPage++
+                    } else {
+                        this.currentPage = 1
+                    }
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        getCheckLedgerProjectArraysURL, {
+                            enterpriseId: $api.getStorage('enterpriseId'),
+                            showCount: PAGE_NUMBER,
+                            currentPage: vm.currentPage
+                        },
+                        function(ret) {
+                            api.refreshHeaderLoadDone();
+                            if (loadMore) {
+                                if (ret.totalResult > vm.selctList.length) {
+                                    ret.obj.forEach(function(item) {
+                                        vm.selctList.push(item)
+                                    })
+                                    ret.obj.forEach(function(item) {
+                                        vm.copySelctList.push(item)
+                                    })
+                                } else {
+                                    api.toast({
+                                        msg: '没有更多数据了...',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                }
+
+                            } else {
+                                vm.selctList = ret.obj;
+                                vm.copySelctList = ret.obj;
+                            }
+                        }
+                    )
+                },
+                //筛选
+                changeInput: function() {
+                    var copyList = $api.strToJson($api.jsonToStr(this.selctList));
+                    this.selctList = $api.strToJson($api.jsonToStr(this.copySelctList));
+                    var filterList = vm.copySelctList.filter(function(item) {
+                        var itemName = item.projectName;
+                        if (itemName.indexOf(vm.listIf) != -1) {
+                            return item
+                        } else {
+                            return false
+                        }
+                    })
+                    if (this.listIf == '') {
+                        this.selctList = this.copySelctList
+                    } else {
+                        this.selctList = filterList
+                    }
+                },
+                openledgerItem:function(item){
+                    api.openWin({
+                        name: 'ledgerItem',
+                        url: './ledgerItem.html',
+                        pageParam: {
+                            ledgerInfo: item
+                        }
+                    });
+                }
+            }
+        })
+        apiready = function() {
+            // 请求企业列表
+            vm.init(false)
+            vm.isShowName = $api.getStorage('selectProjectType');
+            api.setRefreshHeaderInfo({
+                visible: true,
+                loadingImg: 'widget://image/refresh.png',
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err) {
+
+                vm.init(false)
+            });
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 100 //设置距离底部多少距离时触发，默认值为0，数字类型
+                }
+            }, function(ret, err) {
+                vm.init(true)
+            });
+
+
+
+        }
+    </script>
+</body>
+
+</html>

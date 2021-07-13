@@ -1,0 +1,474 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+
+</head>
+<style>
+    .app {
+        width: 100%;
+        height: 100%;
+    }
+
+    .top-div {
+        width: 100%;
+        height: 12rem;
+        /* background-color: #ffffff; */
+        border-bottom: 2px #e3e4e5 solid;
+    }
+
+    .top-div-title {
+        font-weight: bold;
+        padding-top: 0.5rem;
+        padding-left: 1rem;
+        position: relative;
+    }
+
+    .top-ui {
+        width: 100%;
+        height: 90%;
+        /* margin-top: -10%; */
+    }
+
+    .bottom-div {
+        width: 100%;
+        height: 15rem;
+        /* background-color: #ffffff; */
+    }
+
+    .select-data {
+        float: right;
+        height: 1.5rem;
+        width: 8rem;
+        background-color: #ffffff;
+        margin-right: 0.5rem;
+        color: #888888;
+        font-size: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .radiu-text {
+        position: absolute;
+        top: 20%;
+        left: 42%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="top-div">
+            <div class="top-div-title">
+                塔机分类报警统计
+                <div class="select-data">
+                    <div @click="clicklogTimeFn()" v-text="radiusUIState">2020-02-01</div>
+                    <div style="margin: 0 0.3rem;">~</div>
+                    <div @click="getRadiusUIEnd()" v-text="radiusUIEnd">2020-06-01</div>
+                </div>
+            </div>
+            <div class="top-ui" id="main">
+
+            </div>
+            <div class="radiu-text">
+                <div style="color:#B5B5B5">总报警数</div>
+                <div style="color: top-ui; color: #FE4242;" v-text="radiusCount"> </div>
+            </div>
+        </div>
+        <div class="bottom-div">
+            <div class="top-div-title">
+                塔机报警趋势
+                <!-- <div class="select-data" style="width: 4.5rem;">
+                    <div @click="getAlarmCountEnd()" v-text="alarmCountEnd">2020-06-01</div>
+                </div> -->
+            </div>
+            <div class="top-ui" style="margin-top: 1rem;" id="mainBottom">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/echarts.min.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+
+
+    <script type="text/javascript">
+
+        apiready = function () {
+            //圆形图数据
+            var radiusUI = [];
+            //曲线图数据
+            var earlysUI = [];  //预警数
+            var callsUI = [];//报警数
+            var graphData = [];
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    radiusUIState: null, //圆形图数据开始时间
+                    radiusUIEnd: null, //圆形图数据结束时间
+                    alarmCountState: null,//曲线图数据结束时间
+                    alarmCountEnd: null,//曲线图数据结束时间
+                    alarmCountEndPrame: null,
+                    radiusCount: null,
+
+                },
+                created: function () {
+                    //初始化数据
+                    this.init();
+                },
+                methods: {
+                    //初始化数据
+                    init: function () {
+                        this.radiusUIEnd = $app.formDate(false, '-');
+                        this.radiusUIState = this.addMonths(this.radiusUIEnd, -3).slice(0, 7) + "-01";
+                        this.alarmCountEnd = $app.formDate(false, '-').slice(0, 7);
+                        this.alarmCountEndPrame = $app.formDate(false, '-');
+                        graphData = [this.addMonths2(this.alarmCountEnd, -3), this.addMonths2(this.alarmCountEnd, -2), this.addMonths2(this.alarmCountEnd, -1), this.alarmCountEnd]
+                        this.getRadui();
+                        this.getAlarmCount();
+                    },
+                    //获取圆形统计数据
+                    getRadui: function () {
+                        var that = this;
+                        var prame = {
+                            type: "1",
+                            startDate: this.radiusUIState,
+                            endDate: this.radiusUIEnd,
+                            projectId:  $api.getStorage('enterpriseId'),
+                        };
+                        that.radiusCount = 0;
+                        $app.post(
+                            true,
+                            getAlarmCountURL,
+                            prame,
+                            function (ret) {
+                                console.log("=========" + JSON.stringify(ret));
+                                radiusUI = ret.obj;
+                                ret.obj.map(function (item) {
+                                    radiusUI.push({
+                                        value: item.total,
+                                        name: item.title
+                                    });
+                                    that.radiusCount += item.total;
+                                });
+                                radusUi();
+                            }
+                        )
+                    },
+                    //获取曲线统计数据
+                    getAlarmCount: function () {
+                        var that = this;
+                        var date = new Date(that.alarmCountEnd);
+                        var currentMonth = date.getMonth();
+                        var nextMonth = ++currentMonth;
+                        var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+                        var oneDay = 1000 * 60 * 60 * 24;
+                        var lastTime = new Date(nextMonthFirstDay - oneDay);
+                        var month = parseInt(lastTime.getMonth() + 1);
+                        var day = lastTime.getDate();
+                        if (month < 10) {
+                            month = '0' + month
+                        }
+                        if (day < 10) {
+                            day = '0' + day
+                        }
+                        var endMathDay = date.getFullYear() + '-' + month + '-' + day;
+                        var prame = {
+                            type: "1",
+                            startDate: that.addMonths2(that.alarmCountEnd, -3) + "-01",
+                            endDate: endMathDay,
+                            projectId:  $api.getStorage('enterpriseId'),
+                        };
+                        $app.post(
+                            true,
+                            getAlarmTrendURL,
+                            prame,
+                            function (ret) {
+                                earlysUI = [0, 0, 0, 0];
+                                callsUI = [0, 0, 0, 0];
+                                ret.obj.map(function (item) {
+                                    if (item.month == that.addMonths2(that.alarmCountEnd, -3)) {
+                                        earlysUI[0] = item.earlys;
+                                        callsUI[0] = item.calls;
+                                    }
+                                    if (item.month == that.addMonths2(that.alarmCountEnd, -2)) {
+                                        earlysUI[1] = item.earlys;
+                                        callsUI[1] = item.calls;
+                                    }
+                                    if (item.month == that.addMonths2(that.alarmCountEnd, -1)) {
+                                        earlysUI[2] = item.earlys;
+                                        callsUI[2] = item.calls;
+                                    }
+                                    if (item.month == that.alarmCountEnd) {
+                                        earlysUI[3] = item.earlys;
+                                        callsUI[3] = item.calls;
+                                    }
+                                });
+                                alarmUi();
+                            }
+                        )
+                    },
+                    //减价日期
+                    addMonths: function (yearMonthDay, monthNum) {
+                        var arr = [];
+                        arr = yearMonthDay.split('-');//2020-08-19或2020-08
+                        var year = parseInt(arr[0]);
+                        var month = parseInt(arr[1]);
+                        var day = parseInt(arr[2]);
+                        month = month + monthNum;
+                        if (month > 12) {//月份加
+                            var yearNum = parseInt((month - 1) / 12);
+                            month = month % 12 == 0 ? 12 : month % 12;
+                            year += yearNum;
+                        } else if (month <= 0) {//月份减
+                            month = Math.abs(month);
+                            var yearNum = parseInt((month + 12) / 12);
+                            year -= yearNum;
+                            if (month == 0) {
+                                month = 12
+                            }
+                        }
+                        month = month < 10 ? "0" + month : month;
+                        day = day < 10 ? "0" + day : day;
+                        return year + "-" + month + "-" + day;
+                    },
+                    //减价日期
+                    addMonths2: function (yearMonthDay, monthNum) {
+                        var arr = yearMonthDay.split('-');//2020-08-19或2020-08
+                        var year = parseInt(arr[0]);
+                        var month = parseInt(arr[1]);
+                        month = month + monthNum;
+                        if (month > 12) {//月份加
+                            var yearNum = parseInt((month - 1) / 12);
+                            month = month % 12 == 0 ? 12 : month % 12;
+                            year += yearNum;
+                        } else if (month <= 0) {//月份减
+                            month = Math.abs(month);
+                            var yearNum = parseInt((month + 12) / 12);
+                            year -= yearNum;
+                            if (month == 0) {
+                                month = 12
+                            }
+                        }
+                        month = month < 10 ? "0" + month : month;
+                        return year + "-" + month;
+                    },
+                    //补充o
+                    addZero: function (s) {
+                        return s < 10 ? '0' + s : s
+                    },
+                    //获取日志日期
+                    clicklogTimeFn: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (new Date(selectDate) >= new Date(that.radiusUIEnd)) {
+                                api.toast({
+                                    msg: '不能选择大于结束日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) > new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.radiusUIState = time;
+                            that.getRadui();
+                        })
+                    },
+                    //获取结束日期
+                    getRadiusUIEnd: function (falge) {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (new Date(selectDate) <= new Date(that.radiusUIState)) {
+                                api.toast({
+                                    msg: '不能选择小于开始日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            if (new Date(selectDate) > new Date(currenDateTime)) {
+                                api.toast({
+                                    msg: '不能选择大于当前日期',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.radiusUIEnd = time;
+                            that.getRadui();
+                        })
+                    },
+                    //获取曲线图结束日期
+                    getAlarmCountEnd: function () {
+                        var that = this;
+                        var timeDate = new Date()
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1)   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            // if (selectDate < curenDate) {
+                            //     api.toast({
+                            //         msg: '不能选择小于当前日期',
+                            //         duration: 2000,
+                            //         location: 'bottom'
+                            //     });
+                            //     return false;
+
+                            // }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.alarmCountEnd = time.slice(0, 7);
+                            graphData = [that.addMonths2(that.alarmCountEnd, -3), that.addMonths2(that.alarmCountEnd, -2), that.addMonths2(that.alarmCountEnd, -1), that.alarmCountEnd]
+
+                            that.getAlarmCount();
+                        })
+                    },
+                }
+            });
+            function radusUi() {
+                var myChart = echarts.init(document.getElementById('main'));
+                option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c} ({d}%)'
+                    },
+                    grid: {
+                        top: '5%',
+                        left: '3%',
+                        right: '4%',
+                        bottom: '8%',
+                        containLabel: true
+                    },
+                    series: [
+                        {
+                            name: '报警统计',
+                            type: 'pie',
+                            radius: ['50%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: false,
+                                position: 'center'
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            data: radiusUI
+                        }
+                    ]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            };
+
+            function alarmUi() {
+                var myChart = echarts.init(document.getElementById('mainBottom'));
+                option = {
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: graphData
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    legend: {
+                        data: ['报警', '预警']
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    grid: {
+                        top: '10%',
+                        left: '10%',
+                        right: '10%',
+                        bottom: '8%',
+                        containLabel: true
+                    },
+                    series: [{
+                        data: earlysUI,
+                        name: '报警',
+                        type: 'line',
+                        color: "#FF0000"
+                    }, {
+                        data: callsUI,
+                        name: '预警',
+                        type: 'line',
+                        color: "#FFA500"
+                    },
+                    ]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            };
+        }
+    </script>
+</body>
+
+</html>

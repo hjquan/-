@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <!-- <link rel="stylesheet" href="../../../css/voice.css"> -->
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+            padding-bottom: 20px;
+        }
+
+        .main_box {
+            background-color: #fff
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .toggle {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(85, 85, 85, 1);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .fs_12 {
+            font-size: 12px;
+        }
+
+        .upImg {
+            padding: 10px;
+        }
+
+        .upImg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .img {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .img img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .add_icon {
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(210, 210, 210, 1);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+
+
+
+        .img_tain {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .click_close {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+
+        }
+
+        .submit {
+            width: 80%;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color: #fff;
+            background: #058FFD;
+            border-radius: 5px;
+            margin: 30px auto 0;
+        }
+
+        .add_btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .add_btn i {
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25 aui-clear">
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>塔机类型</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerType" disabled>
+                </li>
+                <li class="upImg border_bottom_after">
+                    <p>设备照片</p>
+                    <div class="img_box">
+                        <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                            <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                                <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn"
+                                    @click=removeImage(index) tapmode="hover"></i>
+                                <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                            </div>
+                            <div class="add_btn" style="background-color: #fff;" @click="uploadHeadPic()" tapmode
+                                v-if="imgSrc.length < 1"><i class="aui-iconfont aui-icon-camera"></i></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>设备序列号</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.towerType" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>自编号</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.towerNo" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>品牌型号</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.towerModel" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>备案号</p>
+                    <input class="input_rt" v-model="towerDeviceInfo.towerPunonNo" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>塔帽高</p>
+                    <input class="input_rt" type="text" style="padding-right: 5px;" placeholder="请输入"
+                        v-model="towerDeviceInfo.towerCapHeight" disabled>
+                    <span style="padding-right: 15px;" v-if="towerDeviceInfo.towerCapHeight">m</span>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>臂长</p>
+                    <input class="input_rt" type="text" style="padding-right: 5px;" placeholder="请输入"
+                        v-model="towerDeviceInfo.towerFarmLength" disabled>
+                    <span style="padding-right: 15px;" v-if="towerDeviceInfo.towerFarmLength">m</span>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>尾臂长</p>
+                    <input class="input_rt" type="text" style="padding-right: 5px;" placeholder="请输入"
+                        v-model="towerDeviceInfo.towerBarmLength" disabled>
+                    <span style="padding-right: 15px;" v-if="towerDeviceInfo.towerBarmLength">m</span>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>最大力矩</p>
+                    <input class="input_rt" type="text" style="padding-right: 5px;" placeholder="请输入"
+                        v-model="towerDeviceInfo.towerMaxMoment" disabled>
+                    <span style="padding-right: 15px;" v-if="towerDeviceInfo.towerMaxMoment">tm</span>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>最大吊重</p>
+                    <input class="input_rt" dis type="tel" style="padding-right: 5px;" placeholder="请输入"
+                        v-model="towerDeviceInfo.towerMaxWeight" disabled>
+                    <span style="padding-right: 15px;" v-if="towerDeviceInfo.towerMaxWeight">t</span>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="clicklogTimeFn()">
+                    <p>进场时间</p>
+                    <p tapmode><span v-text="towerDeviceInfo.entryTime"></span> </p>
+
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="clicklogTimeFn(2)">
+                    <p>出场时间(选填)</p>
+                    <p tapmode><span v-text="towerDeviceInfo.exitTime"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>使用单位</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.mainContractor">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>租赁单位</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.rentalUnit">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>租赁单位负责人</p>
+                    <input class="input_rt" maxlength="11" type="text" placeholder="请输入"
+                        v-model="towerDeviceInfo.rentalOperator">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>租赁单位负责人联系方式</p>
+                    <input class="input_rt" maxlength="11" type="tel" placeholder="请输入"
+                        v-model="towerDeviceInfo.rentalPhone">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="educationFn()">
+                    <p>维保单位</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.tpmUnit">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>维保单位负责人</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.tpmOperator">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>维保单位负责人联系方式</p>
+                    <input class="input_rt" maxlength="11" type="tel" placeholder="请输入"
+                        v-model="towerDeviceInfo.tpmOperatorPhone">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>操作人员</p>
+                    <input class="input_rt" type="text" placeholder="请输入" v-model="towerDeviceInfo.operator">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>操作人员联系方式</p>
+                    <input class="input_rt" maxlength="11" type="tel" placeholder="请输入"
+                        v-model="towerDeviceInfo.operatorPhone">
+                </li>
+                <ul>
+                    <div class="submit" @click="saveImg()">完成</div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/lunarcalendar.js"></script>
+    <script src="../../../script/permission.js"></script>
+
+    <script>
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    towerDeviceInfo: api.pageParam.towerDeviceInfo,   //塔机信息
+                    // towerDeviceInfo: { "id": "500de8f937304d2a93cf87695f0c25c6", "towerName": "100T塔机", "towerNo": "1#", "ccid": "89860439111880030129", "towerType": "1", "towerPhoto": "/demo/a3.jpg", "towerModel": "大汉建机QTZ63(5010)", "towerLicenseNo": "00569LBZC3100", "towerCapHeight": null, "towerTopHeight": 85, "towerArmHeight": 120, "towerFarmLength": 75, "towerBarmLength": 35, "towerMaxMoment": 5, "towerMaxWeight": 100, "towerMaxRanger": null, "towerMaxHeight": null, "towerMaxAnger": null, "towerMinAnger": null, "towerMaxWind": null, "towerMaxDips": null, "longitude": null, "latitude": null, "agentNumber": null, "coordX": null, "coordY": null, "rentalUnit": null, "rentalOperator": null, "rentalPhone": null, "imei": "1#-HMI-P KEY:1 FACE:1 ERR:37", "towerStandards": "最大载荷100T", "towerProducer": "大汉建机工程设备有限公司", "towerLeaveDate": "2020-04-01 00:00:00", "towerPunonNo": "EF202002234589130", "towerStatus": "0", "insureName": "人保财险", "insureNo": "BL30-2319-M8910-1158", "insureStartdate": "2020-05-01 00:00:00", "insureEnddate": "2024-06-01 00:00:00", "operator": "刘华", "operatorPhone": "1359235626", "tpmOperator": "张胜", "tpmOperatorPhone": "16625869632", "mainContractor": "中建三局", "tpmUnit": "广华泰机械设备有限公司", "ownUnit": "民有工程设备公司", "entryTime": "1588262400000", "exitTime": null, "projectId": "4dd6d6f62bc44b05989a73c96171eb22", "urlPrefix": "http://47.92.149.108/SmartSite", "createDate": "2020-05-29 10:53:41", "maintainList": null, "repairList": null, "healthList": null },
+                    towerType: null,          //塔机类型
+                    //上传图片字段
+                    isCloseBtn: true,//是否显示删除图片icon
+                    imgSrc: [],
+                    serverImg: "",//服务器返回图片地址
+                    lableUrl: "",//标注图片地址(更改：该字段已清除)
+                    srcImgUrl: "",//原图片地址（多张逗号分隔）
+                    compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+                },
+                created: function () {
+                    //格式数据
+                    this.inte()
+                },
+                methods: {
+                    //格式数据
+                    inte: function () {
+                        switch (this.towerDeviceInfo.towerType) {
+                            case "0":
+                                this.towerType = "平臂"
+                                break
+                            case "1":
+                                this.towerType = "动臂"
+                                break
+                            case "2":
+                                this.towerType = "尖头"
+                                break
+                        }
+                        this.imgSrc[0] = this.towerDeviceInfo.phoneUrl;
+                    },
+                    //上传图片
+                    //上传图片处理函数start
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片上传服务器保存
+                    saveImg: function () {
+                        console.log("开始上传图片");
+                        var compressImg = [];
+                        var that = this;
+                        if (that.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        }
+                                    });
+                                })(i);
+                            }
+
+                            var timer = setInterval(function () {
+                                console.log("compressImg:" + JSON.stringify(compressImg));
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeURL, {}, {
+                                        files: compressImg
+                                    },
+                                        function (ret) {
+                                            console.log("上传图片返回数据：" + JSON.stringify(ret))
+                                            that.isCloseBtn = false;
+                                            that.serverImg = '';
+                                            ret.obj.map(function (item) {
+                                                that.serverImg += item.fileName + ','
+                                            });
+                                            that.serverImg = that.serverImg.substr(0, that.serverImg.length - 1);
+                                            that.towerDeviceInfo.towerPhoto = that.serverImg;
+                                            that.submit();
+                                        }
+                                    )
+                                }
+                            }, 1000)
+                        }
+                    },
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        // confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 1,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //获取日志日期
+                    clicklogTimeFn: function (falge) {
+                        var that = this;
+                        var timeDate = new Date(vm.logTime)
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            // if (selectDate < curenDate) {
+                            //     api.toast({
+                            //         msg: '不能选择小于当前日期',
+                            //         duration: 2000,
+                            //         location: 'bottom'
+                            //     });
+                            //     return false;
+
+                            // }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            if (falge != 2) {
+                                that.towerDeviceInfo.entryTime = time;
+                            } else {
+                                that.towerDeviceInfo.exitTime = time;
+                            }
+                        })
+                    },
+                    //提交函数
+                    submit: function () {
+                        var that = this;
+                        console.log("上传参数:" + JSON.stringify(this.towerDeviceInfo));
+                        $app.post(
+                            true,
+                            towerBasicInfoEditURL,
+                            this.towerDeviceInfo,
+                            function (ret) {
+                                console.log("提交成功");
+                                that.openDeviceInfo();
+                            }
+                        )
+                    },
+                    openDeviceInfo: function () {
+                        api.openWin({
+                            name: 'deviceInfo',
+                            url: 'deviceInfo.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                towerDeviceInfo: api.pageParam.towerDeviceInfo
+                            }
+                        });
+                    },
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

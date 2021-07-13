@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,body{
+            background-color: rgba(245, 245, 245, 0.8);
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .layerBox{
+            /*position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;*/
+            /*background-color: rgba(245, 245, 245, 0.8);*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+        .lay_t{
+            text-align: center;
+            height:24px;
+            font-size:17px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color:rgba(3,3,3,1);
+            line-height:24px;
+            margin: 15px 0;
+        }
+        .layer_content{
+            width:270px;
+            /*min-height:247px;*/
+            background:#fff;
+            border-radius:12px;
+            padding: 10px 0;
+        }
+        .lay_btn{
+            text-align: center;
+            height:24px;
+            font-size:17px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color:rgba(0,118,255,1);
+            line-height:24px;
+        }
+        .lay_dataBox{
+            display: flex;
+            flex-wrap: wrap;
+            text-align: center;
+            align-content: center;
+            font-size:15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            margin-bottom: 30px;
+        }
+
+        .lay_item{width:33.3%;padding: 15px 0;}
+        .color-suc{
+            color:#15BC83
+        }
+        .color-er{
+            color:#F47575;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="layerBox" >
+            <div class="layer_content" >
+                <h2 class="lay_t">实测值</h2>
+                <ul class="lay_dataBox" >
+                    <li class="lay_item color-suc" :class="{'color-er':item.isQualified == '1'}"  v-for="item in info" v-text="item.metricalData">12</li>
+
+                </ul>
+                <div class="lay_btn" @click="close_lay()">我知道了</div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            // $api.fixStatusBar( $api.dom('header') );
+            var app = new Vue({
+                el:'#app',
+                data:{
+                    'info':[],//接收参数
+                },
+                created:function(){
+                    this.info = api.pageParam.meaRecord_data;
+                    console.log($api.jsonToStr(this.info));
+                },
+                methods:{
+                    close_lay:function(){
+                        console.log('close');
+                        api.closeFrame();
+
+                    }
+                },
+
+            })
+        }
+
+        function closeWin(){
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

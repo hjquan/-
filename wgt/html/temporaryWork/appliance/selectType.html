@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            font-family: PingFangSC-Medium, PingFangSC;
+            background-color: transparent;
+        }
+
+        .content {
+            width: 100%;
+            background-color: transparent;
+        }
+
+        .top {
+            width: 100%;
+            height: 60%;
+            background-color: rgba(245, 245, 245, .8);
+            position: fixed;
+            top: 0;
+        }
+
+        .bottom {
+            position: fixed;
+            top: 60%;
+            width: 100%;
+            min-height: 40%;
+            background: #fff;
+        }
+
+        .header {
+            width: 100%;
+            height: 2rem;
+            line-height: 2rem;
+            border-bottom: 1px #e3e4e5 solid;
+        }
+
+        .header-right {
+            float: right;
+            margin-right: 1rem;
+            color: #2a82e4;
+        }
+
+        .header-left {
+            float: left;
+            margin-left: 1rem;
+        }
+
+        .list-ojc-div {
+            width: 100%;
+            height: 1.5rem;
+            padding-left: 15px;
+            margin-top: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .radius-check {
+            width: 18px;
+            height: 18px;
+            border: 1px solid rgba(199, 199, 204, 1);
+            border-radius: 50%;
+            float: left;
+            margin-right: 0.5rem;
+            color: #ffffff;
+        }
+
+        .float-left {
+            float: left;
+            background-clip: padding-box;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="content" id="app">
+        <section class="top" @click="closeFn()"></section>
+        <section class="bottom">
+            <section class="header">
+                <article class="header-left" @click="closeFn()">取消</article>
+                <article class="header-right" @click="submit()">确定</article>
+            </section>
+            <section class="content">
+                <div class="list-ojc-div" v-for="(items,index) in dictInfo" :key="index">
+                    <div class="aui-list-item-left">
+                        <input type="checkbox" class="aui-checkbox float-left" ref="check" v-model="items.selectFlage">
+                    </div>
+                    <div class="aui-list-item-title" v-text="items.name"></div>
+                </div>
+            </section>
+        </section>
+    </section>
+</body>
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../script/sha1.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+<script type="text/javascript" src="../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<script>
+    apiready = function () {
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                dictInfo: [],
+                selectDict: [],
+            },
+            created: function () {
+                //获取用工事由字典
+                this.getShowDictList();
+            },
+            methods: {
+                //获取用工事由
+                getShowDictList: function () {
+                    var that = this;
+                    $app.post(
+                        false,
+                        getShowDictListURL,
+                        { dictCode: "13" },
+                        function (ret) {
+                            that.dictInfo = ret.obj
+                        }
+                    )
+                },
+                closeFn: function () {
+                    api.closeFrame();
+                },
+                submit: function () {
+                    // console.log("============:" + JSON.stringify(this.dictInfo));
+                    var that = this;
+                    var selectName = "";
+                    var subjectMatterId = "";
+                    this.dictInfo.map(function (item) {
+                        if (item.selectFlage) {
+                            that.selectDict.push(item);
+                            selectName = selectName + "," + item.name
+                            subjectMatterId = subjectMatterId + "," + item.dictionaries_id
+                        }
+                    });
+                    selectName = selectName.slice(1);
+                    subjectMatterId = subjectMatterId.slice(1);
+                    api.sendEvent({
+                        name: 'selectDictFlage',
+                        extra: {
+                            subjectMatterId: subjectMatterId,
+                            selectName: selectName
+                        }
+                    });
+                    api.closeFrame();
+                },
+            }
+        })
+    }
+</script>
+
+</html>

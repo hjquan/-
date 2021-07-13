@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        #app {
+            width: 95%;
+            background: rgba(0, 142, 255, 1);
+            border-radius: 10px;
+            margin: 8px auto;
+            padding-bottom: 20px;
+        }
+
+        .show {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .show p {
+            font-size: 18px;
+            margin: 0 50px;
+        }
+
+        .show h2 {
+            font-size: 36px
+        }
+
+        .show img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .show * {
+            color: #fff
+        }
+
+        .footer {
+            /*background-color: #000;*/
+        }
+
+        .date {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .date span {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .date i {
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_show {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .show_item {
+            width: 33.3%;
+            height: 135px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .show_item div {
+            width: 110px;
+            height: 135px;
+            background: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 5px;
+            border-radius: 5px
+        }
+
+        .show_item h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item h3 {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_title {
+            height: 30px;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+            margin: 20px 0;
+            line-height: 30px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="date">
+            <div class="">
+                <span>2020-05-12  02:34</span>&nbsp;
+                <i class="aui-iconfont aui-icon-recovery"></i>
+            </div>
+            <div class="rt" @click="switchDevideFn()">
+                <span>设备001</span>&nbsp;
+                <i class="aui-iconfont aui-icon-more"></i>
+            </div>
+        </div>
+        <div class="show">
+            <img src="../../../image/logo.png" alt="">
+            <p>晴</p>
+            <h2>27 <span>℃</span></h2>
+        </div>
+
+        <div class="footer">
+
+            <ul class="f_show" @click="trendchartFn">
+                <li class="show_item">
+                    <div>
+                        <h2>温度</h2>
+                        <h2>℃</h2>
+                        <h3>23</h3>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="danger">
+                        <h2>PM2.5</h2>
+                        <h2>0(μg/m³）</h2>
+                        <h2>25</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>PM 10</h2>
+                        <h2>(μg/m³）</h2>
+                        <h2>25</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>风速</h2>
+                        <h2>（m/s）</h2>
+                        <h2>25</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>噪声</h2>
+                        <h2>(dB）</h2>
+                        <h2>25</h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div>
+                        <h2>湿度</h2>
+                        <h2>(RH）</h2>
+                        <h2>25</h2>
+                    </div>
+                </li>
+
+
+            </ul>
+        </div>
+        <p class="f_title">温馨提示：点击相应版块可查看趋势图</p>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function() {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    nav_txt: '', //nav文本
+                    cur_nav_i: 0,
+                },
+                created: function() {
+                    this.nav_txt = [{
+                        txt: '实时数据',
+                        type: 0,
+                    }, {
+                        txt: '运行数据',
+                        type: 1,
+                    }, {
+                        txt: '基本数据',
+                        type: 2,
+                    }, ]
+                },
+                methods: {
+                    //切换设备
+                    switchDevideFn: function() {
+                        api.openWin({
+                            name: 'switchDevideFn',
+                            url: './switchDevide.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //趋势图
+                    trendchartFn: function() {
+                        api.openWin({
+                            name: 'trendchart',
+                            url: './trendchart.html',
+                            pageParam: {}
+                        });
+
+                    },
+                    //点击切换当前nav
+                    curtoggleFn: function(data, i) {
+                        this.cur_nav_i = i;
+                    }
+
+                },
+            })
+
+        }
+    </script>
+
+</body>
+
+</html>

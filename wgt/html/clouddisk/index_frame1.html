@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .imgbox{
+            width: 100%;
+            position: fixed;
+            bottom: 110px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .img_item{
+            width: 64px;
+            height: 64px;
+            text-align: center;
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(70,70,71,1);
+        }
+        .close{
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            bottom: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width:24px;
+            height:24px;
+            font-size: 24px;
+            font-weight: bold;
+            color:rgba(5,143,253,1);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <ul class="imgbox">
+            <li v-for="item in topimg" class="img_item" @click="tabBarFn(item)">
+                <img :src="item.src" alt="">
+                <p v-text="item.name"></p>
+            </li>
+
+        </ul>
+        <div class="close" tapmode @click="closefn">+</div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+
+    <script>
+        apiready = function() {
+                var dialogBox = api.require('dialogBox');
+
+                $api.fixStatusBar($api.dom('.container'));
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        topimg: [
+                            {'name':'文件夹','src':'../../../image/clouddisk/yunpan_add_icon_folder_ios.png'},
+                            {'name':'文件','src':'../../../image/clouddisk/yunpan_add_icon_file_ios.png'},
+                            {'name':'图片','src':'../../../image/clouddisk/yunpan_add_icon_img_ios.png' },
+                            {'name':'视频','src':'../../../image/clouddisk/yunpan_add_icon_vedio_ios.png'}
+
+                        ]
+                    },
+                    created: function() {
+
+
+                    },
+                    mounted:function(){
+
+                    },
+                    methods: {
+                        //关闭
+                        closefn:function(){
+                            api.closeWin()
+                        },
+                        //点击
+                        tabBarFn:function(data){
+                            switch (data.name) {
+                                case '文件夹':
+                                    var  params = {
+                                        title:'新文件夹名称',
+                                        callback:function(ret){
+                                            api.sendEvent({
+                                                name: 'clouddisk_creatFolder_event',
+                                                extra: {
+                                                    creatFolder_inputValue:ret.text
+                                                }
+                                            });
+                                            setTimeout(function(){api.closeWin()},500)
+
+                                        }
+                                    }
+                                    this.inputComfig(params)
+                                    break;
+                                case '文件':
+
+                                    break;
+                                case '图片':
+                                    api.sendEvent({
+                                        name: 'clouddisk_upload_img_event',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){api.closeWin()},500)
+
+
+                                    break;
+                                case '视频':
+
+                                    break;
+                            default:
+
+                            }
+                        },
+                        //带输入框弹窗
+                        inputComfig:function(params){
+                            dialogBox.input({
+                                keyboardType: 'default',
+                                tapClose:true,
+                                texts: {
+                                    title: params.title,
+                                    placeholder: '请输入',
+                                    leftBtnTitle: '取消',
+                                    rightBtnTitle: '确定'
+                                },
+                                styles: {
+                                    bg: '#FCFCFC',
+                                    corner: 2,
+                                    w: 270,
+                                    h: 180,
+                                    title: {
+                                        h: 60,
+                                        alignment: 'center',
+                                        size: 14,
+                                        color: '#000',
+                                        // marginT:30,
+                                    },
+                                    input: {
+                                        h: 40,                  //（可选项）数字类型；输入框区域高度；默认：20
+                                       alignment: 'left',    //（可选项）字符串类型；输入框文字显示位置；取值范围：center、left、right ；默认：居中
+                                       marginT: 6,             //（可选项）数字类型；输入框顶端与标题栏底端的距离，如果标题栏不存在，则是到窗口顶端的距离；默认：居中显示
+                                       marginLeft: 10,             //（可选项）数字类型；输入框的左边距；默认：10
+                                       marginRight: 10,             //（可选项）数字类型；输入框的右边距；默认：10
+                                       textSize: 14,           //（可选项）数字类型；输入文本框文本字体大小；默认：14
+                                       verticalCenter:true,         //（可选项）布尔类型；是否上下居中；默认：false；该参数暂仅支持 android
+                                       textColor: '#000' ,      //（可选项）字符串类型；输入文本框文本字体颜色，支持#、rgb、rgba；默认：#000
+                                       borderColor:'#4D4D4D', //（可选项）字符串类型；输入文本框的边框颜色，支持#、rgb、rgba；默认：#000
+                                       borderWidth:1 ,//（可选项）数字类型；输入文本框的边框宽度；默认：0
+                                      corner:5,
+
+                                    },
+                                    dividingLine: {
+                                        width: 0,
+                                        color: '#f00'
+                                    },
+                                    left: {
+                                        bg: 'rgba(0,0,0,0)',
+                                        color: '#007FFF',
+                                        size: 12,
+                                        h: 40,                //(可选项) 数字类型；右边按钮的高度；默认：40
+                                        // w:60,                   //(可选项) 数字类型；左边按钮的宽度；默认：提示框的宽度的一半
+                                        // marginB:10,            //(可选项) 数字类型；左边按离底部的边距；默认：0
+                                        corner:5,              //(可选项) 数字类型；左边按钮的圆角；默认：0
+                                        widhtBorder:0,         //(可选项) 数字类型；左边按钮的边宽；默认：0
+                                        normalBorderColor:'#778899', //(可选项) 数字类型；左边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeBorderColor:'#0000CD', //(可选项) 数字类型；左边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeColor:'#006400', //(可选项) 数字类型；左边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                        activeBg:'#6B8E23'   //(可选项) 数字类型；左边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+                                    },
+                                    right: {
+                                        bg: 'rgba(0,0,0,0)',
+                                        color: '#007FFF',
+                                        size: 12,                   //(可选项) 数字类型；右边按钮的宽度；默认：提示框的宽度的一半
+                                        h: 40,
+                                        // marginB:10,            //(可选项) 数字类型；右边按离底部的边距；默认：0
+                                        corner:5,              //(可选项) 数字类型；右边按钮的圆角；默认：0
+                                        widhtBorder:0,         //(可选项) 数字类型；右边按钮的边宽；默认：0
+                                        normalBorderColor:'#778899', //(可选项) 数字类型；右边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeBorderColor:'#0000CD', //(可选项) 数字类型；右边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeColor:'#006400', //(可选项) 数字类型；右边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                        activeBg:'#6B8E23'   //(可选项) 数字类型；右边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+                                    },
+                                    verticalLine:{
+                                        color:'#ccc', //（可选项）字符串类型；左右按钮中间竖线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                        width:0    //（可选项）数字类型；左右边按钮竖线的高度；默认：0
+
+                                    },
+                                }
+                            }, function(ret) {
+                                console.log( JSON.stringify(ret));
+                                if (ret.eventType == 'left') {
+                                    dialogBox.close({
+                                        dialogName: 'input'
+                                    });
+                                }else{
+                                    params.callback(ret)
+                                    setTimeout(function(){
+                                        dialogBox.close({
+                                            dialogName: 'input'
+                                        });
+                                    },500)
+                                }
+                            });
+                        },
+
+                    }
+
+                })
+
+
+
+            }
+    </script>
+
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        i {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #058FFD
+        }
+
+        .img_h {
+            width: 18px;
+            height: 18px;
+        }
+
+        .content {
+            width: 100%;
+            margin-top: 0.5rem;
+            background-color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .name-img {
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            background: #058FFD;
+            float: left;
+            line-height: 2.5rem;
+            font-size: 0.5rem;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .month-list {
+            height: 2.5rem;
+            width: 100%;
+            border-bottom: 1px #F5F5F5 solid;
+            margin-top: 0.1rem;
+            padding-right: 0.5rem;
+        }
+
+        .month-user-name {
+            float: left;
+            margin-left: 0.5rem;
+        }
+
+        .approve {
+            color: #909090;
+            font-size: 0.7rem;
+        }
+
+        .user-list {
+            width: 100%;
+            padding: 0.5rem 0;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .user-left {
+            float: left;
+            color: #909090;
+        }
+
+        .user-right {
+            float: right;
+            color: #323233;
+        }
+
+        .list-height {
+            width: 100%;
+            height: 1rem;
+        }
+
+        .list-height2 {
+            width: 100%;
+            height: 3rem;
+        }
+
+        .approvr-cause {
+            width: 75%;
+            margin-left: 25%;
+        }
+
+        .cause-right {
+            max-width: 75%;
+            float: right;
+        }
+
+        .flow-text {
+            margin-top: 0.5rem;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            height: 9rem;
+            background: #ffffff;
+        }
+
+        .check-time {
+            width: 3rem;
+            height: 2rem;
+            float: left;
+        }
+
+        .check-time div {
+            width: 2.5rem;
+            height: 1rem;
+            text-align: right;
+        }
+
+        .check-time div:nth-child(2) {
+            color: #A5A5A5;
+            font-size: 0.6rem;
+        }
+
+        .check-text {
+            height: 7rem;
+            position: relative;
+            float: left;
+            width: 100%;
+            margin-left: 0.5rem;
+        }
+
+        .check-text-radius {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: rgba(223, 224, 225, 1);
+            border-radius: 50%;
+        }
+
+        .check-text1 {
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            /* justify-content: center; */
+        }
+
+        .check-text-name {
+            width: 5rem;
+            margin-left: 1rem;
+        }
+
+        .broder-vertical {
+            width: 80%;
+            border-left: 2px #E8F5FF solid;
+            margin-left: 3.2rem;
+            margin-top: -1rem;
+            min-height: 4rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            word-break: break-all;
+            padding-left: 1rem;
+        }
+
+        .check-text1-margin-top {
+            margin-top: -1rem;
+        }
+        .footer{
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">
+                <span v-text="approveApolyType"></span>申请</div>
+            <a class="aui-pull-right aui-btn">
+                <!-- <i class="aui-iconfont aui-icon-menu" tapmode onclick="openquelity(1)"></i> -->
+                <img class="img_h" src="../../../../../image/qualityproblem/shuaixuan.png" tapmode alt="">
+            </a>
+        </header>
+        <div class="content">
+            <div class="month-list">
+                <div class="name-img">
+                    张一山
+                </div>
+                <div class="month-user-name">
+                    张一山
+                    <div class="approve">审批中</div>
+                </div>
+            </div>
+            <div class="user-list">
+                <div class="list-height">
+                    <div class="user-left">
+                        开始时间
+                    </div>
+                    <div class="user-right">
+                        2018-04-04 上午
+                    </div>
+                </div>
+            </div>
+            <div class="user-list">
+                <div class="list-height">
+                    <div class="user-left">
+                        补卡时间
+                    </div>
+                    <div class="user-right">
+                        2018-04-04 上午
+                    </div>
+                </div>
+            </div>
+            <div class="user-list">
+                <div class="list-height">
+                    <div class="user-left">
+                        时长(天)
+                    </div>
+                    <div class="user-right">
+                        0.5 天
+                    </div>
+                </div>
+            </div>
+            <div class="user-list">
+                <div class="list-height2">
+                    <div class="user-left">
+                        请假事由
+                    </div>
+                    <div class="cause-right">
+                        很有说服力的原因，很有说服力的原因，有两行……
+                    </div>
+                </div>
+            </div>
+            <!-- <div>
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                    <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+            </div> -->
+        </div>
+        <div class="flow-text">
+            <div class="check-text">
+                <div class="check-text1">
+                    <div class="check-time">
+                        <div>10-24</div>
+                        <div>09:30</div>
+                    </div>
+                    <div class="check-text-radius"></div>
+                    <div class="check-text-name"> <span>张三 </span> <span>待审批 </span></div>
+                </div>
+                <div class="broder-vertical">1111111111111111111111111111111</div>
+                <div class="check-text1 check-text1-margin-top">
+                    <div class="check-time">
+                        <div>10-24</div>
+                        <div>09:30</div>
+                    </div>
+                    <div class="check-text-radius"></div>
+                    <div class="check-text-name"> <span>张三 </span> <span>待审批 </span></div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+
+        </div>
+    </div>
+    <script src="../../../../../script/api.js"></script>
+    <script src="../../../../../script/sha1.js"></script>
+    <script src="../../../../../script/common.js"></script>
+    <script src="../../../../../script/vue.js"></script>
+
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+
+            var vm = new Vue({
+                el: "#app",
+                data: {
+                    approveApolyInfo: api.pageParam.approveApolyInfo,  //请假申请信息
+                },
+                created: function () {
+                    //格式数据
+                    this.formatDate();
+                },
+                methods: {
+                    //格式数据
+                    formatDate: function () {
+
+                    },
+                },
+            });
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

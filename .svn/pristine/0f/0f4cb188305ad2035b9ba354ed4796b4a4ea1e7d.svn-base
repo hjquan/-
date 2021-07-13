@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>视频监控</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+</head>
+<style>
+    .viode {
+        width: 500px;
+        height: 500px;
+        overflow: hidden;
+    }
+</style>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+        <a class="aui-pull-left aui-btn" tapmode>
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title header_title" id="header_title">视频监控</div>
+    </header>
+
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+            // https://open.ys7.com/ezopen/h5/iframe_se?url=ezopen://open.ys7.com/203751922/1.live&autoplay=1&audio=1&accessToken=ra.79e785kj43ubp77q9esrowhhai7ngdpc-9kekqf15kg-1vwajnz-qytcec0zb&templete=2',
+            var offset = $api.offset($api.byId('header'));
+            var hikvision = api.require('hikvision');
+            var params = {
+                accessToken: 'ra.bjam0fn728r9vc1y7tkvfb79cz01iulc-2rtj44rj54-0n9e5fg-wotfshny4',
+                url: 'ezopen://open.ys7.com/203751922/1.rec',
+                // url: 'ezopen://open.ys7.com/203751922/1.live',
+                rect: {
+                    x: 0,    //（可选项）数字类型；播放画面 x 坐标（相对于所属的 Window 或 Frame）；默认值：0
+                    y: offset.h,    //（可选项）数字类型；播放画面 y 坐标（相对于所属的 Window 或 Frame）；默认值：0
+                    w: 'auto',  //（可选项）数字类型；播放画面宽（相对于所属的 Window 或 Frame）；默认值：屏幕宽度
+                    h: 300,  //（可选项）数字类型；播放画面高（相对于所属的 Window 或 Frame）；默认值：300
+                },
+                isProgress: true
+            };
+            hikvision.open(params, function (ret, err) {
+                console.log("成功" + JSON.stringify(ret));
+                console.log("失败" + JSON.stringify(err));
+            });
+        }
+    </script>
+</body>
+</html>

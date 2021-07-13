@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../../commonUi/iosSelect/iosSelect.css"> -->
+    <style>
+        body,
+        html {
+            height: 100%;
+            background-color: transparent
+        }
+
+
+        .layout{
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background:rgba(0,0,0,.8);
+            z-index: 10;
+        }
+        .btnBox{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 45px;
+            background-color: #fff;
+            text-align: center;
+            padding:0 15px;
+
+        }
+        .btn{
+            flex: 0 0 60px;
+            color: #000;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 3px;
+        }
+        .btn:last-child{
+            color: #fff;
+            background-color: #058FFD;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="layout">
+            <div class="btnBox" >
+                <div class="btn"  @click="closeFn()">取消</div>
+                <div class="btn" @click="confirmFn()">确定</div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+
+            var UICustomPicker = api.require('UICustomPicker');
+            $api.fixStatusBar($api.dom('.layout'));
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    currDate:'',
+                },
+                created:function(){
+                    this.init()
+                },
+                methods: {
+                    //确认
+                    confirmFn:function(){
+                        var _this = this;
+                        api.sendEvent({
+                            name: 'addteam_time_event',
+                            extra: {
+                                workerDate:_this.currDate,
+                                aaddteam_timeme:api.pageParam.aaddteam_timeme
+                            }
+                        });
+                        setTimeout(function(){api.closeFrame();},500)
+                    },
+                    //关闭
+                    closeFn:function(){
+                        api.closeFrame();
+
+                    },
+                    //时间选择
+                    init:function(){
+                        var _this = this;
+                        this.layFlag = true;
+                        UICustomPicker.open({
+                            rect: {
+                                x: 0,
+                                y: api.frameHeight / 2 - 100,
+                                w: api.frameWidth - 60,
+                                h: 340
+                            },
+                            styles: {
+                                bg: 'rgba(0,0,0,0)',
+                                normalColor: '#fff',
+                                autoHide:false,
+                                normalSize:14,
+                                selectedColor: '#fff',
+                                selectedSize: 36,
+                                tagColor: '#058FFD',
+                                tagSize: 18
+                            },
+                            loop:true,
+                            fixedOn:api.frameName,
+                            data: [{
+                                tag: '时',
+                                scope: '0-23'
+                            }, {
+                                tag: '分',
+                                scope: '0-60'
+                            }],
+                            rows: 5,
+                            fixedOn: api.frameName,
+                            fixed: true
+                        }, function(ret, err) {
+                            if (ret) {
+                                console.log(JSON.stringify(ret));
+                                if(!ret.data || !ret.data.length )return;
+                                _this.currDate = ret.data.map(function(item){
+                                    return $app.fillDate(item)
+                                }).join(':')
+
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+                    },
+
+
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

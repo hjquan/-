@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <style>
+        html,body{height: 100%;background:#fff}
+        .container{background-color:rgba(245,245,245,1);}
+        .textarea{
+
+            font-size: 15px;
+            padding: 10px;
+            font-weight:400;
+            color:rgba(199,199,204,1);
+            position: relative;
+        }
+
+        .textarea textarea{
+            max-height: 125px;
+            overflow-y: auto;
+            line-height: 25px;
+            font-size: 15px;
+
+        }
+        .list_title{
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .mt_10{
+            margin-top:10px;
+        }
+        #app{
+
+        }
+
+        .mb_25{padding-bottom: 25px;}
+        .color_f5{background-color: #f5f5f5;}
+        .top_detail{
+            height: 55px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size:10px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:600;
+            background-color: #fff;
+        }
+        .item1{
+            width:32px;
+            height:32px;
+            line-height: 32px;
+            text-align: center;
+            background:rgba(50,50,51,1);
+            border-radius: 16px;
+            font-size: 10px;
+            color:#fff;
+        }
+        .item2 p{
+            font-size:11px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color: #C7C7CC;
+        }
+        .item2 p:last-child{
+            font-size:13px;
+            color: #8F929A;
+        }
+        .nav_show{
+            height: 66px;
+            padding:15px;
+            line-height: 13px;
+            font-size:13px;
+            position: relative;
+
+        }
+        .nav_show div{
+            display: flex;
+            margin-bottom: 10px;
+
+        }
+        .nav_show div p{
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color:rgba(199,199,204,1);
+            font-size: 13px;
+            flex: 1;
+        }
+        .color_c7{
+            color:#c7c7c7;
+
+        }
+        .color_8F{
+            color:#8F929A;
+        }
+        .beforeLine:after{
+            content:'';
+            position: absolute;
+            bottom: 0;
+            left:50%;
+            transform: translateX(-50%);
+            height: 1px;
+            background:#eee;
+            width:100%;
+        }
+        .color_00{
+            color:#000;
+        }
+        .fs_10{font-size: 10px;}
+        .foot_rt{
+            padding:10px 15px 10px 0;
+            position: relative;
+            width: 100%;
+        }
+        .plBox li{
+            display: flex;
+            justify-content:flex-start;
+        }
+        .first_pl{
+            width: auto;
+            padding: 10px 15px;
+            box-sizing: border-box;
+        }
+        .plBox li div div div{
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            height: 25px;
+            line-height: 25px;
+        }
+        .fs_15{
+            font-size: 15px;
+        }
+        .ft_conten{
+            width: 100%;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+            font-size: 15px;
+            line-height:25px;
+        }
+        .footer{padding-bottom:15px}
+        .ft_title{font-size: 15px;color:rgba(50,50,51,1);border-bottom:1px  dashed #C7C7CC;padding:10px 15px}
+        .bg_ff{background-color: #fff}
+        .bg_f5{background-color: #f5f5f5}
+        .inputBox{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 0;
+            position: fixed;
+            padding-bottom: 15px;
+            bottom: 0;
+        }
+        .inputBox input{
+            width: 90%;
+            height:35px;
+            background:rgba(255,255,255,1);
+            border-radius:4px;
+            padding-left: 8px;
+        }
+        .aui-iconfont{font-size: 20px;}
+        .input_b{
+            position: relative;
+            margin-left: 10px;
+        }
+        .plallnum{
+            position: absolute;
+            top:0;
+            right:-10px;
+            font-weight:500;
+            color:rgba(199,199,204,1);
+            line-height:11px;
+        }
+        .sendBtn{
+            width:50px;
+            height:35px;
+            line-height: 35px;
+            background:#C7C7CC;
+            border-radius:4px;
+            text-align: center;
+            color: #fff;
+            font-size:13px;
+            margin-left: 10px;
+        }
+        .active{
+            background: #058FFD !important
+        }
+        .w_100{width: 100%}
+        .color_3d{color:#3D79A9}
+        .color_ffd{color:#058FFD }
+        .bg_f5{
+            background-color: #f5f5f5;
+        }
+        .plBox li{
+            border-bottom: 1px dashed #ccc;
+        }
+        .border_b{border-bottom: 1px dashed #ccc}
+        .border_b:last-child{border:none}
+        .noData_pl p{
+            height: 70px;
+            line-height: 70px;
+            font-weight:600;
+            color:rgba(199,199,204,1);
+            font-size: 13px;
+            text-align: center;
+        }
+        .pd_50{padding-bottom: 50px;}
+        .loadMore{
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color:#058FFD;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .hide{display: none;}
+    </style>
+</head>
+
+<body>
+    <div class="container bg_f5" id="app">
+        <div  class=bg_f5 v-if="detailsInfo">
+            <ul class="top_detail">
+                <li class="item1" v-if="detailsInfo.user_name" v-text="detailsInfo.user_name.substring(detailsInfo.user_name.length-2,detailsInfo.user_name.length)">包包</li>
+                <li class="item2">
+                    <p>日志日期</p>
+                    <p v-text="detailsInfo.logTime">2019/12/09</p>
+                </li>
+                <li class="item2">
+                    <p>上午</p>
+                    <p v-text="detailsInfo.upperWeather">嘤</p>
+                </li>
+                <li class="item2">
+                    <p>下午</p>
+                    <p v-text="detailsInfo.lowerWeather">晴</p>
+                </li>
+                <li class="item2">
+                    <p>温度</p>
+                    <p v-text="detailsInfo.temperature">32</p>
+                </li>
+            </ul>
+            <div class="main_box mb_25 mt_10 ">
+
+                <ul class="bg_ff">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner textarea">
+                            <div class="aui-list-item-input">
+                                <textarea  readonly="readonly" placeholder="请输入"  v-model="detailsInfo.regionInfo"></textarea>
+                            </div>
+                        </div>
+                        <div class="nav_show beforeLine">
+                            <div>
+                                <p class="color_c7" v-if="detailsInfo.operator">操作负责: <span class="color_8F" v-text="detailsInfo.operator[0].name">张三</span></p>
+                                <p class="color_c7">出勤人数: <span class="color_8F" v-text="detailsInfo.number">3</span></p>
+                            </div>
+                            <p class="color_c7">施工区域: <span class="color_8F" v-for="item in detailsInfo.areas" v-text="item.area_name + ','">#12 #14</span></p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="imgUpdate border_bottom_after" v-if="detailsInfo.pictureUrls && detailsInfo.pictureUrls.length">
+                    <div class="imgItem" v-for="(item,index) in detailsInfo.pictureUrls" tapmode="hover">
+                        <!-- <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index) tapmode="hover"></i> -->
+                        <img :src="item.compressUrl" alt="" tapmode @click="imgSee(imgSrc,index)">
+                    </div>
+                </div>
+                <div  class="mt_10 ">
+                    <ul class="">
+                        <li class="mian_item border_bottom_after" v-if="detailsInfo.alterContent">
+                            <p>变更内容<span class="requid"></span></p>
+                            <p><span v-text="detailsInfo.alterContent"></span> </p>
+                        </li>
+                        <li class="mian_item border_bottom_after" v-if="detailsInfo.quqlityMatter">
+                            <p>质量问题<span class="requid"></span></p>
+                            <p><span v-text="detailsInfo.quqlityMatter"></span></p>
+                        </li>
+                        <li class="mian_item border_bottom_after" v-if="detailsInfo.other">
+                            <p>其它<span class="requid"></span></p>
+                            <p><span v-text="detailsInfo.other"></span> </p>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="footer bg_f5" v-if="plListBox.length">
+            <h2 class="ft_title">评论</h2>
+            <div class="pd_50">
+                <div v-if="plListBox.length">
+                    <ul class="plBox" >
+                        <li v-for="items in plListBox" >
+                            <div class=" first_pl">
+                                <p class="item1" v-text="items.createUserName.substr(-2)"></p>
+                            </div>
+                            <div class="w_100">
+                                <div class="foot_rt border_b" tapdemo @click="cilckfirstReplyFn(items)">
+                                    <div class="w_100">
+                                        <p class="fs_15" v-cloak>{{items.createUserName}} &nbsp;<span class="fs_10 color_8F" v-text="items.createTime"></span></p>
+                                        <i class="aui-iconfont aui-icon-trash color_ffd " v-if="items.createUserId == currenId" tapmode @click="pldelCommentFn(items)"></i>
+                                    </div>
+                                    <p class="ft_conten" v-text="items.commentContent" >
+                                    </p>
+                                </div>
+                                <div class="foot_rt border_b" v-if="items.commentList1.length" v-for="item in items.commentList1">
+                                    <div class="w_100">
+                                        <p class="fs_15" v-cloak v-if="item.createUserName">
+                                            <span class="color_3d" v-text="item.createUserName"></span>
+                                            <strong>回复</strong>
+                                            <span class="color_3d" v-text="items.createUserName"></span>&nbsp;&nbsp;&nbsp;
+                                            <span class="fs_10 color_8F" v-text="item.createTime"></span>
+                                        </p>
+                                        <i class="aui-iconfont aui-icon-trash color_ffd" v-if="item.createUserId == currenId" tapmode @click="pldelCommentFn(item)"></i>
+                                    </div>
+                                    <p class="ft_conten" v-text="item.commentContent" >
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="loadMore" tapdemo @click="loadMoreFn()" v-show="isLoadMoreBtn">加载更多>></p>
+                </div>
+                <div class="noData_pl"  v-else>
+                    <p>暂无评论</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="inputBox bg_f5">
+            <input ref="input_b" :placeholder="placeholder_value" type="text" v-model.trim="plcontent" tapmode @click="clickInput()"  @keyup.enter="getplsaveCommentFn()">
+            <div class="input_b" v-show="false">
+                <i class="aui-iconfont aui-icon-comment"></i>
+                <span class="plallnum">21</span>
+            </div>
+            <div class="sendBtn" :class="{'active':plcontent}" tapmode @click.enter="getplsaveCommentFn()">
+                发送
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+            var rescurrentLoginfo = api.pageParam.currentLoginfo.logs[0];
+            // console.log(rescurrentLoginfo);
+            //监听撤销日志
+            api.addEventListener({
+                name: 'revers_construction_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.reversFn();
+
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    detailsInfo:'',//详情消息
+                    imgSrc:[],//预览地址
+                    plcontent:'',//评论内容
+                    rescreateUserId:$api.getStorage('userId'),//创建人id
+                    rescreateUserName:$api.getStorage('enterLoginInfo').name,//创建人name
+                    plListBox:[],//获取评论列表
+                    placeholder_value:'',
+                    parentId:rescurrentLoginfo.logId,//判断是几级
+                    currenId:$api.getStorage('userId'),//当前登录用户id
+                    currenUserName:$api.getStorage('enterLoginInfo').name,//当前用户名称
+                    plcurrentcommentId:'',//记录评论当前评论id，用于判断输入框回复内容是否保存
+                    currentPage: 1, //评论列表请求页数
+                    isLoadMoreBtn:false,//加载评论按钮是否显示
+                    // isSendBtn:true,//判断在不同设备是否显示
+                },
+                watch: {
+
+                },
+                computed: {
+                    //控制提交按钮状态
+
+
+                },
+                mounted:function(){
+
+                },
+                created:function(){
+                    this.init();
+                    this.plcommentListFn()
+
+                },
+                methods: {
+                    //撤销草稿
+                    reversFn:function(){
+                        var _this = this;
+                            var params = {
+                                businessId:api.pageParam.currentLoginfo.logs[0].logId,
+                                logType:'1'
+                            };
+                            $app.post(
+                                true,
+                                delLog,
+                                params,
+                                function(ret){
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+
+                                    _this.savedraftFn()
+
+                                }
+                            )
+                    },
+                    //草稿保//草稿保存
+                    savedraftFn: function() {
+
+                        var item = this.detailsInfo;
+                        var img_filter = item.pictureUrls.map(function(item){//图片处理
+                            return item.srcUrl
+                        })
+                        var  params = {
+                            logTime:item.logTime, //日志日期
+                            morningweather:item.upperWeather, //上午天气
+                            afternoonweather: item.lowerWeather, //下午天气
+                            temperature: item.temperature, //温度
+
+                            constructionLocation: item.areas, //施工部位
+                            pcoo: item.operator[0], //操作负责人
+                            attendance: item.number, //出勤人数
+                            constructionContents: item.regionInfo, //施工内容
+
+
+                            cahngeContent: item.alterContent, //变更内容
+                            changeNumber: item.alterDocument, //变更文号
+                            notificationUnit: item.company, //通知单位
+                            disclosureContents: item.disclosureContent, //交底内容
+                            concealedAcceptance: item.acceptanceSection, //隐藏验收
+                            testBlockMaking: item.statusBlock, //试块制作
+                            enter: item.statusMaterial, //材料情况
+                            qualityProblem: item.quqlityMatter, //质量问题
+                            safetyproblem: item.securityMatter, //安全问题
+                            other: item.other, //其它
+
+                            imgSrc: [], //本地图片地址
+                        };
+                        var isFlag, i_Index = 0;
+                        var  imgArr = [];
+                        dowonloadFn();
+                        function dowonloadFn(){
+                            if(!img_filter.length) return false;
+                            api.download({
+                                url:img_filter[i_Index],
+                                // savePath: 'fs://test.rar',
+                                report: true,
+                                cache: true,
+                                allowResume: true
+                            },function(ret, err){
+                                if(ret.state == 1){
+                                    if (ret) {
+                                        i_Index++;
+                                        if (i_Index < img_filter.length) {
+                                            dowonloadFn();
+                                        } else {
+                                            i_Index = 0;
+                                            // isFlag = true;
+                                        }
+                                        imgArr.push(ret.savePath)
+
+
+                                    } else {
+                                    }
+                                }else{
+
+                                }
+                            });
+
+                        }
+                        var timer = setInterval(function(){
+                                params.imgSrc = imgArr;
+                                if( item.pictureUrls.length == imgArr.length){
+                                    clearInterval(timer);
+                                    console.log($api.jsonToStr(params));
+                                    api.setPrefs({
+                                        key: 'savedraftBox',
+                                        value: $api.jsonToStr(params)
+
+                                    });
+                                    api.sendEvent({
+                                        name: 'refreshcalendar_frame',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){
+                                        api.closeWin();
+                                    },500)
+
+                                }
+                            },500)
+
+                    },
+                    // 设置草稿缓存
+                    setPrefsFn:function(data){
+
+                    },
+                    clickInput:function(){
+                        this.parentId = rescurrentLoginfo.logId;
+                        this.placeholder_value = ''
+                    },
+                    //判断当前是ios或安卓
+                    // isEquipment:function(){
+                    //     if(api.systemType == 'ios'){
+                    //         return true
+                    //     }else{
+                    //         return false
+                    //     }
+                    // },
+                    //点击加载更多评论
+                    loadMoreFn:function(){
+                        this.currentPage++;
+                        this.plcommentListFn(true)
+                    },
+                    //点击回复第一级
+                    cilckfirstReplyFn:function(data,e){
+                        window.event? window.event.cancelBubble = true : e.stopPropagation();
+                        if(this.plcurrentcommentId != data.commentId){
+                            vm.plcontent = '';
+                        }
+                        this.$refs.input_b.focus();
+                        this.parentId = data.commentId;
+                        this.placeholder_value = '@' + data.createUserName;
+                        this.plcurrentcommentId = data.commentId;
+                    },
+                    init:function(){
+                        ajaxPost(
+                            true,
+                            '加载中',
+                            listxq,
+                            {id:api.pageParam.currentLoginfo.logs[0].logId},
+                            function(ret){
+                                console.log($api.jsonToStr(ret.obj));
+                                vm.detailsInfo = ret.obj;
+                                if(ret.obj){
+
+                                    vm.imgSrc = ret.obj.pictureUrls.map(function(item){
+                                        return item.srcUrl
+                                    })
+                                    api.sendEvent({
+                                        name: 'revokebtn',
+                                        extra: {
+                                            revokebtn: ret.obj.createUserId
+                                        }
+                                    });
+                                    //刷新消息中心未读列表
+                                    api.sendEvent({
+                                        name: 'getUnReadFn',
+                                        extra: {
+                                        }
+                                    });
+                                }
+
+                            }
+                        )
+                    },
+                    getplsaveCommentFn:function(){//新增评论
+                        if(!this.plcontent){
+                            api.toast({
+                                msg: '评论不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+
+                            return
+                        }
+                        var params = {
+                            projectId:$api.getStorage('enterpriseId'),
+                            createUserId:vm.rescreateUserId,
+                            createUserName:vm.rescreateUserName,
+                            businessUserId:rescurrentLoginfo.createUserId,
+                            conmmentType:'3',
+                            areaName:'',
+                            businessId:rescurrentLoginfo.logId,
+                            parentId:vm.parentId,
+                            commentContent:vm.plcontent,
+                            logTime:rescurrentLoginfo.logTime,
+                            companyId:''
+                        }
+                        ajaxPost(
+                            true,
+                            '加载中',
+                            plsaveComment,
+                            params,
+                            function(ret){
+                                vm.plcontent = '';
+                                vm.placeholder_value ='';
+                                vm.parentId = rescurrentLoginfo.logId;
+                                vm.plcommentListFn();
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+
+                            }
+                        )
+                    },
+                    pldelCommentFn:function(data,e){//删除评论
+                        window.event? window.event.cancelBubble = true : e.stopPropagation();
+                        api.confirm({
+                            title: '警告',
+                            msg: '是否删除评论',
+                            buttons: [ '取消','删除']
+                        }, function(ret, err){
+                            if( ret ){
+                                if(ret.buttonIndex == 2){
+                                    delFn()
+                                }
+                            }else{
+                            }
+                        });
+
+
+                        function delFn(){
+                            var params = {
+                                commentId:data.commentId,
+                                userId:$api.getStorage('userId')
+                            }
+                            ajaxPost(
+                                true,
+                                '加载中',
+                                pldelComment,
+                                params,
+                                function(ret){
+                                    vm.plcommentListFn();
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+
+                                }
+                            )
+                        }
+                    },
+                    plcommentListFn:function(isLoad){//评论列表
+                        var params = {
+                            businessId:rescurrentLoginfo.logId,
+                            userId:rescurrentLoginfo.createUserId,
+                            showCount:'2',
+                            currentPage:this.currentPage
+                        }
+                        ajaxPost(
+                            true,
+                            '加载中',
+                            plcommentList,
+                            params,
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+
+                                if(isLoad){
+
+                                    if(vm.plListBox.length < ret.totalResult){
+
+                                        vm.plListBox = vm.plListBox.concat(ret.obj)
+                                    }else{
+                                        vm.isLoadMoreBtn = false;
+                                        api.toast({
+                                            msg: '暂无更多评论',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else{
+                                    vm.currentPage = 1;
+                                    vm.plListBox = ret.obj;
+                                }
+                                if(vm.plListBox.length < ret.totalResult){
+                                    vm.isLoadMoreBtn = true;
+                                }else{
+                                    vm.isLoadMoreBtn = false;
+                                }
+                            }
+                        )
+                    },
+                    plgetCommentNumFn:function(){//获取评论总数
+                        var params = {
+                            businessId:api.pageParam.currentLoginfo.logs[0].logId,
+                        }
+                        ajaxPost(
+                            true,
+                            '加载中',
+                            plgetCommentNum,
+                            params,
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                            }
+                        )
+                    },
+                    // //图片查看
+                    imgSee: function(url,index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images:url,
+                            activeIndex:index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+                    // 查看依据详情
+                    openShowDispaly: function(txt) {
+                        api.openFrame({
+                            name: 'contentDisplay',
+                            url: '../../../contentDisplay.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                content: txt
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(240,240,240,0.4)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    },
+
+
+                }
+            })
+
+
+        };
+
+    </script>
+</body>
+
+</html>

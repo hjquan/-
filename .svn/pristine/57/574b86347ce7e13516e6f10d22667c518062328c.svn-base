@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        .title {
+            padding: 0 15px;
+            height: 40px;
+            background: rgba(5, 143, 253, 0.2);
+            font-size: 13px;
+            line-height: 40px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+
+        }
+
+        textarea {
+            padding: 15px;
+            font-size: 12px;
+            min-height: 90px;
+            line-height: 20px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .img_box {
+            border-top: 1px dashed #ccc;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .img_item {
+            margin-right: 5px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .add_btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .add_btn i {
+            font-size: 24px;
+        }
+
+        .requid {
+            color: #EC4031;
+            font-size: 0.8rem;
+
+        }
+
+        .btn {
+            width: 80%;
+            height: 46px;
+            line-height: 46px;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            text-align: center;
+            color: #fff;
+            margin: 45px auto 0;
+        }
+
+        .border_bottom_after:after {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list">
+            <li class="list_item">
+                <h2 class="title">原因<span class="requid">*</span></h2>
+                <textarea name="name" rows="8" cols="80" placeholder="请输入文字" v-text="policeInfo.callContent"
+                    readonly></textarea>
+                <div class="img_box">
+                    <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                        <div class="imgItem" v-for="(item,index) in imgSrc">
+                            <img :src="item" alt="">
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="list_item">
+                <h2 class="title">处理<span class="requid">*</span></h2>
+                <textarea name="name" rows="8" cols="80" placeholder="请输入文字" v-text="policeInfo.resultContent"
+                    readonly></textarea>
+                <div class="img_box">
+                    <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                        <div class="imgItem" v-for="(item,index) in  imgSrcResult">
+                            <img :src="item" alt="">
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    callpoliceInfo: api.pageParam.callpoliceInfo,
+                    callContent: null,
+                    imgSrcResult: [],
+                    imgSrc: [],
+                    policeInfo: null,
+                },
+                created: function () {
+                    this.getPoliceHandleInfo();
+                },
+                methods: {
+                    //获取报警处理
+                    getPoliceHandleInfo: function () {
+                        var that = this;
+                        var prame = {
+                            warnLogId: this.callpoliceInfo.id + "",
+                        };
+                        $app.post(
+                            true,
+                            getPoliceHandleInfoURL,
+                            prame,
+                            function (ret) {
+                                var img = null;
+                                var imgSrc1 = [];
+                                var imgResult = null;
+                                var imgSrcResult1 = [];
+                                that.policeInfo = ret.obj;
+                                if (that.policeInfo.callPhoto) {
+                                    that.policeInfo.callPhoto.split(",").map(function (item) {
+                                        img = that.policeInfo.urlPrefix + item;
+                                        imgSrc1.push(img);
+                                    });
+                                    that.imgSrc = imgSrc1;
+                                }
+                                if (that.policeInfo.resultPhoto) {
+                                    that.policeInfo.resultPhoto.split(",").map(function (item) {
+                                        imgResult = that.policeInfo.urlPrefix + item;
+                                        imgSrcResult1.push(imgResult);
+                                    });
+                                    that.imgSrcResult = imgSrcResult1;
+                                }
+                            }
+                        )
+                    },
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
