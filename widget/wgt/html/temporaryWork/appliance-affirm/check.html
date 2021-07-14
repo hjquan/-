@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .text-right-img {
+            float: right;
+            width: 1rem;
+        }
+
+        .form {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .form p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            padding-bottom: 10px;
+        }
+
+        .header-name {
+            padding: 10px;
+        }
+
+        .mian_item {
+            border-bottom: 1px #e3e4e5 solid;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .text-right-img {
+            float: right;
+            width: 1rem;
+        }
+
+        .form {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .form p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            padding-bottom: 10px;
+        }
+
+        .footer {
+            width: 100%;
+            height: 7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button-submit {
+            width: 50%;
+            height: 2rem;
+            border: 0;
+            border-radius: 3px;
+            background: #2a82e4;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="height">
+        <header class="aui-bar aui-bar-nav bg_f " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <section class="aui-title">流程审批</section>
+        </header>
+        <section class="content">
+            <li class="mian_item" @click="selectCheck()">
+                <p> 下一步审批</p>
+                <input class="input_rt" type="text" style="padding-right: 0;" placeholder="请选择"
+                    v-model="subjectMatterName" disabled>
+                <img class="text-right-img" src="../../../../image/clocking-in/right.png" alt="">
+            </li>
+            <li class="mian_item" v-if="state == 2" @click="selectCopyTo()">
+                <p> 结束后抄送</p>
+                <input class="input_rt" type="text" style="padding-right: 0;" placeholder="请选择" v-model="ccUserName"
+                    disabled>
+                <img class="text-right-img" src="../../../../image/clocking-in/right.png" alt="">
+            </li>
+            <li class="mian_item" v-if="state == 1" @click="selectAssignee()">
+                <p> 选择审批人</p>
+                <input class="input_rt" type="text" style="padding-right: 0;" placeholder="请选择" v-model="assigneeName"
+                    disabled>
+                <img class="text-right-img" src="../../../../image/clocking-in/right.png" alt="">
+            </li>
+            <li class="form">
+                <p> 审批内容</p>
+                <textarea name="name" placeholder="请输入" rows="8" cols="80" maxlength="50" v-model="content"></textarea>
+            </li>
+            <section class="footer">
+                <button class="button-submit" @click="submit()">提交</button>
+            </section>
+        </section>
+    </section>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    confirmId: api.pageParam.confirmId,
+                    content: "",    //流程处理内容
+                    ccUserId: "",  //抄送人id
+                    ccUserName: "",  //抄送人姓名
+                    state: "",//下一步审批状态
+                    assigneeName: "",//审批人姓名
+                    assigneeId: "",//审批人姓名
+                    subjectMatterName: ""
+                },
+                created: function () {
+                    var that = this;
+                    //监听用工选择数据
+                    api.addEventListener({
+                        name: 'selectApproval'
+                    }, function (ret, err) {
+                        console.log("选择的数据：" + JSON.stringify(ret.value))
+                        that.assigneeName = ret.value.approvalUserName;
+                        that.assigneeId = ret.value.approvalUserId;
+                    });
+                    //监听用工选择数据
+                    api.addEventListener({
+                        name: 'selectCopy'
+                    }, function (ret, err) {
+                        console.log("选择的数据：" + JSON.stringify(ret.value))
+                        that.ccUserName = ret.value.copyUserName;
+                        that.ccUserId = ret.value.copyUserId;
+                    });
+                },
+                methods: {
+                    //下一步审批
+                    selectCheck: function () {
+                        var that = this;
+                        api.actionSheet({
+                            cancelTitle: '取消',
+                            buttons: ["选择下一个审批人", "完成审批", "退回至发起人"]
+                        }, function (ret, err) {
+                            that.state = ret.buttonIndex;
+                            switch (ret.buttonIndex) {
+                                case 1:
+                                    that.subjectMatterName = "选择下一个审批人"
+                                    break;
+                                case 2:
+                                    that.subjectMatterName = "完成审批"
+                                    break;
+                                case 3:
+                                    that.subjectMatterName = "退回至发起人"
+                                    break;
+                            }
+                        });
+                    },
+                    selectCopyTo: function () {
+                        api.openWin({
+                            name: 'selectCopy',
+                            url: '../selectCopy.html',
+                            bounces: false,
+                            pageParam: { key: 'value' }
+                        });
+                    },
+                    selectAssignee: function () {
+                        api.openWin({
+                            name: 'examinePer',
+                            url: '../examinePer.html',
+                            bounces: false,
+                            pageParam: { key: 'value' }
+                        });
+                    },
+                    checkFunction: function (state) {
+                        var prame = {
+                            businessId: this.confirmId,
+                            ccUserId: this.ccUserId,
+                            state: state,
+                            content: this.content,
+                            msgContent: $api.getStorage('enterLoginInfo').name + "申请的零星机械使用确认" + "[用工事由：" + this.subjectMatterName + "]",
+                            msgTitle: "零星机械使用确认",
+                            msgModule: "mechanicsConfirm",
+                        };
+                        var that = this;
+                        console.log("参数：" + JSON.stringify(prame));
+                        $app.post(
+                            false,
+                            editStateInfoMechanicsconfirm,
+                            prame,
+                            function (ret) {
+                                api.sendEvent({
+                                    name: 'mechanicsConfirm',
+                                    extra: {
+                                        confirmId: that.confirmId
+                                    }
+                                });
+                                api.closeWin();
+                            }
+                        )
+                    },
+                    //提交函数
+                    submit: function () {
+                        if (this.subjectMatterName === "") {
+                            api.toast({
+                                msg: '请选择下一步审批',
+                                duration: 2000,
+                                location: 'bottom'
+                            })
+                        }
+                        if (this.state === 1) {
+                            this.nextFunction("0");
+                        }
+                        if (this.state === 2) {
+                            this.checkFunction("2");
+                        }
+                        if (this.state === 3) {
+                            this.checkFunction("1");
+                        }
+                    },
+                    nextFunction: function (state) {
+                        var prame = {
+                            businessId: this.confirmId,
+                            assigneeId: this.assigneeId,
+                            assigneeName: this.assigneeName,
+                            roleId: "",
+                            roleName: "",
+                            flowType: "1",
+                            content: this.content,
+                            companyId: "",
+                            compressPath: "",
+                            srcPath: "",
+                            msgContent: $api.getStorage('enterLoginInfo').name + "申请的零星机械使用确认" + "[用工事由：" + this.subjectMatterName + "]",
+                            msgTitle: "零星机械使用确认",
+                            msgModule: "mechanicsConfirm",
+                        };
+                        var that = this;
+                        console.log("参数：" + JSON.stringify(prame));
+                        $app.post(
+                            false,
+                            processPassURL,
+                            prame,
+                            function (ret) {
+                                api.sendEvent({
+                                    name: 'mechanicsConfirm',
+                                    extra: {
+                                        confirmId: that.confirmId
+                                    }
+                                });
+                                api.closeWin();
+                            }
+                        )
+                    },
+                }
+            });
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

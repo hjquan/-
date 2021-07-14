@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+        .box{
+            background-color: #fff;
+            padding: 10px 10px 0 10px;
+            margin-top: 15px;
+        }
+        .title{
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .txt_detail{
+            line-height: 25px;
+            min-height: 80px;
+            font-size: 16px;
+        }
+        .nav{
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        .nav span{
+            font-size: 0.7rem;
+            color: #757575;
+        }
+        .footer{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+            height: 45px;
+        }
+        .footer p{
+            width: 40px;
+            margin: 0 5px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .icon{
+            /*flex:0 0 60px;*/
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .line::before{
+            position: absolute;
+            left: 50%;
+            top: 0;
+            content: "";
+            height: 1px;
+            background: #ddd;
+            width: 100%;
+            transform: scaleY(0.5) translateX(-50%);
+        }
+        .img-box{
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .img-box img{
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+
+
+
+
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15 box"   id="app">
+        <div v-if="detailInfo" >
+            <h2 class="title" v-text="detailInfo.type">通知</h2>
+            <textarea name="name" readonly  rows="8" cols="80" v-model="detailInfo.detail" class="txt_detail"></textarea>
+            <div class="img-box">
+                <img :src="item.compressUrl" v-for="(item,i) in detailInfo.pictureUrls" :key="item.compressUrl" alt="" @click="imgSee(detailInfo.pictureUrls,i)" tapmode>
+            </div>
+            <!-- <div class="nav">
+                <span v-text="detailInfo.CreateUsername">asd</span>
+                <span v-text="detailInfo.createTime">as</span>
+            </div> -->
+            <div class="footer line" v-if="detailInfo.allReciveUserlist" v-cloak>
+                <p tapmode @click="openperson('接收人员')" class=""><i class="aui-iconfont aui-icon-my icon"></i> <span v-text="detailInfo.allReciveUserlist.length">1</span></p>
+                <p tapmode @click="openperson('已查看')"><i class="aui-iconfont aui-icon-display icon "></i> <span v-text="read.length">3</span></p>
+                <p tapmode @click="openperson('未查看')"><i class="aui-iconfont aui-icon-hide icon"></i> <span v-text="unread.length">2</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            api.parseTapmode();
+
+            var photoBrowser = api.require('photoBrowser');
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    "detailInfo":[],//列表数据
+                    "read":[],//已读
+                    "unread":[]//未读
+                },
+                methods:{
+                    imgSee: function(url, index) {
+                        var Img_url_box = url.map(function(item){
+                            return item.srcUrl
+                        })
+                        photoBrowser.open({
+                            images: Img_url_box,
+                            activeIndex: index,
+                            placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+                    openperson:function(type){
+                        var data=null;
+                        switch (type) {
+                            case '接收人员':
+                                data = this.detailInfo.allReciveUserlist;
+                                break;
+                            case '已查看':
+                                data = this.read;
+                                break;
+                            case '未查看':
+                                data = this.unread;
+                                break;
+                            default:
+
+
+                        }
+                        api.openWin({
+                            name: 'doc_person',
+                            url: './doc_person.html',
+                            pageParam: {
+                                "doc_personIfo":data,
+                                "title_sate":type
+                            }
+                        });
+
+
+                    },
+
+                    //初始化公文列表
+                    init:function(){
+                        var _this = this;
+                        var params ={
+                            "id": api.pageParam.doc_list_info.id || api.pageParam.doc_list_info.objectId,
+                            "userId": $api.getStorage('userId'),
+                            "projectId": $api.getStorage('enterpriseId'),
+
+                        }
+                        // console.log($api.jsonToStr(params));
+
+                        $app.post(
+                            true,
+                            documentgetDetail,
+                            params,
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.detailInfo = ret.obj;
+                                //分离已读未读
+                                ret.obj.allReciveUserlist.forEach(function(item){
+                                    if(item.readTime){
+                                        _this.read.push(item)
+                                    }else{
+                                        _this.unread.push(item)
+                                    }
+                                })
+                                //刷新消息列表状态
+                                api.sendEvent({
+                                    name: 'newCenterListFn',
+                                    extra: {
+                                    }
+                                });
+                                //刷新首页消息计数
+                                api.sendEvent({
+                                    name: 'enterpriceMessage',
+                                    extra: {
+                                    }
+                                });
+
+
+                            }
+                        )
+                    },
+                },
+                created:function(){
+                    this.init()
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>

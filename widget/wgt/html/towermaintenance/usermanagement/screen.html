@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        .layer,
+        body {
+            height: 100%;
+            background-color: transparent
+        }
+
+        .lay {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, .2);
+            z-index: 10
+        }
+
+        .main {
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            padding-top: 65px;
+            position: relative;
+            z-index: 50
+        }
+
+        .main_item {
+            margin-bottom: 40px;
+        }
+
+        .show {
+            width: 200px;
+            height: 35px;
+            line-height: 35px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .title {
+            padding: 5px 0;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .btnBox {
+            width: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            ;
+            bottom: 0;
+            right: 0;
+        }
+
+        .btn_item {
+            flex: 1;
+            height: 45px;
+            line-height: 45px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(5, 143, 253, 1);
+            border-radius: 2px;
+            text-align: center;
+        }
+
+        .btn_active {
+            background: rgba(5, 143, 253, 1);
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layer" id="app">
+        <div class="lay" tapmode onclick="closecurrpage()"></div>
+        <ul class="main">
+            <li class="main_item">
+                <h1 class="title">选择人员类别</h1>
+                <p class="show" @click="selectCategory()"><span v-text="category">不限</span><i
+                        class="aui-iconfont aui-icon-right"></i></p>
+            </li>
+            <li class="main_item">
+                <h1 class="title">选择负责塔机</h1>
+                <p class="show" @click="selectBeincrane()"><span v-text="beincrane">不限</span><i
+                        class="aui-iconfont aui-icon-right"></i></p>
+            <li>
+                <div class="btnBox">
+                    <div class="btn_item" @click="reset()">重置</div>
+                    <div class="btn_item btn_active" @click="submit()">确认</div>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+
+    <script>
+        apiready = function () {
+            api.parseTapmode();
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.layer'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    category: null,    //人员类型
+                    beincrane: null,    //负责设备
+                    TowerDeviceList: [],   //设备列表  
+                },
+                created: function () {
+                    this.getTowerDeviceLists();
+                },
+                methods: {
+                    //提交函数
+                    submit: function () {
+                        var that = this;
+                        api.closeFrame();
+                        api.sendEvent({
+                            name: 'screenCondition',
+                            extra: {
+                                category: that.category,
+                                beincrane: that.beincrane
+                            }
+                        });
+
+                    },
+                    //重置函数
+                    reset: function () {
+                        this.category = null;
+                        this.beincrane = null;
+                    },
+                    //获取塔机列表
+                    getTowerDeviceLists: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getTowerListInfoURL,
+                            {
+                                projectId: $api.getStorage('enterpriseId'),
+                            },
+                            function (ret) {
+
+                                console.log("获取塔机列表:" + JSON.stringify(ret.obj));
+                                ret.obj.list.map(function (item) {
+                                    that.TowerDeviceList.push(item.towerNo);
+                                });
+                            }
+                        )
+                    },
+                    selectCategory: function () {
+                        var that = this
+                        api.actionSheet({
+                            title: '选择人员类别',
+                            cancelTitle: '取消',
+                            buttons: ['司机', '安装人员', '安拆人员']
+                        }, function (ret, err) {
+                            switch (ret.buttonIndex - 1) {
+                                case 0:
+                                    that.category = '司机';
+                                    break;
+                                case 1:
+                                    that.category = '安装人员';
+                                    break;
+                                case 2:
+                                    that.category = '安拆人员';
+                                    break;
+                            }
+                        });
+                    },
+                    selectBeincrane: function () {
+                        var that = this
+                        api.actionSheet({
+                            title: '选择负责塔机',
+                            cancelTitle: '取消',
+                            buttons: this.TowerDeviceList
+                        }, function (ret, err) {
+                            that.beincrane = that.TowerDeviceList[ret.buttonIndex - 1]
+                        });
+                    },
+                }
+            })
+        }
+        function closecurrpage() {
+            console.log('close');
+            api.closeFrame();
+
+        }
+    </script>
+</body>
+
+</html>

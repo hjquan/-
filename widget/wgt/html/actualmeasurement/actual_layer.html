@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,body{
+            background-color:rgba(0,0,0,.1);
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .a_link{
+            color:#058FFD
+        }
+        .head{
+            height:40px;
+            line-height: 40px;
+        }
+        .container{
+            width: 270px;
+            margin:0 auto;
+            min-height: 100px;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #000;
+            font-weight: 600;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .main{
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            padding: 15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+        }
+        .btn_box{
+
+            text-align: center;
+            display: flex;
+            justify-content:
+        }
+        .btn{
+            height:45px;
+            line-height: 45px;
+            flex:1;
+        }
+        .btn:last-child{
+            color:#058FFD;
+            /*border-left: 1px solid #ccc;*/
+        }
+        .title{
+            font-size:12px;
+            font-weight:400;
+            margin-bottom: 15px;
+        }
+        .txt_l{
+            width: 75px;
+            font-size:13px;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+            margin-right: 5px;
+            text-align: left;
+        }
+        .txt_r{
+            width:160px;
+            font-size:13px;
+            font-weight:400;
+            color:rgba(183,183,188,1);
+            text-align: left;
+        }
+        .main li{
+            display: flex;
+            justify-content: flex-start;
+            align-content: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="head">
+            测量说明
+        </div>
+        <div class="main">
+            <h2 class="title"><span style="color:#15BC83">绿色</span>为合格,<span style="color:red">红色</span>为不合格</h2>
+            <ul>
+                <li><p class="txt_l">检测项目:</p><p class="txt_r  aui-ellipsis-1" v-text=" (info.checkContentname && info.checkContentname.split('_')[0]) || info.componentName">抹灰</p></li>
+                <li ><p class="txt_l">检测内容:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].name"></p></li>
+                <li v-if="info.builontentds[0].uperLimit != 0"><p class="txt_l">存在设计值:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].isDesign == 1 ? '是':'否'"></p></li>
+                <li ><p class="txt_l">评判方式:</p><p class="txt_r" v-text="(info.builontentds[0].lowerLimit == 0 && info.builontentds[0].uperLimit  == 0) ? '肉眼观感' : '测量区间'"></p></li>
+                <li ><p class="txt_l">合格区间:</p><p class="txt_r aui-ellipsis-1" v-cloak> {{ '[' + info.builontentds[0].lowerLimit + ',' + info.builontentds[0].uperLimit + ']' }} </p></li>
+                <li v-if="info.builontentds[0].calculatePoor == 2"><p class="txt_l">偏差区间:</p><p class="txt_r aui-ellipsis-1" v-cloak> {{ '[' + info.builontentds[0].lowerDeviation + ',' + info.builontentds[0].uperDeviation + ']' }} </p></li>
+                <li><p class="txt_l">计算方式:</p><p class="txt_r aui-ellipsis-1" >{{info.builontentds[0].calculatePoor == 0 ? '一般计算' : info.builontentds[0].calculatePoor == 1 ? '极差计算' : '偏差计算' }}</p></li>
+                <li><p class="txt_l">检测区:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].gaugeArea"></p></li>
+                <li><p class="txt_l">检查点:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].gaugeCount"></p></li>
+                <li v-if="info.builontentds[0].changeRole"><p class="txt_l">选点规则:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].changeRole"></p></li>
+                <li v-if="info.builontentds[0].instruction"><p class="txt_l">说明:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].instruction"></p></li>
+                <li v-if="info.builontentds[0].calculatePoor == 1"><p class="txt_l">爆版值:</p><p class="txt_r aui-ellipsis-1" v-text="info.builontentds[0].plateValue"></p></li>
+            </ul>
+        </div>
+        <div class="btn_box">
+            <div class="btn" tapmode onclick="closeWin()">确定</div>
+            <!-- <div class="btn" tapmode onclick="fnNo(1)">同意</div> -->
+        </div>
+    </div>
+
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            // $api.fixStatusBar( $api.dom('header') );
+            var app = new Vue({
+                el:'#app',
+                data:{
+                    'info':'',//接收参数
+                },
+                created:function(){
+
+                    this.info = api.pageParam.actual_info;
+                    console.log($api.jsonToStr(this.info));
+                },
+                methods:{},
+
+            })
+        }
+
+        function closeWin(){
+            api.closeFrame();
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        /*.list_item > *{
+            flex: 1
+        }*/
+        .total {
+
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .total p {
+            margin-right: 20px;
+        }
+
+        .daner {
+            color: #FF0000
+        }
+
+        .queryBtn {
+            width: 250px;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            margin: 35px auto 0;
+        }
+
+        .requid {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list">
+            <li class="list_item danger" @click="selectVideoName()">
+                <div class="lf ">
+                    <span class="name">视频名称<span class="requid">*</span></span>
+                </div>
+                <div class="total">
+                    <p v-if="buttonIndex !== null" v-text="selectCameraInfo.cameraName"></p>
+                    <p v-if="buttonIndex == null">请选择</p>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </li>
+            <li class="list_item danger" @click="selectStartTime()">
+                <div class="lf ">
+                    <span class="name">选择开始日期<span class="requid">*</span></span>
+                </div>
+                <div class="total">
+                    <p v-if="startTime" v-text="startTime"></p>
+                    <p v-if="!startTime">请选择</p>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </li>
+            <li class="list_item danger" @click="selectEndTime()">
+                <div class="lf ">
+                    <span class="name">选择结束日期<span class="requid">*</span></span>
+                </div>
+                <div class="total">
+                    <p v-if="endTime" v-text="endTime"></p>
+                    <p v-if="!endTime">请选择</p>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </li>
+        </ul>
+        <div class="queryBtn" @click="selectVideo()">查找</div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    startTime: null,
+                    endTime: null,
+                    cameraListInfo: [],  //获取的视频
+                    selectCameraInfo: null,  //选择的视频
+                    buttons: [],//选择框数据
+                    buttonIndex: null,
+                    cameraName: name,
+                },
+                mounted: function () {
+                },
+                created: function () {
+                    this.getAICaptureInfoList();
+                },
+                methods: {
+                    //选择视频
+                    selectVideo: function () {
+                        var that = this;
+                        if (!this.selectCameraInfo) {
+                            api.toast({
+                                msg: '视频名称不能为空',
+                                duration: 3000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        if (!this.startTime) {
+                            api.toast({
+                                msg: '开始时间不能为空',
+                                duration: 3000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        if (!this.endTime) {
+                            api.toast({
+                                msg: '结束时间不能为空',
+                                duration: 3000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        var prame = {
+                            id: this.selectCameraInfo.id,
+                            startTime: this.startTime,
+                            endTime: this.endTime
+                        };
+                        console.log("请求参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getCameraPlaybackURL,
+                            prame,
+                            function (ret) {
+                                console.log("视屏监控" + JSON.stringify(ret));
+                                if (!ret.obj.playUrl) {
+                                    api.toast({
+                                        msg: '暂无视频',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    return false;
+                                }
+                                api.openWin({
+                                    name: 'video',
+                                    url: 'video.html',
+                                    pageParam: {
+                                        playUrl: ret.obj.playUrl,
+                                        startTime: that.startTime,
+                                        endTime: that.endTime,
+                                    },
+                                });
+                            }
+                        )
+                    },
+                    //查询视频列表
+                    getAICaptureInfoList: function () {
+                        var that = this;
+                        var prame = {
+                            projectId: $api.getStorage('enterpriseId'),
+                            cranesId: "",
+                            type: "100"
+                        };
+                        console.log("请求参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getCameraListInfoURL,
+                            prame,
+                            function (ret) {
+                                if (ret.obj) {
+                                    that.cameraListInfo = ret.obj;
+                                    that.cameraListInfo.map(function (item) {
+                                        that.buttons.push(item.cameraName)
+                                    });
+                                }
+                                console.log("视屏监控" + JSON.stringify(ret));
+                            }
+                        )
+                    },
+                    //选择视频名称
+                    selectVideoName: function () {
+                        var that = this
+                        api.actionSheet({
+                            title: '选择视频名称',
+                            cancelTitle: '取消',
+                            buttons: that.buttons
+                        }, function (ret, err) {
+                            if (ret.buttonIndex - 1 < that.buttons.length) {
+                                that.buttonIndex = ret.buttonIndex - 1;
+                                that.selectCameraInfo = that.cameraListInfo[that.buttonIndex]
+                            }
+                        });
+                    },
+                    //选择开始时间
+                    selectStartTime: function () {
+                        var that = this;
+                        timeSelector.fnOpenSelector({
+                            title: '时间选择',
+                            sureText: '完成',
+                            isShowUnit: true,
+                            itemShowCount: 5,
+                            itemHeight: 55,
+                            date: vm.selectDate
+                        }, function (ret) {
+                            //ret.date
+                            if (ret) {
+                                var d = new Date(ret.date);
+                                var selectTime = d.getTime(); //选择毫秒数
+                                var seconds = d.getSeconds() + '';
+                                var currenDateTime = new Date();//当前时间毫秒数
+                                var curenDate = new Date()//当前时间年月日
+                                var currenD = new Date(that.endTime)
+                                if (selectTime > curenDate.getTime()) {
+                                    api.toast({
+                                        msg: '选择不能大于当前日期',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    return false;
+                                }
+                                console.log("++++" + ret.date);
+                                console.log("++++" + that.endTime);
+                                if (that.endTime) {
+                                    if (selectTime > currenD) {
+                                        api.toast({
+                                            msg: '选择不能大于结束日期',
+                                            duration: 3000,
+                                            location: 'bottom'
+                                        });
+                                        return false;
+                                    }
+                                    console.log("++++" + selectTime);
+                                    console.log("++++" + currenD);
+                                }
+                                seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                                var time = d.getFullYear() + '-' + that.add0(d.getMonth() + 1) + '-' + that.add0(d
+                                    .getDate()) + ' ' + that.add0(d.getHours()) + ':' + that.add0(d.getMinutes()) + ':' +
+                                    seconds;
+                                that.startTime = time;
+                            }
+                        })
+                    },
+                    //选择结束时间
+                    selectEndTime: function () {
+                        var that = this;
+                        timeSelector.fnOpenSelector({
+                            title: '时间选择',
+                            sureText: '完成',
+                            isShowUnit: true,
+                            itemShowCount: 5,
+                            itemHeight: 55,
+                            date: vm.selectDate
+                        }, function (ret) {
+                            //ret.date
+                            if (ret) {
+                                var d = new Date(ret.date);
+                                var selectTime = d.getTime(); //选择毫秒数
+                                var curenDate = new Date().getTime();//当前时间年月日
+                                var currenD = new Date(that.startTime).getTime();
+                                if (currenD > selectTime) {
+                                    api.toast({
+                                        msg: '选择不能小于开始日期',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    return false;
+                                }
+                                if (selectTime > curenDate) {
+                                    api.toast({
+                                        msg: '选择不能大于当前日期',
+                                        duration: 3000,
+                                        location: 'bottom'
+                                    });
+                                    return false;
+                                }
+                                var seconds = d.getSeconds() + '';
+                                seconds.length == 2 ? seconds : (seconds = '0' + seconds)
+                                var time = d.getFullYear() + '-' + that.add0(d.getMonth() + 1) + '-' + that.add0(d
+                                    .getDate()) + ' ' + that.add0(d.getHours()) + ':' + that.add0(d.getMinutes()) + ':' +
+                                    seconds;
+                                that.endTime = time;
+                            }
+                        })
+                    },
+                    add0: function (num) {
+                        if (num < 10) {
+                            return '0' + num;
+                        } else {
+                            return num;
+                        }
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

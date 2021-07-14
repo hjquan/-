@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .btn {
+            color: #c7c7c7;
+            font-size: 14px;
+        }
+
+        .color_d5 {
+            color: #058FFD
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">添加设备用户</div>
+                <!-- <a class="aui-pull-right aui-btn" >
+                    <span class="btn color_d5" tapmode >评价</span>
+                </a> -->
+            </header>
+
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    isShow: false,//判断删除按钮是否显示
+                    isClassSave: false,//是否高亮
+                    isTitle: false //判断草稿或新增
+
+                },
+                methods: {
+
+                }
+            })
+
+            api.openFrame({
+                name: 'adduser_frame',
+                url: './adduser_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    idInfo: api.pageParam.idInfo,
+                    // idInfo: {
+                    //     "riskType": "normal",
+                    //     "imageStatus": "normal",
+                    //     "idCardSide": "front",
+                    //     "status": true,
+                    //     "imagePath": "/data/user/0/com.e1181876308.szf/files/1599725023144.jpg",
+                    //     "address": "重庆市渝北区",
+                    //     "birthday": "19961228",
+                    //     "idNumber": "500231199612283414",
+                    //     "ethnic": "汉",
+                    //     "gender": "男",
+                    //     "name": "海绵宝宝"
+                    // },
+                    fromInfo: api.pageParam.fromInfo
+                },
+                bounces: false,
+                bgColor: 'rgba(0,0,0,0)',
+                vScrollBarEnabled: true,
+                hScrollBarEnabled: true
+            });
+
+        }
+        function openLeft() {
+
+        }
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

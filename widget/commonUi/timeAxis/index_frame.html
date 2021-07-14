@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="./libs/index.css" />
+    <style>
+        .imgBox {
+            height: 50px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
+
+        .statu {
+            color: #999;
+            font-size: 15px;
+        }
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="list">
+            <div class="item-inner flex-box-x" :class="{'active':index == 0}" v-for="(item,index) in dataStepList">
+                <div class="item-date">
+                    <div class="date" v-text="item.createTime" style="font-size:12px;"></div>
+                </div>
+
+                <div class="dot"><i></i></div>
+                <div class="item-main col-xs-x">
+                    <div class="item-type" v-if="item.assigneeName" v-cloak>{{item.assigneeName}}({{item.roleName}})</div>
+                    <div class="item-content" v-if="item.content" v-cloak>{{item.content}}</div>
+
+                    <div class="imgBox" v-if="item.imgUrl.length">
+                        <img :src="itemSrc.compressUrl" alt="" v-for="(itemSrc,index) in item.imgUrl" @click="imgSee(item.imgUrl,index)">
+                    </div>
+                </div>
+                <span class="statu" v-if="item.actName" v-cloak>{{item.actName}}</span>
+            </div>
+
+        </div>
+    </div>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script src="../../script/common.js"></script>
+    <script>
+        apiready = function() {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    dataStepList: '',
+                },
+                methods: {
+                    init: function() {
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getTaskHandleStepListsURL, {
+                                businessId: api.pageParam.checkId
+                            },
+                            function(ret) {
+                                vm.dataStepList = ret.obj;
+                            }
+                        )
+                    },
+                    // //图片查看
+                    imgSee: function(url,index) {
+                        console.log($api.jsonToStr(url));
+                        var imgBox = [];
+                        url.forEach(function(item){
+                            imgBox.push(item.srcUrl)
+                        })
+                        console.log($api.jsonToStr(imgBox));
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images:imgBox,
+                            activeIndex:index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+                }
+            })
+            console.log(api.pageParam.checkId);
+            vm.init();
+            console.log($api.jsonToStr(vm.dataStepList));
+        }
+    </script>
+</body>
+
+</html>

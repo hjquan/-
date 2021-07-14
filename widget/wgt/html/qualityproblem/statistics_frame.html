@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        #app {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+        }
+        .location{
+            background-color: #fff;
+            margin-top: .5rem
+
+
+        }
+        h1{
+            font-size:0.75rem;
+            color:rgba(50,50,51,1);
+            padding: .75rem;
+            padding-bottom: 10px;
+        }
+        .suc_title{
+            font-size:0.5rem;
+            color:rgba(148,152,160,1);
+        }
+
+        .canvas {
+            width: 18.75rem;
+            min-height: 11.35rem;
+            background: rgba(255, 255, 255, 1);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <div class="location">
+            <h1>问题部位数量 <span class="suc_title">(个)</span></h1>
+            <div class="canvas" id="location"></div>
+        </div>
+        <div class="location">
+            <h1>责任人问题数量 <span class="suc_title">(个)</span></h1>
+            <div class="canvas" id="personLiable"></div>
+        </div>
+        <div class="location">
+            <h1>劳务队问题数量 <span class="suc_title">(个)</span></h1>
+            <div class="canvas" id="laborTeam"></div>
+        </div>
+        <div class="location">
+            <h1>问题类型 <span class="suc_title">(个)</span></h1>
+            <div class="canvas" id="questionType"></div>
+        </div>
+        <div class="location">
+            <h1>问题类型 <span class="suc_title">(个)</span></h1>
+            <div class="canvas" id="fbNuber"></div>
+        </div>
+
+        <!-- <canvas class="canvas" id="location"></canvas>
+        <canvas class="canvas" id="location"></canvas>
+
+        <canvas class="canvas" id="location"></canvas>
+        <canvas class="canvas" id="location"></canvas>
+        <canvas class="canvas" id="location"></canvas> -->
+
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <!-- <script src="../../../script/layimg.js"></script> -->
+    <!-- <script src="../../../script/touchFn.js"></script> -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script>
+        // apiready = function() {
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+
+                },
+
+                created: function() {
+                    this.getQualityAreaCountFn()
+                },
+                mounted: function() {
+                    var _this = this;
+                    //问题部位
+                    var opt = {
+                        'id':'location',
+                        'xData':['1#','2#','3#','4#','5#','6#','7#','1#','2#','3#','4#','5#','6#','7#'],
+                        'yData':[12,22,14,45,25,32,5,12,22,14,45,25,32,5],
+                        'starColor':'#A9C9FF',
+                        'endColor':'#FFBBEC'
+
+                    }
+                    this.creatabarFn(opt)
+                    //责任人
+                    var opt1 = {
+                        'id':'personLiable',
+                        'xData':['1#','2#','3#','4#','5#','6#','7#','1#','2#','3#','4#','5#','6#','7#'],
+                        'yData':[12,22,14,45,25,32,5,12,22,14,45,25,32,5],
+                        'starColor':'#32C1C1',
+                        'endColor':'#93E474'
+                    }
+                    this.creatabarFn(opt1)
+                    //劳务队问题
+                    var opt2 = {
+                        'id':'laborTeam',
+                        'xData':['1#','2#','3#','4#','5#','6#','7#','1#','2#','3#','4#','5#','6#','7#'],
+                        'yData':[12,22,14,45,25,32,5,12,22,14,45,25,32,5],
+                        'starColor':'#ACD9FF',
+                        'endColor':'#ACB7FF'
+                    }
+                    this.creatabarFn(opt2)
+
+                    //问题类型
+                    var opt3 = {
+                        'id':'questionType',
+                        'data':[
+                            {
+                                'name':'1#',
+                                'value':15
+                            },
+                            {
+                                'name':'1#',
+                                'value':25
+                            },
+                            {
+                                'name':'1#',
+                                'value':56
+                            },
+                            {
+                                'name':'1#',
+                                'value':21
+                            },{
+                                'name':'1#',
+                                'value':18
+                            }
+                        ]
+                    }
+                    this.createPieFn(opt3)
+
+                    var opt4= {
+                        'id':'fbNuber',
+                        'dataX':['1#','2#','3#','4#','5#'],
+                        'dataY':[12,22,14,45,25],
+
+                        'starColor':'#6568FF',//#6568FF,#FF6565
+                        'tooltip_end_color':'#819DFE',//#819DFE,#FDC6CE
+                        'series_color':'#819DFE'//#819DFE,#FE8181
+                    }
+                    this.createLineFn(opt4)
+
+
+
+                },
+                computed: {
+
+                },
+
+                methods: {
+
+                    //请求质量问题部位
+                    getQualityAreaCountFn: function() {
+                        var params = {
+                            projectId: $api.getStorage('enterpriseId'),
+                            startTime: '2020-01-01',
+                            endTime: '2020-08-29'
+                        }
+                        $app.post(
+                            true,
+                            getQualityAreaCount,
+                            params,
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                            }
+                        )
+                    },
+
+                    //折线图
+                    createLineFn:function(opt){
+                        var myChart = echarts.init(document.getElementById(opt.id));
+                        var option = {
+                            xAxis: {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: opt.dataX,
+                                axisTick: {
+                            		show: false,
+                             		alignWithLabel: true,
+                             		interval: 0,
+                             		length: 3
+                             	},
+                             	axisLine: {
+                             		lineStyle: {
+                             			color: '#F5F5F5'
+                             		}
+                             	},
+                                axisLabel: {
+                             		fontSize: 10,
+                             		color: '#A2A2A2'
+                             	},
+                             	splitLine: {
+                             		show: true,
+                             		lineStyle: {
+                             			color: '#F5F5F5'
+                             		}
+                             	},
+                             	interval:1,
+                             	boundaryGap: false
+                            },
+                            yAxis: {
+                                type: 'value',
+                                axisLine: {
+                             		show: false
+                             	},
+                             	axisTick: {
+                             		show: false,
+                             		alignWithLabel: true
+                             	},
+                             	axisLabel: {
+                             		show: false
+                             	},
+                             	splitLine: {
+                             		show: false
+                             	}
+                            },
+                            grid: { // 控制图的大小，调整下面这些值就可以，
+                    			x: 20, //图形左边距
+                    			x2: 20, //图形右边距
+                    			y: 60,
+                    			y2: 45, // y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+                    		},
+                            // tooltip: {
+                    		// 	trigger: 'axis',
+                    		// 	triggerOn: 'click',
+                    		// 	axisPointer: {
+                            //         type: 'line',
+                            //         label: false,
+                            //         lineStyle: {
+                            //         	color: {
+                    		// 			    type: 'linear',
+                    		// 			    x: 0,
+                    		// 			    y: 0,
+                    		// 			    x2: 0,
+                    		// 			    y2: 1,
+                    		// 			    colorStops: [{
+                    		// 			        offset: 0, color: 'white' // 0% 处的颜色
+                    		// 			    }, {
+                    		// 			        offset: 1, color: opt.tooltip_end_color // 100% 处的颜色
+                    		// 			    }],
+                    		// 			    globalCoord: false // 缺省为 false
+                    		// 			}
+                            //         }
+                            //     },
+                            //     backgroundColor: '#00000050'
+                        	// },
+                            // dataZoom: [{
+                    		// 	type: 'inside',
+                    		// 	show: true,
+                    		// 	start: 0,
+                    		// 	end: 'auto'
+                    		// }],
+                            series: [{
+                                data: opt.dataY,
+                                type: 'line',
+                                symbol:'circle',
+                                symbolSize:6,
+                                areaStyle: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: opt.tooltip_end_color
+                                    }, {
+                                        offset: 1,
+                                        color: '#fff'
+                                    }])
+                                },
+                                itemStyle: {  /*折线图拐点样式*/
+                            		// 径向渐变，前三个参数分别是圆心 x, y 和半径，取值同线性渐变
+                            		color: opt.series_color,
+                    				borderColor: 'white',
+                    				borderWidth: 1
+                    			},
+                                lineStyle: {  /*折现线条样式*/
+                            		color: opt.series_color,
+                            		width: 1
+                            	},
+                                smoothMonotone: 'x',
+                            	label: {
+                    				show: true,
+                    				color: '#707070',
+                            	}
+                            }]
+                        };
+
+                        myChart.setOption(option);
+                    },
+                    //饼状图
+                    createPieFn:function(opt){
+                        var myChart = echarts.init(document.getElementById(opt.id));
+                        var option = {
+                            // title: {
+                            //     text: '某站点用户访问来源',
+                            //     subtext: '纯属虚构',
+                            //     left: 'center'
+                            // },
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: '{a} <br/>{b} : {c} ({d}%)'
+                            },
+                            // legend: {
+                            //     orient: 'vertical',
+                            //     left: 'left',
+                            //     data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+                            // },
+                            series: [
+                                {
+                                    name: '访问来源',
+                                    type: 'pie',
+                                    radius: '55%',
+                                    center: ['50%', '60%'],
+                                    data: [
+                                        {value: 335, name: '直接访问'},
+                                        {value: 310, name: '邮件营销'},
+                                        {value: 234, name: '联盟广告'},
+                                        {value: 135, name: '视频广告'},
+                                        {value: 1548, name: '搜索引擎'},
+                                        {value:4652,name:'包洋'}
+                                    ],
+                                    emphasis: {
+                                        itemStyle: {
+                                            shadowBlur: 10,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        }
+                                    }
+                                }
+                            ],
+                            color: ['#FF553F','#4C8BF5','#00C853','#FFCE43','#CF5EE2','#f5ff00', '#3cdf01', '#fabe00','#0096ff', '#f100ff', '#ff0000', '#00f5ff', '#009ba9']
+                        }
+                        myChart.setOption(option);
+
+                    },
+
+                    //柱状图
+                    creatabarFn: function(opt) {
+                        var myChart = echarts.init(document.getElementById(opt.id));
+                        var option = {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: opt.starColor // 0% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: opt.endColor // 100% 处的颜色
+                                }],
+                                globalCoord: false // 缺省为 false
+                            },
+                            dataZoom: [{
+                                type: 'inside',
+                                show: true,
+                                start: 0,
+                                // end: oneMaxWidth
+                            }, ],
+                            grid: { // 控制图的大小，调整下面这些值就可以，
+                                x: 10, //图形左边距
+                                x2: 10, //图形右边距
+                                y: 20,
+						        y2: 20, // y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow',
+                                    z: 1,
+                                    shadowStyle: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                },
+                                backgroundColor: 'rgba(57, 57, 57, 0.5)',
+                                triggerOn: 'click'
+                            },
+                            xAxis: {
+                                type: 'category',
+                                data: opt.xData, //x轴显示的数据
+                                axisLabel: {
+                                    rotate: 55,
+                                    margin: 4,
+                                    fontSize: 11,
+                                    color: '#A5A5A5'
+                                },
+                                axisLine: {
+                                    show: false,
+                                },
+                                axisTick: {
+                                    show: false,
+                                    alignWithLabel: true,
+                                    lineStyle: {
+                                        color: 'black'
+                                    }
+                                },
+                                z: 3
+                            },
+                            yAxis: {
+                                type: 'value',
+                                axisLine: { //y轴坐标轴设置
+                                    show: false
+                                },
+                                axisTick: { //y轴坐标刻度设置
+                                    show: false
+                                },
+                                axisLabel: { //y轴坐标刻度标签设置
+                                    show: false,
+                                },
+                                splitLine: { //分割线设置
+                                    show: false
+                                },
+                                z: 2
+                            },
+                            series: [{
+                                name: '问题部位数量',
+                                type: 'bar',
+                                data: opt.yData, //y轴显示的数据
+                                label: {
+                                    show: true,
+                                    position: 'top',
+                                    color: '#C1C2C2'
+                                },
+                                itemStyle: {
+                                    opacity: 0.8
+                                },
+                                barMaxWidth: 16
+                            }]
+                        }
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                        myChart.on('click', function (params) {
+                            // 在用户点击后控制台打印数据的名称
+                            console.log($api.jsonToStr(params));
+                        });
+                    }
+                }
+            })
+        // }
+    </script>
+</body>
+
+</html>

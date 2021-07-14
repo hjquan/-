@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>日历</title>
+
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+</head>
+
+<body>
+
+    <div id="app">
+        <div id="">
+          <div  id="swiperBox">
+            <!-- 年份 月份 -->
+            <div class="month">
+                <ul v-cloak>
+                    <!--点击会触发pickpre函数，重新刷新当前日期 @click(vue v-on:click缩写) -->
+                    <li class="arrow" @click="pickPre()">❮</li>
+                    <li class="year-month" @click="openTimeFn()" >
+                        <span class="choose-year" v-text="currentYear + '年'"></span>
+                        <span class="choose-month" v-text="(currentMonth+'').length <=1 ? ('0'+currentMonth + '月') : currentMonth + '月'"></span>
+                    </li>
+                    <li class="arrow" @click="pickNext()">❯</li>
+                </ul>
+                <div class="rt">
+                    <p class="rtItem"
+                        :class="{'rtItem_active': index == roleBtnCurrenIndex }"
+                        v-for="(roleItem,index) in roleBtnTxt"
+                        tapmode
+                        @click="rolefn(roleItem,index)"
+                        v-if="roleItem"
+                        v-cloak>
+                        {{roleItem.substring(roleItem.length-2,roleItem.length)}}
+                    </p>
+                </div>
+            </div>
+            <!-- 星期 -->
+            <ul class="weekdays">
+                <li>一</li>
+                <li>二</li>
+                <li>三</li>
+                <li>四</li>
+                <li>五</li>
+                <li style="color:#C7C7CC">六</li>
+                <li style="color:#C7C7CC">日</li>
+            </ul>
+            <!-- 日期 -->
+
+            <ul class="days">
+                <!-- 核心 v-for循环 每一次循环用<li>标签创建一天 -->
+                <li v-for="(dayobject,index) in days" tapmode  @click="getItemFn(dayobject,index)">
+                    <!--本月-->
+                    <!--如果不是本月  改变类名加灰色-->
+
+                    <div class="dayBox" v-cloak >
+                        <span v-if="dayobject.day.getMonth()+1 != currentMonth" style="display:none" v-cloak class="other-month" :class="{'weekdaysColor':(dayobject.day.getDay() == 6 || dayobject.day.getDay()==0)}">{{ dayobject.day.getDate() }}</span>
+
+                        <!--如果是本月  还需要判断是不是这一天-->
+                        <span v-else>
+                            <!--今天  同年同月同日-->
+                            <span v-if="dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth() && dayobject.day.getDate() == new Date().getDate()"
+                                class="active" v-cloak
+                                >{{ dayobject.day.getDate() }}</span>
+                            <span v-cloak v-else :class="[{'weekdaysColor': (dayobject.day.getDay() ==6 || dayobject.day.getDay() ==0)},{'currenDayIndex':index == currentDayIndex}]">{{ dayobject.day.getDate() }}</span>
+                        </span>
+                        <!-- dateRaduis textcontent-->
+                        <template v-if="dayobject.day < new Date() && dayobject.day.getMonth()+1 == currentMonth">
+                                <span
+                                v-if="dayobject.contentShow"
+                                v-cloak
+                                :class="[
+                                    roleType ? 'textcontent' : 'dateRaduis',
+                                    ((dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth() && dayobject.day.getDate() == new Date().getDate()) && !roleType) ? 'zcClsBg' : '',
+                                    dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth(),
+                                    dayobject.contentShow == '' ? '' : (isStateClsFn(dayobject) ? 'zcClsBg' : 'cancalClsBg'),
+
+                                ]"
+                                >
+                                    {{!roleType ? '': dayobject.contentShow.allNum != 0 ? dayobject.contentShow.allNum : '0'}}
+                                </span>
+                                <span
+                                v-else
+                                v-cloak
+                                :class="[
+                                    roleType ? 'textcontent' : 'dateRaduis',
+                                    ((dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth() && dayobject.day.getDate() == new Date().getDate()) && !roleType) ? 'zcClsBg' : '',
+                                    dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth()
+                                ]"
+                                >
+                                {{!roleType ? '': '0'}}
+                                </span>
+                        </template>
+                    </div>
+
+                </li>
+            </ul>
+          </div>
+            <div class="nav" v-cloak v-if="!roleType">
+                <div class="navItem">
+                    <div></div><span v-cloak>正常({{statisticalLogInfo.onTimeNum}})</span>
+                </div>
+                <div class="navItem">
+                    <div></div><span v-cloak>补录({{statisticalLogInfo.noNum}})</span>
+                </div>
+                <div class="navItem">
+                    <div></div>
+                    <span v-cloak>漏写({{  ( (currentYear == (new Date().getFullYear()) &&  currentMonth == (new Date().getMonth()+1)) ?   new Date().getDate() : new Date(currentYear,currentMonth,0).getDate()) - (statisticalLogInfo.onTimeNum + statisticalLogInfo.noNum)}})</span>
+                    <!-- <span v-cloak>漏写{{new Date(currentYear,currentMonth,0).getDate()-(statisticalLogInfo.onTimeNum + statisticalLogInfo.noNum)}})</span> -->
+                </div>
+            </div>
+            <div class="footer" v-if="roleType">
+                <p class="line"></p>
+                <div>
+                    <div class="top" v-if="allDetails">
+                        <div class="f_lf"   v-text="allDetails.logTime || allDateTitle"></div>
+                        <div class="f_rt"  >
+                            <div class="rt_item">
+                                <p></p><span>正常</span>
+                            </div>
+                            <div class="rt_item">
+                                <p></p><span>补录</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="f_show"  v-if="allDetails" >
+                        <li class="showItem" v-for="item in allDetails.logs" tapmode @click="clickAll_itemFn(item)">
+                            <p :class="item.isOnTime === '0' ? 'active' : ''"></p><span v-text="item.createUserName">补录</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/touchFn.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function() {
+            api.addEventListener({
+                name: 'refreshcalendar_frame'
+            }, function(ret, err){
+                if( ret ){
+                    console.log(vm.roleTypeContent);
+                    var isFlag = vm.roleTypeContent == '全部' ? true :false;
+                    vm.getInit(vm.currentYear+'-'+vm.currentMonth,isFlag)
+                    vm.allDetails = [];
+                    vm.$forceUpdate()
+                }else{
+                }
+            });
+
+            api.addEventListener({
+                name: 'logLeftperson'
+            }, function(ret, err){
+                if( ret ){
+
+                    vm.resuserId = ret.value.logPerson.userId;
+                    var isFlag = vm.roleTypeContent == '全部' ? true :false;
+                    vm.getInit(null,isFlag);
+                    vm.roleBtnTxt[1] = ret.value.logPerson.name;
+                    vm.roleTypeContent = ret.value.logPerson.name;
+
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data:{
+                    currentDay:  $app.fillDate(new Date().getDate()),
+                    currentMonth:   $app.fillDate(new Date().getMonth() + 1),
+                    currentYear:  new Date().getFullYear(),
+                    currentWeek: 1,
+                    days: [],
+                    statisticalLogInfo: [], //获取日志统计数据
+                    resprojectId: $api.getStorage('enterpriseId'),
+                    resuserId: $api.getStorage('userId'),
+                    // reslogTime: new Date().getFullYear() + '/' + ( new Date().getMonth() + 1),//传递查询时间
+                    roleType:false, //权限类别
+                    roleBtnTxt:['我的'],
+                    roleBtnCurrenIndex:2,
+                    roleTypeContent:'我的',//记录点击当前按钮
+                    allDetails:[],//当前日期下的记录数据
+                    getbtnRole:false,//权限按钮是否显示
+                    currentDayIndex:'',//当前选择的日期
+                    allDateTitle:''//获取全部权限的当前时间
+                },
+                computed:{
+
+                },
+                created: function() {
+                    this.getInit();
+                    this.getBtnRoleFn();
+                },
+                mounted: function() {
+                  //监听左右滑动事件切换菜单
+                  EventUtil.listenTouchDirection(document.getElementById('swiperBox'), false, this.pickNext, this.pickPre)
+                },
+                methods: {
+                    //点击全部下面的具体人详情查看
+                    clickAll_itemFn:function(data){
+                        var a = {logs:[]};
+                        a.logs.push(data)
+                        api.openWin({
+                            name: 'logdetail',
+                            url: './logdetail.html',
+                            pageParam: {
+                                currentLoginfo:a
+
+                            }
+                        });
+                    },
+                    //判断是正常还是补录状态
+                    isStateClsFn:function(dayobject){
+                        dayobject.contentShow.logs[0].isOnTime == 1
+                        if(dayobject.contentShow){
+                            if(dayobject.contentShow.logs){
+                                if(dayobject.contentShow.logs[0].isOnTime == 1 ){
+                                    return true
+                                }else{
+                                    return false
+                                }
+                            }else{
+                                return false
+                            }
+                        }else{
+                            return false
+                        }
+                    },
+                    getBtnRoleFn:function(){ //获取按钮权限
+                        $app.post(
+                            true,
+                            projectButtonList,
+                            {},
+                            function(ret) {
+                                ret.obj.filter(function(item){
+                                    if(item.buttonName === '施工日志统计'){
+                                        if(item.qxName == 'sgLogCount'){
+                                            // vm.getbtnRole = true;
+                                            vm.roleBtnTxt = ['全部','他人','我的']
+                                        }
+                                    }
+                                })
+                            }
+                        )
+                    },
+                    getInit:function(date,roleBtnType) {
+                        var _this = this;
+                        var params = {
+                            projectId: _this.resprojectId,
+                            userId: _this.resuserId,
+                            logTime: _this.currentYear+'-'+ $app.fillDate(_this.currentMonth)
+                        }
+                        if(roleBtnType){
+                            params.userId = '';
+                        }
+                        console.log($api.jsonToStr(params));
+                        ajaxPost(
+                            true,
+                            '加载中',
+                            statisticalLog,
+                            params,
+                            function(ret) {
+                                vm.statisticalLogInfo = ret.obj;
+                                _this.initData(vm.currentYear+'-'+((vm.currentMonth + '').length >1 ? vm.currentMonth : '0'+vm.currentMonth))
+                            }
+                        )
+                    },
+                    initData: function(cur) {
+
+                        var that = this;
+                        var leftcount = 0; //存放剩余数量
+                        var date;
+                        if (cur) {
+                            date = new Date(cur);
+                        } else {
+                            var now = new Date();
+                            var d = new Date(that.formatDate(now.getFullYear(), now.getMonth(), 1));
+                            d.setDate(35);
+                            date = new Date(that.formatDate(d.getFullYear(), d.getMonth() + 1, 1));
+                        }
+                        that.currentDay = date.getDate();
+                        that.currentYear = date.getFullYear();
+                        that.currentMonth = date.getMonth() + 1;
+                        that.currentWeek = date.getDay(); // 1...6,0
+                        if (that.currentWeek == 0) {
+                            that.currentWeek = 7;
+                        }
+                        var str = that.formatDate(that.currentYear, that.currentMonth, that.currentDay);
+                        that.days.length = 0;
+                        // 今天是周日，放在第一行第7个位置，前面6个
+                        //初始化本周
+                        for (var i = that.currentWeek - 1; i >= 0; i--) {
+                            var d = new Date(str);
+                            d.setDate(d.getDate() - i);
+                            var dayobject = {}; //用一个对象包装Date对象  以便为以后预定功能添加属性
+                            dayobject.day = d;
+                            that.days.push(dayobject); //将日期放入data 中的days数组 供页面渲染使用
+                        }
+                        //其他周
+                        for (var i = 1; i <= 42 - that.currentWeek; i++) {
+                            var d = new Date(str);
+                            d.setDate(d.getDate() + i);
+                            var dayobject = {};
+                            dayobject.day = d;
+                            that.days.push(dayobject);
+                        }
+                        vm.days.forEach(function(a){
+                            var newlog = vm.statisticalLogInfo.lists
+                            if(newlog.length){
+
+                                newlog.forEach(function(b){
+                                    var date = a.day.getFullYear() +'-'+ $app.fillDate(a.day.getMonth()+1) +'-'+  $app.fillDate(a.day.getDate());
+
+                                    if(date ==  b.logTime){
+                                        a.contentShow = b;
+                                        return false;
+                                    }
+                                })
+                            }else{
+                                a.contentShow = ''
+                            }
+                        })
+                        // this.$forceUpdate()
+
+
+                    },
+                    pickPre: function(year, month) {
+                        // setDate(0); 上月最后一天
+                        // setDate(-1); 上月倒数第二天
+                        // setDate(dx) 参数dx为 上月最后一天的前后dx天
+                        var isFlag = this.roleTypeContent == '全部' ? true :false;//判断是否需要传递userid
+                        if(this.currentMonth <= 1){
+                            this.currentMonth = 12;
+                            vm.currentYear--
+                        }else{
+                            vm.currentMonth--;
+                        }
+                        this.getInit(vm.currentYear+'-'+vm.currentMonth,isFlag);
+                    },
+                    pickNext: function(year, month) {
+                      var curtDate_y = parseInt(new Date().getFullYear());//年份
+                      var curtDate_m = parseInt(new Date().getMonth() + 1);//月份
+                      if(vm.currentYear >= curtDate_y && vm.currentMonth >= curtDate_m){
+                        api.toast({
+                            msg: '不能查看大于当前月份日志',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        return false;
+
+                      }
+                        var isFlag = this.roleTypeContent == '全部' ? true :false;
+                        if(this.currentMonth >= 12){
+                            this.currentMonth = 1;
+                            vm.currentYear++
+                        }else{
+                            vm.currentMonth++
+                        }
+                        this.getInit(vm.currentYear+'-'+vm.currentMonth,isFlag);
+                    },
+                    pickYear: function(year, month) {
+                        // alert(year + "," + month);
+                    },
+                    // 返回 类似 2016-01-02 格式的字符串
+                    formatDate: function(year, month, day) {
+                        var y = year;
+                        var m = month;
+                        if (m < 10) m = "0" + m;
+                        var d = day;
+                        if (d < 10) d = "0" + d;
+                        return y + "-" + m + "-" + d
+                    },
+                    rolefn:function(state,index){
+                        this.roleBtnCurrenIndex = index;
+                        this.roleTypeContent = state;
+                        console.log(this.roleTypeContent);
+                        switch (state) {
+                            case '全部':
+                                this.roleType = true;
+                                vm.getInit(null,true)
+                                break;
+                            case '我的':
+                                this.roleType = false;
+                                this.resuserId =  $api.getStorage('userId');
+                                vm.getInit(null,false)
+                                break;
+                            default:
+                                this.roleType = false;
+                                api.openFrame({
+                                    name: 'left_frame',
+                                    url: './left.html',
+                                    rect: {
+                                        x: 0,
+                                        y: 0,
+                                        w: 'auto',
+                                        h: 'auto'
+                                    },
+                                    pageParam: {
+
+                                    },
+                                    bounces: false,
+                                    bgColor: 'rgba(0,0,0,0)',
+                                    vScrollBarEnabled: true,
+                                    hScrollBarEnabled: false
+                                });
+
+                                break;
+
+                        }
+                    },
+                    getItemFn:function(data,index){//获取当前下的数据
+                        this.currentDayIndex = index;
+                        this.allDetails = data.contentShow;
+                        switch (vm.roleTypeContent) {
+                            case '全部':
+                                vm.allDateTitle = vm.currentYear + '-'+ vm.currentMonth +'-'+ data.day.getDate();
+                                break;
+                            case '我的':
+
+                                myjumpFn()
+                                break;
+                            default:
+                                qtjump()
+
+                                break;
+
+                        }
+                        //他人
+                        function qtjump(){
+                            if(data.contentShow){
+                                api.openWin({
+                                    name: 'logdetail',
+                                    url: './logdetail.html',
+                                    pageParam: {
+                                        currentLoginfo:data.contentShow
+                                    }
+                                });
+                            }else{
+                                var date = vm.currentYear + '年'+ vm.currentMonth +'月'+ data.day.getDate() +'日'+'未写日志'
+                                api.toast({
+                                    msg: vm.roleBtnTxt[1] + date,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+
+                            }
+                        }
+                        //我的
+                        function myjumpFn(){
+                            if(data.contentShow){
+                                api.openWin({
+                                    name: 'logdetail',
+                                    url: './logdetail.html',
+                                    pageParam: {
+                                        currentLoginfo:data.contentShow,
+
+                                    }
+                                });
+                            }else{
+                                var currenDateTime = new Date();//当前时间毫秒数
+                                var dividingLine = api.systemType === 'ios' ? '/' : '-';//时间分割线
+                                var curenDate = new Date(currenDateTime.getFullYear() + dividingLine + (currenDateTime.getMonth()+1) + dividingLine + currenDateTime.getDate()).getTime();//当前时间年月日毫秒数
+                                var selctDate = new Date(vm.currentYear + dividingLine+ vm.currentMonth +dividingLine+ data.day.getDate()).getTime();//选择的时间年月日毫秒数
+                                if(curenDate < selctDate){
+                                    api.toast({
+                                        msg: '不能大于当前日',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+
+                                    return false
+                                }
+                                api.openWin({
+                                    name: 'addlog',
+                                    url: './addlog.html',
+                                    pageParam: {
+                                        currentaddlogtime:selctDate
+                                    }
+                                });
+                            }
+                        }
+
+
+
+                    },
+                    openTimeFn:function(){//自定义查询时间
+                        timeSelector.fnOpenSelector({
+                            title: ' ',                          //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成',                          //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true,                         //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5,                         //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55,                           //选填 |      55       |  Number         |  行高度（单位px）
+                            date: vm.currentYear+'/'+vm.currentMonth                          //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function(ret){
+                            if(!ret) return false;
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth()+1)).getTime();//选择的时间年月
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth()+1)).getTime();//当前时间年月
+                            if(!ret){return }
+                            if(selectDate > curenDate){
+                                api.toast({
+                                    msg: '不能选择大于当前月份',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+
+                            }
+
+                            vm.currentYear = date.getFullYear() ;
+                            vm.currentMonth = date.getMonth()+1;
+                            var isFlag = vm.roleTypeContent == '全部' ? true :false;
+                            vm.getInit(vm.currentYear+'-'+vm.currentMonth,isFlag)
+
+                        })
+                    }
+
+                }
+            })
+
+
+        }
+    </script>
+</body>
+
+</html>

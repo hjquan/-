@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/addlog.css" />
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .content {
+            height: 100%;
+            width: 100%;
+        }
+
+        .list {
+            padding: 5px 10px 10px 10px;
+            width: 100%;
+            background-color: #ffffff;
+            margin-top: 8px;
+        }
+
+        .list-header {
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .list-header h3 {
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .list-header article {
+            width: 2.8rem;
+            height: 1.2rem;
+            border-radius: 3px;
+            border: 1px darkturquoise solid;
+            background-color: #ffffff;
+            text-align: center;
+            line-height: 1.2rem;
+            margin-right: 1rem;
+            font-size: 0.6rem;
+        }
+
+        .list-header time {
+            font-size: 0.65rem;
+        }
+
+        .list-content {
+            height: 1.4rem;
+            width: 95%;
+            font-size: 0.7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="content">
+        <article class="list" v-if="temporary.length != 0" v-for="(item,index) in temporary"
+            @click="edit(item.applyId)">
+            <li class="list-header">
+                <h3 v-text="item.subjectMatterName"
+                    style="overflow: hidden;text-overflow: ellipsis; white-space: nowrap;"></h3>
+                <article v-if="item.state =='3' " style="border-color:#2a82e4; color: #2a82e4;">审批中</article>
+                <article v-if="item.state =='0' " style="border-color:#808080; color:#808080;">已作废</article>
+                <article v-if="item.state =='1' " style="border-color:#ff0000; color:#ff0000;">已退回</article>
+                <article v-if="item.state =='2' " style="border-color:#008000; color:#008000;">已通过</article>
+                <time v-text="item.createTime">2020-01-10</time>
+            </li>
+            <li class="list-content">
+                申请人：<span v-text="item.createUserName"></span>
+            </li>
+            <li class="list-content">
+                出工班组：<span v-text="item.workerTeamName">海绵宝宝</span>
+            </li>
+            <!-- <li class="list-content">
+                具体工作内容：<span>海绵宝宝海绵宝宝海绵宝宝海绵宝宝海绵宝宝海绵宝宝海绵宝宝海绵宝宝</span>
+            </li> -->
+        </article>
+        <div class="noData" v-if="temporary.length === 0">
+            <img src="../../../../image/noData.png" alt="">
+            <p>还没有相关数据哦~</p>
+        </div>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+
+            // 下拉刷新
+            $app.downrefresh(function () {
+                vm.currentPage = 1;
+                vm.temporary = [];
+                vm.getWorkerApplyLIstanbul(false);
+            })
+
+            // ///上拉加载
+            $app.uploding(
+                function () {
+                    vm.getWorkerApplyLIstanbul(true);
+                }
+            )
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    temporary: [],
+                    temporaryFlage: true,
+                    startTime: "",
+                    endTime: "",
+                    state: "",
+                    createUserName: "",
+                    showCount: 10,
+                    currentPage: 1
+                },
+                created: function () {
+                    this.getWorkerApplyLIstanbul();
+
+                    //监听作废标识
+                    var that = this;
+                    api.addEventListener({
+                        name: 'cancellation'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.getWorkerApplyLIstanbul();
+                        }
+                    });
+                    //筛选条件
+                    api.addEventListener({
+                        name: 'user-screen'
+                    }, function (ret, err) {
+                        if (ret) {
+                            console.log(JSON.stringify(ret));
+                            that.state = ret.value.state;
+                            that.createUserName = ret.value.createUserName;
+                            that.startTime = ret.value.startTime;
+                            that.endTime = ret.value.endTime;
+                            that.getWorkerApplyLIstanbul();
+                        }
+                    });
+                    api.addEventListener({
+                        name: 'addAppliance'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.getWorkerApplyLIstanbul();
+                        }
+                    });
+                },
+                methods: {
+                    edit: function (applyId) {
+                        api.openWin({
+                            name: 'appliance_edit',
+                            url: 'appliance_edit.html',
+                            bounces: false,
+                            pageParam: { applyId: applyId }
+                        });
+                    },
+                    getWorkerApplyLIstanbul: function (isFlag) {
+                        if (isFlag) { //判断上拉或下拉
+                            // this.currentPage++;
+                        } else {
+                            this.currentPage = 1;
+                        }
+                        var that = this;
+                        var prame = {
+                            showCount: this.showCount,
+                            currentPage: this.currentPage,
+                            projectId: $api.getStorage('enterpriseId'),
+                            userId: $api.getStorage('enterLoginInfo').userId,
+                            createUserName: that.createUserName,
+                            startTime: that.startTime,
+                            endTime: that.endTime,
+                            state: that.state,
+                        };
+                        $app.post(
+                            false,
+                            getMechanicsApplyArraysURL,
+                            prame,
+                            function (ret) {
+                                console.log("列表数据：" + JSON.stringify(ret));
+                                if (isFlag) {
+                                    if (that.currentPage > ret.totalPage) {
+                                        api.toast({
+                                            msg: '没有数据啦！',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+                                        return false;
+                                    } else {
+                                        that.temporary = that.temporary.concat(ret.obj);
+                                        that.currentPage++;
+                                    }
+                                } else {
+                                    that.temporary = ret.obj;
+                                    that.currentPage++;
+                                }
+                            }
+                        )
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

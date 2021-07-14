@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../../css/voice.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .content {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .askForLeave-name {
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+        }
+
+        .text-left {
+            float: left;
+        }
+
+        .text-right {
+            float: right;
+            color: #909090;
+        }
+
+        .askForLeave-content {
+            width: 100%;
+            margin-top: 0.5rem;
+            background: #ffffff;
+
+        }
+
+        .name-right {
+            margin-left: 6rem;
+            color: #909090;
+            height: 1.5rem;
+        }
+
+        .askForLeave-content ul li {
+            width: 100%;
+            height: 2rem;
+            padding: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .askForLeave-wifi {
+            width: 100%;
+            height: 2rem;
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .add-btn {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .add-btn-disabled {
+            width: 2.5rem;
+            height: 1.2rem;
+            line-height: 1.2rem;
+            border: 0;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .name-right input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left input {
+            height: 1.5rem;
+            margin-top: -0.2rem;
+        }
+
+        .text-left img {
+            display: inline;
+            width: 1rem;
+            margin-left: -0.4rem;
+        }
+
+        .text-right img {
+            float: right;
+            width: 1rem;
+        }
+
+        .xiujia div {
+            float: right;
+            margin-left: 0.5rem;
+        }
+
+        .xinxinImg {
+            margin-left: 0.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+            <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">请假申请</div>
+            <a class="aui-pull-right">
+                <div class="add-btn" @click="addRule()">保存</div>
+            </a>
+        </header>
+        <div class="content">
+            <div class="askForLeave-content">
+                <ul>
+                    <li @click="openAsk()">
+                        <div class="text-left">请假类型
+                            <img style="margin-left: -0.3rem;" src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            {{leaveTypeText}}
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li @click="startTime()">
+                        <div class="text-left">开始时间
+                            <img style="margin-left: -0.3rem;" src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            <span>{{applyStartTime}}</span>&nbsp;&nbsp;<span v-if="applyClock =='1'">上午</span><span
+                                v-if="applyClock =='2'">下午</span>
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li @click="endTime()">
+                        <div class="text-left">结束时间
+                            <img style="margin-left: -0.3rem;" src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            <span>{{applyEndTime}}</span>&nbsp;&nbsp;<span v-if="applyEndClock =='1'">上午</span><span
+                                v-if="applyEndClock =='2'">下午</span>
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-left">请假事由
+                            <img style="margin-left: -0.3rem;" src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="name-right">
+                            <input type="text" placeholder="请输入内容" v-model="applyCauser">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="askForLeave-name">
+                <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                    <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                        <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                            tapmode="hover"></i>
+                        <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                    </div>
+                    <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 3">+</div>
+                </div>
+            </div>
+            <div class="askForLeave-content">
+                <ul>
+                    <li @click="openExaminePer()">
+                        <div class="text-left">审批人员
+                            <img style="margin-left: -0.3rem;" src="../../../../image/clocking-in/xingxing.png" alt="">
+                        </div>
+                        <div class="text-right">
+                            {{nextUserName}}
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                    <li @click="openTransmitPer()">
+                        <div class="text-left">抄送人员</div>
+                        <div class="text-right">
+                            {{sendDuplName}}
+                            <img src="../../../../image/clocking-in/right.png" alt="">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        var dialog = new auiDialog({})
+        apiready = function () {
+            $api.fixStatusBar($api.dom('.header'));
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleInfo: api.pageParam.ruleInfo || null,//考勤规则对象
+                    leaveType: null, //请假类型
+                    leaveTypeText: null, //请假类型文字
+                    applyStartTime: null,//申请开始时间
+                    applyClock: null,//申请开始时间段
+                    applyEndTime: null,//申请结束时间
+                    applyEndClock: null, //结束时间段
+                    applyCauser: null,   //申请原因
+                    pictureUrls: [],   //图片信息
+                    nextUserId: null,//下一步处理人ID
+                    nextUserName: null,//下一步处理人姓名
+                    sendDuplId: null,//抄送人ID
+                    sendDuplName: null,//抄送人名称
+                    totalPerson: null,  //抄送人数
+                    duration: null,    //请假时长
+                    //上传图片字段
+                    isCloseBtn: true,//是否显示删除图片icon
+                    imgSrc: [],
+                    serverImg: "",//服务器返回图片地址
+                    lableUrl: "",//标注图片地址(更改：该字段已清除)
+                    srcImgUrl: "",//原图片地址（多张逗号分隔）
+                    compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+                },
+                created: function () {
+                    //格式化数据
+                    this.layoutData()
+                    var that = this;
+                    //监听数据
+                    api.addEventListener({
+                        name: 'nextUserInfo'
+                    }, function (ret, err) {
+                        // console.log(JSON.stringify(ret.value.nextUserInfo));
+                        that.nextUserName = ret.value.nextUserInfo.name;
+                        that.nextUserId = ret.value.nextUserInfo.userId;
+                    });
+                    api.addEventListener({
+                        name: 'transmitPer'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var txt = $api.strToJson(ret.value.sendDuplInfo);
+                            var name_join = '';
+                            var id_join = '';
+                            that.totalPerson = 0;
+                            txt.forEach(function (items) {
+                                items.children.forEach(function (item, i) {
+                                    if (item.checked) {
+                                        name_join += item.name + ',';
+                                        id_join += item.userId + ',';
+                                        that.totalPerson++;
+                                    }
+                                })
+
+                            })
+                            that.totalPerson = name_join.substr(0, 7) + '   等' + that.totalPerson + '人';
+                            that.sendDuplName = name_join.substr(0, name_join.length - 1);
+                            that.sendDuplId = id_join.substr(0, id_join.length - 1);
+                        } else {
+                            alert(JSON.stringify(err));
+                        }
+                    });
+                },
+                methods: {
+                    //格式化数据
+                    layoutData: function () {
+                    },
+                    //返回跳转
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //新增请假申请
+                    addRule: function () {
+                        var that = this;
+                        var applyClock = null;
+                        var applyEndClock = null;
+                        if (this.applyClock == 1) {
+                            applyClock = '上午'
+                        } else {
+                            applyClock = '下午'
+                        }
+                        if (this.applyEndClock) {
+                            applyEndClock = '上午'
+                        } else {
+                            applyEndClock = '下午'
+                        }
+
+                        var parme = {
+                            applyType: '3',
+                            companyId: $api.getStorage('enterpriseId'),
+                            projectId: $api.getStorage('enterpriseId'),
+                            applyClock: that.applyClock,
+                            applyUserId: $api.getStorage('userId'),
+                            applyUserName: $api.getStorage('enterLoginInfo').name,  
+                            applyStartTime: this.applyStartTime + ' ' + applyClock,
+                            applyEndTime: this.applyEndTime + ' ' + applyEndClock,
+                            applyCauser: this.applyCauser,
+                            duration: this.duration,
+                            leaveType: this.leaveType,
+                            pictureUrls: [{
+                                srcPath: this.srcImgUrl,
+                                compressPath: this.compressImgUrl
+                            }],
+                            nextUserId: this.nextUserId,
+                            nextUserName: this.nextUserName,
+                            sendDuplId: this.sendDuplId,
+                            sendDuplName: this.sendDuplName,
+                            applyId: '',
+                        }
+                        console.log('parme:' + JSON.stringify(parme));
+                        if (this.leaveType && this.applyStartTime && this.applyEndTime && this.applyCauser && this.nextUserName && this.nextUserId) {
+                            $app.post(
+                                'true',
+                                sendStartApplyURL,
+                                parme,
+                                function (ret) {
+                                    console.log(JSON.stringify(ret));
+                                    that.closeWin()
+                                })
+                        } else {
+                            api.toast({
+                                msg: '部位为必填项...',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                        }
+                    },
+                    //补充o
+                    addZero: function(s) {
+                        return s < 10 ? '0' + s : s
+                    },
+                    //选择请假类型
+                    openAsk: function () {
+                        var that = this
+                        api.actionSheet({
+                            title: '选择请假类型',
+                            cancelTitle: '取消',
+                            buttons: ['事假', '产假', '病假', '调休']
+                        }, function (ret, err) {
+                            that.leaveType = ret.buttonIndex;
+                            switch (that.leaveType) {
+                                case 1:
+                                    that.leaveTypeText = '事假';
+                                    break;
+                                case 2:
+                                    that.leaveTypeText = '产假';
+                                    break;
+                                case 3:
+                                    that.leaveTypeText = '病假';
+                                    break;
+                                case 4:
+                                    that.leaveTypeText = '调休';
+                                    break;
+                            }
+                        });
+                    },
+                    //选择开始时间
+                    startTime: function () {
+                        var that = this;
+                        //获取日志日期
+                        var timeDate = new Date();
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            that.applyStartTime = date.getFullYear() + '-' + that.addZero((date.getMonth() + 1)) + '-' + that.addZero(date.getDate());//选择的时间年月日
+                            api.actionSheet({
+                                title: '选择时间',
+                                cancelTitle: '取消',
+                                buttons: ['上午', '下午']
+                            }, function (ret, err) {
+                                console.log("时间段选择：" + JSON.stringify(ret))
+                                that.applyClock = ret.buttonIndex;
+                                //计算请假时间
+                                that.countDuration();
+                            });
+                        })
+                    },
+                    //选择结束时间
+                    endTime: function () {
+                        var that = this;
+                        //获取日志日期
+                        var timeDate = new Date();
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            console.log(JSON.stringify(ret))
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            console.log("date:" + date);
+                            that.applyEndTime = date.getFullYear() + '-' + that.addZero((date.getMonth() + 1)) + '-' + that.addZero(date.getDate());//选择的时间年月日
+                            api.actionSheet({
+                                title: '选择时间',
+                                cancelTitle: '取消',
+                                buttons: ['上午', '下午']
+                            }, function (ret, err) {
+                                that.applyEndClock = ret.buttonIndex;
+                                //计算请假时间
+                                that.countDuration();
+                            });
+                        })
+                    },
+                    //计算请假时间
+                    countDuration: function () {
+                        var that = this;
+                        var dayTime = this.dateDiff(this.applyStartTime, this.applyEndTime);
+                        console.log(dayTime + "------" + this.applyClock + "------" + this.applyEndClock);
+                        if (this.applyClock == 1 && this.applyEndClock == 2) {
+                            dayTime += 0.5
+                        }
+                        if (this.applyClock == 2 && this.applyEndClock == 1) {
+                            dayTime -= 0.5
+                        }
+                        this.duration = dayTime;
+                        // console.log("请假时长：" + this.duration);
+                    },
+                    //计算天数差的函数，通用  
+                    dateDiff:function(sDate1, sDate2) {    //sDate1和sDate2是2006-12-18格式  
+                        var aDate, oDate1, oDate2, iDays
+                        aDate = sDate1.split("-")
+                        oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])    //转换为12-18-2006格式  
+                        aDate = sDate2.split("-")
+                        oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+                        iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24)    //把相差的毫秒数转换为天数  
+                        return iDays
+                    },
+                    //选择抄送人员
+                    openTransmitPer: function () {
+                        api.openFrame({
+                            name: 'transmitPer',
+                            url: 'transmitPer.html',
+                        });
+                    },
+                    //选择审批人员
+                    openExaminePer: function () {
+                        api.openFrame({
+                            name: 'examinePer',
+                            url: 'examinePer.html',
+                        });
+                    },
+
+                    //上传图片处理函数start
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function(fncFN) {
+                        var that = this;
+                        if (that.serverImg) {
+                            var src_join = this.serverImg.map(function (item) {
+                                return item.srcPath
+                            })
+                            var compress_join = this.serverImg.map(function (item) {
+                                return item.compressPath
+                            })
+                            that.srcImgUrl = src_join.join(',');
+                            that.compressImgUrl = compress_join.join(',');
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function(fncFN) {
+                        var compressImg = [];
+                        var that = this;
+                        if (that.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            var timer = setInterval(function () {
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                        enterpriseId: $api.getStorage('enterpriseId')
+                                    }, {
+                                        imgFile: compressImg
+                                    },
+                                        function (ret) {
+                                            that.isCloseBtn = false;
+                                            var data = ret.obj;
+                                            that.serverImg = data;
+                                            that.imgFilter(fncFN)
+
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        // confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - that.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    }
+                },
+            })
+        }
+
+    </script>
+</body>
+
+</html>

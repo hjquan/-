@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+
+    <style>
+        .fixed{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100
+        }
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+        .list{
+            margin-top: 50px
+        }
+        .list_item{
+            padding: 15px;
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(51,51,51,1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+        /*.list_item > *{
+            flex: 1
+        }*/
+        .total{
+
+            display: flex;
+            justify-content: flex-end;;
+            align-items: center;
+        }
+        .total p{
+            /*color:rgba(0,153,76,1);*/
+            /*margin-right: 50px;*/
+        }
+        .total p.online{
+            color:#03A13B;
+        }
+        .lf{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lf img{
+            width: 15px;
+            height: 10px;
+        }
+
+        .circel{
+            display: inline-block;
+            width:13px;
+            height:13px;
+            border:2px solid rgba(0,153,68,1);
+            border-radius:50%;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <div class="fixed">
+            <div class="aui-searchbar" id="search">
+                <div class="aui-searchbar-input aui-border-radius" tapmode>
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <form action="javascript:search();">
+                        <input type="search" placeholder="请输入姓名" id="search-input" v-model="condition" @input="searchFn()">
+                    </form>
+                </div>
+                <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+            </div>
+        </div>
+        <ul class="list">
+            <li class="list_item danger" @click="openListdeatil()">
+                <div class="lf ">
+                    <img src="../../../../image/videosurveillance/shebei.png" alt="">&nbsp;&nbsp;
+                    <span class="name aui-ellipsis-1">设备一</span>
+                    <i class="aui-iconfont aui-icon-pencil"></i>
+                </div>
+
+                <div class="total center">
+                    <p class="off online ">在线</p>
+
+                </div>
+                <p class="rt">通道数量:&nbsp;&nbsp;<span>2</span></p>
+            </li>
+            <li class="list_item danger">
+                <div class="lf ">
+                    <img src="../../../../image/videosurveillance/shebei.png" alt="">&nbsp;&nbsp;
+                    <span class="name aui-ellipsis-1">设备一</span>
+                    <i class="aui-iconfont aui-icon-pencil"></i>
+                </div>
+
+                <div class="total center">
+                    <p class="off ">在线</p>
+
+                </div>
+                <p class="rt">通道数量:&nbsp;&nbsp;<span>2</span></p>
+            </li>
+
+        </ul>
+        <!-- <div class="noData">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div> -->
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+          error: '../../../../image/err.jpg',
+          loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function(){
+
+            //下拉刷新
+            // $app.downrefresh(
+            //     function(){
+            //         // vm.init(false)
+            //
+            //     }
+            // )
+            //
+            // ///上拉加载
+            // $app.uploding(
+            //     function(){
+            //         // vm.init(true)
+            //
+            //     }
+            // )
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    pageParam:'',//接收跨页面参数
+                    pageNo:1,//当前页码
+                    status:0,//人员状态（0在场 1离场）
+                    personList:[],//人员列表信息
+                    copyPersonList:[],//保存人员列表信息（用于检索）
+                    condition:'',//检索条件
+
+                },
+                mounted:function(){
+                },
+                created:function(){
+                    // console.log($api.jsonToStr(api.pageParam.subcontractor));
+                    // this.pageParam = api.pageParam.info;
+                    // this.init(false)
+                },
+                methods:{
+                    //打开详情
+                    openListdeatil:function(){
+                        api.openWin({
+                            name: 'realtimemonitoringlistdetail',
+                            url: './list_detail.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //初始化数据
+                    init:function(loadMore){
+                        var _this = this;
+                        if(loadMore){
+                            this.pageNo++
+                        }else {
+                            this.pageNo = 1
+                        }
+                        var params = {
+                                idcardNo:'',// 身份证号码
+                                name:'',//姓名
+                                teamId:this.pageParam.teamId,//班组ID
+                                projectId:this.pageParam.projectId,//项目ID
+                                category:api.pageParam.subcontractor.category,//人员类别
+                                id:'',//主键ID
+                                pageNo:this.pageNo,//当前页
+                                pageSize:'2',//每页显示条数
+                                station:this.pageParam.station,//项目岗位
+                                status:this.status,//查询人员状态（0入场 1立场）
+                            }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            realNameList,
+                            params,
+                            function(ret){
+                                api.refreshHeaderLoadDone();
+                                console.log($api.jsonToStr(ret));
+                                if(!ret.obj.list){
+                                    _this.personList = [];
+                                }
+                                if(loadMore){
+                                    if(_this.personList.length < ret.obj.count){
+                                        _this.personList = _this.personList.concat(ret.obj.list)
+                                    }else{
+                                        api.toast({
+                                            msg: '暂无更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else{
+                                    _this.personList = ret.obj.list;
+                                }
+                                _this.copyPersonList = $api.strToJson($api.jsonToStr(_this.personList));
+
+                            }
+                        )
+                    },
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

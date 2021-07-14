@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .noDataContent {
+            display: flex;
+            min-height: 500px;
+            flex-direction: column;
+            ;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noDataContent img {
+            width: 200px;
+            height: 170px;
+        }
+
+        .noDataContent p {
+            marin-top: 7px;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(102, 102, 102, 1);
+            line-height: 19px;
+        }
+
+        .txt_one {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .iconPosion {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            font-size: 1rem !important;
+        }
+        .noDataContent {
+            display: flex;
+            min-height: 500px;
+            flex-direction: column;
+            ;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noDataContent img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .noDataContent p {
+            marin-top: 7px;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(102, 102, 102, 1);
+            line-height: 19px;
+        }
+        .imgIcon{
+            display: inline-block;
+            width: 30px;
+            height:30px;
+            background-image: url('../../image/zf.png');
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="main_box" style="margin-top:10px; " id="app">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list " v-if="examinationInfo.length">
+                        <li class="aui-list-item aui-list-item-middle" v-for="item in  examinationInfo" tapmode @click="openInspectionDetails(item)">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-inner " style="padding-right:2rem">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-15 txt_one aui-ellipsis-1" style="color:#333;width:80%" v-text="item.problemDescribe?item.problemDescribe:'暂无描述'"></div>
+                                    </div>
+                                    <div class="aui-list-item-text aui-font-size-13 flex_start " style="color:#999;">
+                                        <span v-text="item.createTime"></span>&nbsp;&nbsp;
+                                        <!-- <span style="color:#ff0c0c">{{item.state == 0 ? '作废':item.state == 1 ? '处理中':'完成'}}</span> -->
+                                    </div>
+                                    <i class="aui-iconfont iconPosion imgIcon" v-if="item.state == 0"></i>
+                                    <i class="aui-iconfont aui-icon-close iconPosion" v-if="item.state == 1"></i>
+                                    <i class="aui-iconfont aui-icon-correct iconPosion" v-if="item.state == 2"></i>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="noDataContent" v-else>
+                        <img src="../../image/noData.png" alt="">
+                        <p>没有相关数据~</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/common.js"></script>
+
+        <script>
+            apiready = function() {
+                //监听列表变化
+                api.addEventListener({
+                    name: 'toVoidList'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.init(false);
+                    }
+                });
+
+                var examinationItemInfo = api.pageParam.examinationItemInfo;
+                vm.init(false);
+                api.setRefreshHeaderInfo({
+                    visible: true,
+                    loadingImg: 'widget://image/refresh.png',
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...',
+                    showTime: true
+                }, function(ret, err) {
+                    api.refreshHeaderLoadDone();
+                    vm.init(false);
+                });
+                //上拉加载
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 200 //设置距离底部多少距离时触发，默认值为0，数字类型
+                    }
+                }, function(ret, err) {
+                    vm.init(true);
+                });
+
+
+            }
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    examinationInfo: [],
+                    currentPage: '1',
+
+                },
+                methods: {
+                    openInspectionDetails:function(item){
+                        api.openWin({
+                            name: 'InspectionDetails',
+                            url: './InspectionDetails.html',
+                            pageParam: {
+                                enterCheckId:item.checkId,
+                                projectName:api.pageParam.examinationItemInfo.projectName,
+                                projectId:api.pageParam.examinationItemInfo.projectId
+
+                            }
+                        });
+
+                    },
+                    init: function(loadMore) {
+                        if (loadMore) {
+                            vm.currentPage++;
+                        } else {
+                            vm.currentPage = 1;
+                        }
+                        var examinationItemInfo = api.pageParam.examinationItemInfo;
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getMyCheckArraysByProjectIdURL, {
+                                userId: $api.getStorage('userId'),
+                                enterpriseId: $api.getStorage('enterpriseId'),
+                                projectId:examinationItemInfo.projectId,
+                                createTime:examinationItemInfo.createTime,
+                                showCount: PAGE_NUMBER,
+                                currentPage: vm.currentPage
+                            },
+                            function(ret) {
+                                if (loadMore) {
+                                    ret.obj.forEach(function(item) {
+                                        if (ret.totalResult > vm.examinationInfo.length) {
+                                            vm.examinationInfo.push(item)
+                                        } else {
+                                            api.toast({
+                                                msg: '没有更多数据了...',
+                                                duration: 3000,
+                                                location: 'bottom'
+                                            });
+
+                                        }
+                                    })
+                                } else {
+                                    vm.examinationInfo = ret.obj;
+                                }
+
+
+                            }
+                        )
+                    },
+                    openexaminationItem: function(item) {
+                        api.openWin({
+                            name: 'examinationItem',
+                            url: './examinationItem.html',
+                            pageParam: {
+
+                            }
+                        });
+
+                    }
+                }
+
+            })
+        </script>
+</body>
+
+</html>

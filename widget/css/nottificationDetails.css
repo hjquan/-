@@ -1,0 +1,89 @@
+.main_box {
+    margin-top: 10px;
+    background-color: #fff;
+}
+html{height:100%;background: #fff}
+
+
+.border_bottom_after:after {
+    content: '';
+    position: absolute;
+    width: 95%;
+    height: 1px;
+    background: rgba(240, 240, 240, 1);
+    left: 50%;
+    bottom: 0px;
+    transform: translateX(-50%);
+}
+
+.cancelBtn {
+    width: 80%;
+    line-height: 46px;
+    text-align: center;
+    height: 46px;
+    background: rgba(5, 143, 253, 1);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+    margin: 54px auto 0px;
+    position: fixed;
+    bottom: 25px;
+    left:50%;
+    transform: translateX(-50%);
+}
+
+.hover {
+    opacity: 0.6;
+}
+.noticeContent{
+    min-height:60px;
+    line-height: 25px;
+    padding:10px;
+    font-size: 18px;
+    color:#333;
+    letter-spacing:1px;
+    border-bottom:1px solid rgba(240, 240, 240, 1);
+}
+.main_box{
+    background-color: #fff;
+}
+.box_item{
+    height: 45px;
+    line-height: 15px;
+    background:rgba(255,255,255,1);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px 0 15px;
+    align-items: center;
+    color:#333;
+    position: relative;
+}
+.txt_333{
+    color:#333;
+}
+
+.imgUpdate{
+    display: flex;
+    height:100%;
+    padding:15px;
+    position: relative;
+}
+.box_item i{
+    font-size: 21px;
+}
+.imgUpdate img{
+    width: 100px;
+    height:100px;
+    margin-right: 15px;
+}
+.imgUpdate div{
+    width: 50px;
+    height:50px;
+    background-color: #F0F0F0;
+    font-size: 48px;
+    color:#ccc;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 5px;
+}

@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <!-- <link rel="stylesheet" href="../../../css/voice.css"> -->
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn {
+            width: 80%;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color: #fff;
+            background: rgba(157, 211, 253, 1);
+            border-radius: 5px;
+            margin: 0 auto;
+            /*position: fixed;
+            bottom: 0;
+            left: 50%;
+            right: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 100*/
+        }
+
+        .btn_active {
+            background: rgba(5, 143, 253, 1);
+        }
+
+        .toggle {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(85, 85, 85, 1);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .fs_12 {
+            font-size: 12px;
+        }
+
+        .upImg {
+            padding: 10px;
+        }
+
+        .upImg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .img {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .img img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .add_icon {
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(210, 210, 210, 1);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .address {
+            min-height: 45px;
+            max-height: 90px;
+            padding: 5px 10px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        .textarea {
+            text-align: right;
+            padding: 0px 15px;
+            line-height: 20px;
+            height: auto;
+            max-height: 90px;
+        }
+
+        .train_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            /*padding-bottom: 5px;*/
+            position: relative;
+        }
+
+        .train_title {
+            width: 100%;
+            padding: 10px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .train_show {
+            width: 100%;
+            padding-left: 15px;
+        }
+
+        .train_show .train_show_item {
+            padding-left: 25px;
+        }
+
+        .btn_add {
+            color: rgba(5, 143, 253, 1);
+            font-size: 14px;
+            line-height: 45px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .train_box_item {
+            padding: 10px;
+            padding-right: 25px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+        .click_upload i {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D2D2D2;
+        }
+
+        .option_box {
+            width: 100%
+        }
+
+        .hours_cls {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .hours_cls input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #D2D2D2;
+            text-align: center;
+            margin-right: 5px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+        .enclosure{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .enclosure img{
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+
+        }
+        .img_tain{position: relative;margin-right: 15px;}
+        .click_close{
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+
+        }
+        .idcardFront-img{
+            width: 80px;
+            height: 45px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>姓名</p>
+                    <input class="input_rt" v-model="add_params.name" type="text" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>身份证号</p>
+                    <input class="input_rt" v-model="add_params.idcardNo" type="text" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>性别</p>
+                    <input class="input_rt" v-model="add_params.sex" type="text" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>民族</p>
+                    <input class="input_rt" v-model="add_params.nation" type="text" placeholder="请输入">
+                </li>
+                <li class="address border_bottom_after" tapmode>
+                    <p>地址</p>
+                    <textarea placeholder="请输入" v-model="add_params.address" class="textarea "></textarea>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="birthdayFn()">
+                    <p>出生日期</p>
+                    <!-- <input class="input_rt" v-text="add_params.birthday" dis  type="text" placeholder="请输入"> -->
+                    <p tapmode ><span v-text="add_params.birthday || '请选择'">54645464</span> </p>
+                </li>
+
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>手机号码</p>
+                    <input class="input_rt" maxlength="11" v-model="add_params.mobile" type="tel" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="timeentranceDayFn()">
+                    <p>入场日期</p>
+                    <p tapmode><span v-text="add_params.entranceDay">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="educationFn()">
+                    <p>文化程度</p>
+                    <p tapmode ><span v-text="add_params.education.label || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="politicFn()">
+                    <p>政治面貌</p>
+                    <p tapmode ><span v-text="add_params.politic.label || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="maritalFn()">
+                    <p>婚姻状况</p>
+                    <p tapmode><span v-text="add_params.marital.label || '请选择'">54645464</span> </p>
+                </li>
+
+                <li class="mian_item border_bottom_after" tapmode @click="categoryFn()">
+                    <p>人员类别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="add_params.category.label || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="worktypeFn()" v-if="add_params.category && add_params.category.value == 2">
+                    <p>工种</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="add_params.worktype.label || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="teamIdFn()" v-if="add_params.category && add_params.category.value == 2">
+                    <p>班组</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="add_params.teamId.ruleName || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode v-if="add_params.category && add_params.category.value == 2">
+                    <p>工作时间</p>
+                    <p tapmode class="hours_cls"><input type="Number" v-model="add_params.hours"><span>小时为1个工时</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="isleaderFn()" v-if="add_params.category && add_params.category.value == 2">
+                    <p>是否为班组长/代班</p>
+                    <p tapmode ><span v-text="add_params.isleader.label || '请选择'">54645464</span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" v-if="add_params.category && add_params.category.value != 2">
+                    <p>所属单位</p>
+                    <input class="input_rt" maxlength="11" v-model="add_params.unit" type="text" placeholder="请输入">
+
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="stationFn()" v-if="add_params.category && add_params.category.value != 2">
+                    <p>项目岗位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="add_params.station.label || '请选择'">请选择</span> </p>
+                </li>
+                <li class="upImg border_bottom_after">
+                    <p>上传照片</p>
+                    <div class="imgUpdate" style="padding:10px 15px;">
+                        <!-- <img :src="add_params.idcardFront_url" @click="imgSee([add_params.idcardFront_url])" class="idcardFront-img" alt=""> -->
+                        <div class="imgItem" v-show="add_params.photo">
+                            <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click="removeImage( add_params.photo.url)" tapmode="hover"></i>
+                            <img :src="add_params.photo.url" alt="" tapmode @click="imgSee([add_params.photo.url])">
+                        </div>
+                        <div @click="photoFn()" tapmode v-show="!add_params.photo">+</div>
+                    </div>
+                </li>
+                <!-- <li class="upImg border_bottom_after">
+                    <p>退场结算书</p>
+                    <div class="imgUpdate" style="padding:10px 15px;" >
+                        <div class="imgItem" tapmode="hover" v-if="add_params.exitLetter" >
+                            <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" tapmode="hover" @click="removeexitLetter()"></i>
+                            <img :src="typeFile(add_params.exitLetter)" alt=""   @click="seeFile(add_params.exitLetter)">
+                        </div>
+                        <div @click="exitLetterFn()" tapmode v-if="!add_params.exitLetter">+</div>
+                    </div>
+
+                </li>
+                <li class="upImg border_bottom_after">
+                    <p>工资结算证明</p>
+                    <div class="imgUpdate" style="padding:10px 15px;">
+                        <div class="imgItem" tapmode="hover" v-if="add_params.salaryAccount">
+                            <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click="removesalaryAccount()" tapmode="hover"></i>
+                            <img :src="typeFile(add_params.salaryAccount)" alt="" tapmode @click="seeFile(add_params.salaryAccount)">
+                        </div>
+                        <div @click="salaryAccountFn()" tapmode v-if="!add_params.salaryAccount">+</div>
+                    </div>
+
+                </li> -->
+            </ul>
+            <p class="toggle" tapmode @click="toggleFn()" v-text=" toggleFlag ? '收缩选填项':'展开选填项' "> <i class="aui-iconfont  fs_12" :class="[toggleFlag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+            <ul class="mt_10" v-show="toggleFlag">
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>紧急联系人</p>
+                    <input class="input_rt" v-model="add_params.emergencyPerson" type="text" placeholder="请输入姓名">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>紧急联系人电话</p>
+                    <input class="input_rt" type="tel" v-model="add_params.emergencyPhone" maxlength="11" placeholder="请输入手机号">
+                </li>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" tapmode @click="trin_toggle('train')">
+                        <p>培训记录</p>
+                        <p><i class="aui-iconfont" :class="[trin_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+                    </div>
+                    <div class="option_box" v-show="trin_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="(trin_item,i) in trainInfo">
+                            <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p v-text=" '培训'+ (i+1) ">培训</p>
+                                <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode @click="del_opention('train',i)"></i>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>培训机构</p>
+                                <input class="input_rt" type="text" v-model="trin_item.trainAgency" placeholder="请输入">
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>培训内容</p>
+                                <input class="input_rt" v-model="trin_item.trainContent" type="text" placeholder="请输入">
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>培训附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="(trainPhoto_item,trainPhoto_i) in trin_item.trainPhoto">
+                                        <img :src="typeFile(trainPhoto_item)" tapmode @click="seeFile(trainPhoto_item)"  alt="">
+                                        <i class="aui-iconfont aui-icon-close click_close" tapmode @click="delenclosureFn(trin_item.trainPhoto,trainPhoto_i)"></i>
+                                    </div>
+                                    <p v-show="trin_item.trainPhoto.length < 2" class="click_upload" tapmode @click="trainEnclosureFn(trin_item)"><i class="aui-iconfont aui-icon-plus"></i></p>
+                                </div>
+
+                            </li>
+                        </ul>
+                        <div class="btn_add" tapmode @click="add_optionFn('train')">添加</div>
+                    </div>
+
+                </li>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" tapmode @click="trin_toggle('ability')">
+                        <p>资质证书</p>
+                        <p><i class="aui-iconfont" :class="[ability_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+                    </div>
+                    <div class="option_box" v-show="ability_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="(abilityInfo_item,i) in abilityInfo">
+                            <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p v-text=" '资质证书' + (i+1)">资质证书</p>
+                                <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode @click="del_opention('ability',i)"></i>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>资质证书名称</p>
+                                <input class="input_rt" v-model="abilityInfo_item.abilityName" type="text" placeholder="请输入">
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode>
+                                <p>资质证书编号</p>
+                                <input class="input_rt" v-model="abilityInfo_item.abilityNo" type="text" placeholder="请输入">
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode @click="getabilityTypeFn(abilityInfo_item)">
+                                <p>资质证书类别</p>
+                                <p tapmode><span v-text="abilityInfo_item.abilityType.label || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityLevelFn(abilityInfo_item)">
+                                <p>资质证书级别</p>
+                                <p tapmode><span v-text="abilityInfo_item.abilityLevel.label || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityIssueDayFn(abilityInfo_item,'abilityIssueDay')">
+                                <p>资质证书发证日期</p>
+                                <p tapmode><span v-text="abilityInfo_item.abilityIssueDay || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityIssueDayFn(abilityInfo_item,'abilityValidDay')">
+                                <p>资质证书有效期</p>
+                                <p tapmode><span v-text="abilityInfo_item.abilityValidDay || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>资质证书附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="(abilityPhoto_item,abilityPhoto_i) in abilityInfo_item.abilityPhoto">
+                                        <img :src="typeFile(abilityPhoto_item)" tapmode @click="seeFile(abilityPhoto_item)"  alt="">
+                                        <i class="aui-iconfont aui-icon-close click_close" tapmode @click="delenclosureFn(abilityInfo_item.abilityPhoto,abilityPhoto_i)"></i>
+                                    </div>
+                                    <p v-show="abilityInfo_item.abilityPhoto.length < 2" class="click_upload" tapmode @click="abilityEnclosureFn(abilityInfo_item)"><i class="aui-iconfont aui-icon-plus"></i></p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="btn_add" tapmode @click="add_optionFn('ability')">添加</div>
+                    </div>
+
+                </li>
+                <li class="train_box border_bottom_after">
+                    <div class="train_title border_bottom_after" tapmode @click="trin_toggle('contract')">
+                        <p>劳动合同</p>
+                        <p><i class="aui-iconfont" :class="[contract_toggle_flag ? 'aui-icon-down' : 'aui-icon-top']"></i></p>
+                    </div>
+                    <div class="option_box" v-show="contract_toggle_flag">
+                        <ul class="train_show border_bottom_after" v-for="(contractInfo_item,i) in contractInfo">
+                            <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                                <p v-text=" '劳动合同' + (i+1)">劳动合同</p>
+                                <i class="aui-iconfont aui-icon-trash aui-text-danger" tapmode @click="del_opention('contract',i)"></i>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode>
+                                <p>合同编号</p>
+                                <input class="input_rt" v-model="contractInfo_item.contractNo" type="text" placeholder="请输入">
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityIssueDayFn(contractInfo_item,'contractStartDay')">
+                                <p>合同开始时间</p>
+                                <p tapmode><span v-text="contractInfo_item.contractStartDay || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after " tapmode @click="getabilityIssueDayFn(contractInfo_item,'contractEndDay')">
+                                <p>合同终止时间</p>
+                                <p tapmode><span v-text="contractInfo_item.contractEndDay || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="mian_item train_show_item border_bottom_after" tapmode @click="getcontractTypeFn(contractInfo_item)">
+                                <p>合同期限类型</p>
+                                <p tapmode><span v-text="contractInfo_item.contractType.label || '请选择'">54645464</span> </p>
+                            </li>
+                            <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                                <p>合同附件</p>
+                                <div class="enclosure">
+                                    <div class="img_tain" v-for="(contractPhoto_item,contractPhoto_i) in contractInfo_item.contractPhoto">
+                                        <img :src="typeFile(contractPhoto_item)" tapmode @click="seeFile(contractPhoto_item)"  alt="">
+                                        <i class="aui-iconfont aui-icon-close click_close" tapmode @click="delenclosureFn(contractInfo_item.contractPhoto,contractPhoto_i)"></i>
+                                    </div>
+                                    <p v-show="contractInfo_item.contractPhoto.length < 2" class="click_upload" tapmode @click="contractEnclosureFn(contractInfo_item)"><i class="aui-iconfont aui-icon-plus"></i></p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="btn_add" tapmode @click="add_optionFn('contract')">添加</div>
+                    </div>
+
+                </li>
+
+            </ul>
+        </div>
+        <div class="btn btn_active" tapmode @click="submitFn()">
+            完成
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/lunarcalendar.js"></script>
+    <script src="../../../script/permission.js"></script>
+
+    <script>
+        apiready = function() {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var photoBrowser = api.require('photoBrowser');
+            var fileBrowser = api.require('fileBrowser');
+            var docInteraction = api.require('docInteraction');
+            var imageFilter = api.require('imageFilter');
+            //监听选择考勤规则自定义事件
+            api.addEventListener({
+                name: 'curr_chooseleader_event'
+            }, function(ret, err){
+                if( ret ){
+                    var data = ret.value.currChooseleader;
+                    vm.add_params.teamId = data;
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    'echoInfo':'',//回显信息
+                    "topimg": [ //文件匹配
+                        '../../../image/data/xslx.png',
+                        '../../../image/data/Group.png',
+                        '../../../image/data/pdf.png',
+                        '../../../image/data/ppt.png',
+                        '../../../image/data/word.png',//5
+                        '../../../image/data/txt.png',
+                        '../../../image/data/video.png',
+                        '../../../image/data/zip.png',
+                        '../../../image/data/audio.png',
+                        '../../../image/data/img.png',//10
+                        '../../../image/data/wz.png'
+                    ],
+                    "toggleFlag": false, //控制是否展开
+                    "isCloseBtn": true, //是否显示删除图片icon
+                    "imgSrc": [],
+                    'idInfo': '', //接收识别的身份证信息
+                    'add_params': '', //新增上传参数
+
+                    'trainInfo': [], //培训记录
+                    'trin_toggle_flag': false, //培训展开
+
+                    'abilityInfo': [], //资质记录
+                    'ability_toggle_flag': false, //资质展开
+
+                    'contractInfo': [], //合同记录
+                    'contract_toggle_flag': false, //合同展开
+
+                },
+                watch: {
+                    // imgSrc:function(oldval,newval){
+                    //     console.log($api.jsonToStr(oldval));
+                    //     console.log($api.jsonToStr(newval));
+                    // }
+                },
+                computed: {},
+                mounted: function() {},
+                created: function() {
+                    //编辑回显表单信息
+                    var _this = this;
+                    this.echoInfo =  api.pageParam.fromInfo;
+                    //表单回显
+                    if(api.pageParam.fromInfo){
+                        console.log('编辑');
+                        var fromInfo = api.pageParam.fromInfo;
+                        var filter_education= {//文化程度
+                            "id":"",
+                            "value":fromInfo.education,
+                            "label":fromInfo.educationName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_politic= {//政治面貌
+                            "id":"",
+                            "value":fromInfo.politic,
+                            "label":fromInfo.politicName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_marital= {//婚姻状况
+                            "id":"",
+                            "value":fromInfo.marital,
+                            "label":fromInfo.maritalName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_category= {//人员类别
+                            "id":"",
+                            "value":fromInfo.category,
+                            "label":fromInfo.categoryName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_worktype= {//工种
+                            "id":"",
+                            "value":fromInfo.worktype,
+                            "label":fromInfo.worktypeName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_isleader= {//是否为班组长 /代班
+                            "id":"",
+                            "value":fromInfo.isleader,
+                            "label":fromInfo.isleaderName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_station= {//项目岗位
+                            "id":"",
+                            "value":fromInfo.station,
+                            "label":fromInfo.stationName,
+                            "type":"",
+                            "description":"",
+                            "sort":"",
+                            "parentId":""
+                        }
+                        var filter_teamId= {
+                            "id":fromInfo.teamId,
+                            "ruleName":fromInfo.teamName,
+                            "elastic":null,
+                            "overtiameComeHour":"1",
+                            "belateComeTime":"2",
+                            "earlierComeTime":"3",
+                            "stayawayAll":"4",
+                            "workStartDate":"11:23",
+                            "workEndDate":"22:30",
+                            "projectId":null
+                        }
+                        var filter_photo = {
+                            url:fromInfo.urlPrefix + fromInfo.photo,
+                            fileName:fromInfo.photo
+                        }
+                        // this.imgSrc.push(fromInfo.photo)
+                        this.add_params = {
+                            idcardFront_url:fromInfo.urlPrefix + fromInfo.idcardFront,//网络身份证正面地址（用于比对）
+                            idcardFront: fromInfo.idcardFront, //身份证正面照
+                            idcardBack:fromInfo.idcardBack, //身份证反面照
+                            name: fromInfo.name, //姓名
+                            idcardNo: fromInfo.idcardNo, //身份证号码
+                            sex: fromInfo.sex, //性别
+                            nation: fromInfo.nation, //民族
+                            address: fromInfo.address, //住址
+                            birthday: fromInfo.birthday, //出生日期
+
+                            idcardFront: fromInfo.idcardFront, //身份证正面照
+                            idcardBack:fromInfo.idcardBack, //身份证反面照
+
+                            mobile: fromInfo.mobile, //手机号码
+                            entranceDay:fromInfo.entranceDay, //入场日期
+
+
+                            education:filter_education, //文化程度
+                            politic: filter_politic, //政治面貌
+                            marital: filter_marital, //婚姻状况
+                            category:filter_category, //人员类别
+                            worktype:filter_worktype, //工种
+                            teamId: filter_teamId, //班组
+                            hours:fromInfo.hours, //工时(默认为8)
+                            isleader: filter_isleader, //是否为班组长 /代班
+                            unit: fromInfo.unit, // 所属单位
+                            station: filter_station, //项目岗位
+
+
+                            photo:filter_photo, //上传头像
+                            emergencyPerson:fromInfo.emergencyPerson,//紧急联系人
+                            emergencyPhone:fromInfo.emergencyPhone,//紧急联系电话
+
+                            exitLetter: fromInfo.exitLetter, //'退场结算书
+                            salaryAccount: fromInfo.salaryAccount, //工资结算证明
+
+
+                            trainAgency: '', //添加培训记 录-培训机构
+                            trainContent: '', //添加培训记 录-培训内容
+                            trainPhoto: '', //添加培训记 录-培训内容照片
+
+                            abilityName: '', //添加资质证 书-名称
+                            abilityNo: '', //添加资质证 书-编号
+                            abilityType: '', //添加资质证 书-类别
+                            abilityLevel: '', //添加资质证 书-级别
+                            abilityIssueDay: '', //添加资质证 书-发证日期
+                            abilityValidDay: '', //添加资质证 书-有效期至
+                            abilityPhoto: '', //添加资质证 书-附件
+
+
+                            contractNo: '', //添加合同-编 号
+                            contractStartDay: '', //添加合同-开始时间
+                            contractEndDay: '', //添加合同-终 止时间
+                            contractType: '', //添加合同-期 限类型
+                            contractPhoto: '', //添加合同-附 件
+
+                            status: fromInfo.status, //人员状态(0入场 1离场)
+                            projectId: fromInfo.projectId, //项目编号
+                            tp_personid: fromInfo.tp_personid, //第三方平台人 员Id(建委下发的人员编号)
+                        };
+                        //切割培训个数
+                        if(fromInfo.trainAgency){
+                            console.log('培训');
+                            var trainAgency_split = fromInfo.trainAgency && fromInfo.trainAgency.split('#');
+                            var trainContent_split =  fromInfo.trainContent && fromInfo.trainContent.split('#');
+                            var trainPhoto_split =  fromInfo.trainPhoto && fromInfo.trainPhoto.split('#');
+
+                            for (var i = 0; i < trainAgency_split.length; i++) {
+                                _this.trainInfo.push({
+                                    trainAgency: '', //机构名称
+                                    trainContent: '', //机构内容
+                                    trainPhoto: [], //机构附件
+                                })
+                                _this.trainInfo[i].trainAgency = trainAgency_split && trainAgency_split[i];
+                                _this.trainInfo[i].trainContent = trainContent_split && trainContent_split[i];
+                                var photo_filenmae = trainPhoto_split && trainPhoto_split[i].split(',').map(function(item){
+                                     return ({'fileName':item,'url':fromInfo.urlPrefix+item})
+                                });
+                                _this.trainInfo[i].trainPhoto = photo_filenmae;
+                            }
+                            console.log($api.jsonToStr(_this.trainInfo));
+                        }
+
+                        //
+                        //切割i资质个数
+                        //     abilityName: '', //资质名称
+                        //     abilityNo: '', //资质编号
+                        //     abilityType: '', //资质类别
+                        //     abilityLevel: '', //资质级别
+                        //     abilityIssueDay: '', //资质发证日期
+                        //     abilityValidDay: '', //资质发证有效日期
+                        //     abilityPhoto: [], //资质附件
+
+
+                        if(fromInfo.abilityName){
+                            console.log('资质');
+                            var abilityName_split =  fromInfo.abilityName && fromInfo.abilityName.split('#');
+                            var abilityNo_split =  fromInfo.abilityNo && fromInfo.abilityNo.split('#');
+                            var abilityTypeName_split =  fromInfo.abilityTypeName && fromInfo.abilityTypeName.split('#');
+                            var abilityLevelName_split =  fromInfo.abilityLevelName && fromInfo.abilityLevelName.split('#');
+                            var abilityIssueDay_split =  fromInfo.abilityIssueDay && fromInfo.abilityIssueDay.split('#');
+                            var abilityValidDay_split =  fromInfo.abilityValidDay && fromInfo.abilityValidDay.split('#');
+                            var abilityPhoto_split =  fromInfo.abilityPhoto && fromInfo.abilityPhoto.split('#');
+
+                            //资质级别数据处理
+                            var filter_abilityType_val = fromInfo.abilityType && fromInfo.abilityType.split('#');
+                            var filter_abilityLevel_val = fromInfo.abilityType && fromInfo.abilityType.split('#');
+                            for (var i = 0; i < abilityName_split.length; i++) {
+                                _this.abilityInfo.push({
+                                        abilityName: '', //资质名称
+                                        abilityNo: '', //资质编号
+                                        abilityTypeName: '', //资质类别
+                                        abilityLevelName: '', //资质级别
+                                        abilityIssueDay: '', //资质发证日期
+                                        abilityValidDay: '', //资质发证有效日期
+                                        abilityPhoto: [], //资质附件
+                                })
+                                var filter_abilityType= {//资质类别
+                                    "id":"",
+                                    "value":filter_abilityType_val && filter_abilityType_val[i],
+                                    "label":abilityTypeName_split && abilityTypeName_split[i],
+                                    "type":"",
+                                    "description":"",
+                                    "sort":"",
+                                    "parentId":""
+                                }
+                                var filter_abilityLevel= {//资质级别
+                                    "id":"",
+                                    "value":filter_abilityLevel_val && filter_abilityLevel_val[i],
+                                    "label":abilityLevelName_split && abilityLevelName_split[i],
+                                    "type":"",
+                                    "description":"",
+                                    "sort":"",
+                                    "parentId":""
+                                }
+
+                                _this.abilityInfo[i].abilityName = abilityName_split && abilityName_split[i];
+                                _this.abilityInfo[i].abilityNo = abilityNo_split && abilityNo_split[i];
+                                _this.abilityInfo[i].abilityType =filter_abilityType;
+                                _this.abilityInfo[i].abilityLevel = filter_abilityLevel;
+                                _this.abilityInfo[i].abilityIssueDay = abilityIssueDay_split && abilityIssueDay_split[i];
+                                _this.abilityInfo[i].abilityValidDay =abilityValidDay_split && abilityValidDay_split[i];
+                                var abilityphoto_filenmae = abilityPhoto_split && abilityPhoto_split[i].split(',').map(function(item){
+                                     return ({'fileName':item,'url':fromInfo.urlPrefix+item})
+                                });
+                                _this.abilityInfo[i].abilityPhoto = abilityphoto_filenmae;
+                            }
+                            console.log($api.jsonToStr(_this.abilityInfo));
+                        }
+
+                        if(fromInfo.contractNo){
+                            console.log('合同');
+                            //切割i合同个数
+                            //     contractNo: '', //合同编号
+                            //     contractStartDay: '', //合同开始时间
+                            //     contractEndDay: '', //合同终止时间
+                            //     contractType: '', //合同类型
+                            //     contractPhoto: [], //合同附件
+                            var contractNo_split =  fromInfo.contractNo && fromInfo.contractNo.split('#');
+                            var contractStartDay_split =  fromInfo.contractStartDay && fromInfo.contractStartDay.split('#');
+                            var contractEndDay_split =  fromInfo.contractEndDay && fromInfo.contractEndDay.split('#');
+                            var contractTypeName_split =  fromInfo.contractTypeName && fromInfo.contractTypeName.split('#');
+                            var contractPhoto_split =  fromInfo.contractPhoto && fromInfo.contractPhoto.split('#');
+                            //切割每项
+                            var filter_contractType_val = fromInfo.contractType && fromInfo.contractType.split('#');
+
+                            for (var i = 0; i < contractNo_split.length; i++) {
+                                _this.contractInfo.push({
+                                    contractNo: '', //合同编号
+                                    contractStartDay: '', //合同开始时间
+                                    contractEndDay: '', //合同终止时间
+                                    contractTypeName: '', //合同类型
+                                    contractPhoto: [], //合同附件
+                                })
+                                var filter_contractType= {//资质类别
+                                    "id":"",
+                                    "value":contractTypeName_split && contractTypeName_split[i],
+                                    "label":filter_contractType_val &&filter_contractType_val[i],
+                                    "type":"",
+                                    "description":"",
+                                    "sort":"",
+                                    "parentId":""
+                                }
+                                _this.contractInfo[i].contractNo = contractNo_split && contractNo_split[i];
+                                _this.contractInfo[i].contractStartDay = contractStartDay_split && contractStartDay_split[i];
+                                _this.contractInfo[i].contractEndDay = contractEndDay_split && contractEndDay_split[i];
+                                _this.contractInfo[i].contractType = filter_contractType;
+                                var contractPhoto_filenmae = contractPhoto_split && contractPhoto_split[i].split(',').map(function(item){
+                                     return ({'fileName':item,'url':fromInfo.urlPrefix+item})
+                                });
+                                _this.contractInfo[i].contractPhoto = contractPhoto_filenmae;
+                            }
+                            console.log($api.jsonToStr(_this.contractInfo));
+                        }
+
+
+
+                        console.log($api.jsonToStr(_this.add_params));
+
+
+
+                    }else{
+                        console.log('新增');
+                        var data = api.pageParam.idInfo;
+                        this.idInfo = data;
+                        console.log($api.jsonToStr(data));
+                        this.add_params = {
+                            idcardFront_url:data.idcardFrontURL,//网络身份证正面地址（用于比对）
+                            idcardFront: data.idCardFrontInfo.idcardFront, //身份证正面照
+                            idcardBack: data.identifyIDBackInfo.idcardBack, //身份证反面照
+                            name: data.idCardFrontInfo.name, //姓名
+                            idcardNo: data.idCardFrontInfo.idNumber, //身份证号码
+                            sex: data.idCardFrontInfo.gender, //性别
+                            nation: data.idCardFrontInfo.ethnic, //民族
+                            address: data.idCardFrontInfo.address, //住址
+                            birthday: data.idCardFrontInfo.birthday, //出生日期
+
+                            mobile: '', //手机号码
+                            entranceDay: $app.formDate(false, '-'), //入场日期
+                            education: '', //文化程度
+                            politic: '', //政治面貌
+                            marital: '', //婚姻状况
+                            category: '', //人员类别
+                            worktype: '', //工种
+                            teamId: '', //班组
+                            hours: 8, //工时(默认为8)
+                            isleader: '', //是否为班组长 /代班
+                            unit: '', // 所属单位
+                            station: '', //项目岗位
+
+
+                            photo: '', //上传头像
+                            emergencyPerson:'',//紧急联系人
+                            emergencyPhone:'',//紧急联系电话
+
+                            exitLetter: '', //'退场结算书
+                            salaryAccount: '', //工资结算证明
+
+
+                            trainAgency: '', //添加培训记 录-培训机构
+                            trainContent: '', //添加培训记 录-培训内容
+                            trainPhoto: '', //添加培训记 录-培训内容照片
+
+                            abilityName: '', //添加资质证 书-名称
+                            abilityNo: '', //添加资质证 书-编号
+                            abilityType: '', //添加资质证 书-类别
+                            abilityLevel: '', //添加资质证 书-级别
+                            abilityIssueDay: '', //添加资质证 书-发证日期
+                            abilityValidDay: '', //添加资质证 书-有效期至
+                            abilityPhoto: '', //添加资质证 书-附件
+
+
+                            contractNo: '', //添加合同-编 号
+                            contractStartDay: '', //添加合同-开始时间
+                            contractEndDay: '', //添加合同-终 止时间
+                            contractType: '', //添加合同-期 限类型
+                            contractPhoto: '', //添加合同-附 件
+
+                            status: '', //人员状态(0入场 1离场)
+                            projectId: '', //项目编号
+                            tp_personid: '', //第三方平台人 员Id(建委下发的人员编号)
+                        };
+                        console.log($api.jsonToStr(this.add_params));
+                        //出身日期转换
+                        this.add_params.birthday = this.add_params.birthday.replace(/(\d{4})(\d{2})(\d{2})/,function($1,$2,$3,$4){return($2+'-'+$3+'-'+$4)})
+                        //培训机构数据结构初始化
+                        this.trainInfo = [{
+                            trainAgency: '', //机构名称
+                            trainContent: '', //机构内容
+                            trainPhoto: [], //机构附件
+                        }];
+                        //资质记录数据结构初始化
+                        this.abilityInfo = [{
+                            abilityName: '', //资质名称
+                            abilityNo: '', //资质编号
+                            abilityType: '', //资质类别
+                            abilityLevel: '', //资质级别
+                            abilityIssueDay: '', //资质发证日期
+                            abilityValidDay: '', //资质发证有效日期
+                            abilityPhoto: [], //资质附件
+                        } ];
+                        //合同记录数据结构初始化
+                        this.contractInfo = [{
+                            contractNo: '', //合同编号
+                            contractStartDay: '', //合同开始时间
+                            contractEndDay: '', //合同终止时间
+                            contractType: '', //合同类型
+                            contractPhoto: [], //合同附件
+                        }]
+                    }
+
+                },
+                methods: {
+                    //提交实名认证信息
+                    submitFn:function(){
+                        var _this =this;
+
+                        // 验证是否为空
+                        var verificationInfo = [
+                            {'name':'mobile','msg':'手机号码不能为空'},
+                            {'name':'education','msg':'文化程度不能为空'},
+                            {'name':'politic','msg':'政治面貌不能为空'},
+                            {'name':'marital','msg':'婚姻状况不能为空'},
+                            {'name':'category','msg':'人员类别不能为空'},
+                            {'name':'photo','msg':'上传头像不能为空'},
+                            {'name':'hours','msg':'工时不能为空'}
+                        ]
+                        if(this.add_params.category.value == 2){
+                            verificationInfo.push({'name':'worktype','msg':'工种不能为空'});
+                            verificationInfo.push({'name':'teamId','msg':'班组不能为空'});
+                            verificationInfo.push({'name':'hours','msg':'工时不能为空'});
+                            verificationInfo.push({'name':'isleader','msg':'是否为班组长 /代班不能为空'});
+                        }else{
+                            verificationInfo.push({'name':'unit','msg':'所属单位'});
+                            verificationInfo.push( {'name':'station','msg':'项目岗位不能为空'});
+                        }
+                        for (var i = 0; i < verificationInfo.length; i++) {
+                            var name = verificationInfo[i].name;
+                            var msg = verificationInfo[i].msg;
+                            if(!this.add_params[name]){
+                                api.alert({
+                                    title: '提示',
+                                    msg:msg ,
+                                }, function(ret, err){
+
+                                });
+
+
+                                return false;
+
+                            }
+                        }
+                        //合同数据处理
+                        if(this.trainInfo.length){
+                            var currtrainAgency = [],currtrainContent=[],currtrainPhoto = [];
+
+                            this.trainInfo.forEach(function(items){
+                                currtrainAgency.push(items.trainAgency)
+                                currtrainContent.push(items.trainContent)
+                                var items_photo = [];
+                                items.trainPhoto.forEach(function(item){
+                                    items_photo.push(item.fileName)
+                                })
+                                items_photo.join(',');
+                                currtrainPhoto.push(items_photo)
+
+                            })
+
+                            currtrainAgency = currtrainAgency.join('#');
+                            currtrainContent = currtrainContent.join('#');
+                            currtrainPhoto = currtrainPhoto.join('#');
+                        }
+
+                        //资质数据处理
+                        if(this.abilityInfo.length){
+                            var currabilityName = [],currabilityNo=[],currabilityType = [],currabilityLevel=[],currabilityIssueDay=[],currabilityValidDay=[],currabilityPhoto=[];
+
+                            this.abilityInfo.forEach(function(items){
+                                currabilityName.push(items.abilityName)
+                                currabilityNo.push(items.abilityNo)
+
+                                currabilityType.push(items.abilityType.value)
+                                currabilityLevel.push(items.abilityLevel.value)
+
+                                currabilityIssueDay.push(items.abilityIssueDay)
+                                currabilityValidDay.push(items.abilityValidDay)
+                                var items_photo = [];
+                                items.abilityPhoto.forEach(function(item){
+                                    items_photo.push(item.fileName)
+                                })
+                                items_photo.join(',');
+                                currabilityPhoto.push(items_photo)
+
+                            })
+
+                            currabilityName = currabilityName.join('#');
+                            currabilityNo = currabilityNo.join('#');
+                            currabilityType = currabilityType.join('#');
+                            currabilityLevel = currabilityLevel.join('#');
+                            currabilityIssueDay = currabilityIssueDay.join('#');
+                            currabilityValidDay = currabilityValidDay.join('#');
+                            currabilityPhoto = currabilityPhoto.join('#');
+                        }
+                        //劳动合同数据处理
+                        if(this.contractInfo.length){
+                            var currcontractNo = [],currcontractStartDay = [],currcontractEndDay=[],currcontractType=[],currcontractPhoto=[];
+
+                            this.contractInfo.forEach(function(items){
+                                currcontractNo.push(items.contractNo)
+                                currcontractStartDay.push(items.contractStartDay)
+                                currcontractEndDay.push(items.contractEndDay)
+                                currcontractType.push(items.contractType.value)
+                                var items_photo = [];
+                                items.contractPhoto.forEach(function(item){
+                                    items_photo.push(item.fileName)
+                                })
+                                items_photo.join(',');
+                                currcontractPhoto.push(items_photo)
+
+                            })
+
+                            currcontractNo = currcontractNo.join('#');
+                            currcontractStartDay = currcontractStartDay.join('#');
+                            currcontractEndDay = currcontractEndDay.join('#');
+                            currcontractType = currcontractType.join('#');
+                            currcontractPhoto = currcontractPhoto.join('#');
+                        }
+
+
+                        var data = this.add_params;
+                        console.log($api.jsonToStr(data));
+
+
+                        var params = {
+                            'idcardFront': data.idcardFront, //身份证正面照
+                            'idcardBack': data.idcardBack, //身份证反面照
+                            'name':data.name, //姓名
+                            'idcardNo': data.idcardNo, //身份证号码
+                            'sex': data.sex, //性别
+                            'nation': data.nation, //民族
+                            'address': data.address, //住址
+                            'birthday': data.birthday, //出生日期
+                            'mobile': data.mobile, //手机号码
+
+                            'entranceDay': data.entranceDay, //入场日期
+                            'education': data.education.value, //文化程度
+                            'politic': data.politic.value, //政治面貌
+                            'marital': data.marital.value, //婚姻状况
+                            'category': data.category.value, //人员类别
+                            'worktype':  data.category.value == 2 ? data.worktype.value :'', //工种
+                            'teamId':  data.category.value == 2 ? data.teamId.id : '', //班组
+                            'hours':  data.category.value == 2 ? (data.hours).toString() :'0', //工时(默认为8)
+                            'isleader': data.category.value == 2 ? data.isleader.value :'', //是否为班组长 /代班
+                            'unit': data.category.value != 2 ? data.unit :'', // 所属单位
+                            'station': data.category.value != 2 ? data.station.value:'', //项目岗位
+
+
+                            'photo':data.photo ? data.photo.fileName : '', //上传头像
+
+                            'emergencyPerson':data.emergencyPerson,
+                            'emergencyPhone':data.emergencyPhone,
+
+                            'exitLetter': '', //'退场结算书
+                            'salaryAccount': '', //工资结算证明
+
+                            'trainAgency': currtrainAgency, //添加培训记 录-培训机构
+                            'trainContent': currtrainContent, //添加培训记 录-培训内容
+                            'trainPhoto': currtrainPhoto, //添加培训记 录-培训内容照片
+
+                            'abilityName': currabilityName, //添加资质证 书-名称
+                            'abilityNo': currabilityNo, //添加资质证 书-编号
+                            'abilityType': currabilityType, //添加资质证 书-类别
+                            'abilityLevel': currabilityLevel, //添加资质证 书-级别
+                            'abilityIssueDay': currabilityIssueDay, //添加资质证 书-发证日期
+                            'abilityValidDay':currabilityValidDay, //添加资质证 书-有效期至
+                            'abilityPhoto': currabilityPhoto, //添加资质证 书-附件
+
+
+                            'contractNo': currcontractNo, //添加合同-编 号
+                            'contractStartDay': currcontractStartDay, //添加合同-开始时间
+                            'contractEndDay': currcontractEndDay, //添加合同-终 止时间
+                            'contractType': currcontractType, //添加合同-期 限类型
+                            'contractPhoto': currcontractPhoto, //添加合同-附 件
+
+
+
+
+                            'status': '0', //人员状态(0入场 1离场)
+                            'projectId': $api.getStorage('enterpriseId'), //项目编号
+                            'tp_personid': '', //第三方平台人 员Id(建委下发的人员编号)
+                        }
+                        console.log($api.jsonToStr(params));
+
+                        var url_realName;
+                        if(api.pageParam.fromInfo){
+                            console.log('Edit');
+                            url_realName = realNameEdit;
+                            params.id = api.pageParam.fromInfo.id;
+
+                        }else{
+                            console.log('new');
+                            url_realName = realNameAdd;
+                        }
+                        $app.post(
+                            true,
+                            url_realName,
+                            params,
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                api.sendEvent({
+                                    name: 'addrealname_form_event',
+                                    extra: {
+                                    }
+                                });
+
+
+                                api.closeToWin({
+                                    name:'./realnameattendance/index.html'
+                                })
+                            }
+                        )
+                    },
+                    //查看文件
+                    seeFile:function(data){
+                        console.log($api.jsonToStr(data));
+                        if(!data)return false;
+                        var fileSplit = data.fileName.split('.');
+                        var type = fileSplit[ fileSplit.length-1].toLowerCase();
+                        var params = {
+                            url:data.url,
+                            type:type
+                        }
+                        switch (type) {
+                            case 'jpg':
+                            case 'png':
+                                this.imgSee([data.url],0);
+                                break;
+                            case 'txt':
+                            case 'doc':
+                            case 'docx':
+                            case 'ppt':
+                            case 'pptx':
+                            case 'pdf':
+                            case 'xlsx':
+                                api.openWin({
+                                    name: 'office',
+                                    url: '../../../commonpage/office.html',
+                                    pageParam: {
+                                        office: params,
+
+                                    }
+                                });
+                                break;
+
+                            default:
+                                api.download({
+                                           url: data.url,
+                                           // savePath: 'fs://test.rar',
+                                           report: true,
+                                           cache: true,
+                                           encode:false,
+                                           allowResume: true
+                                       }, function(ret, err) {
+                                           if (ret.state == 1) {
+                                               docInteraction.open({
+                                                   path: 'widget://'+ret.savePath
+                                               }, function(ret, err) {
+                                                   if (err) {
+                                                       api.toast({
+                                                           msg: '打开失败',
+                                                           duration: 2000,
+                                                           location: 'bottom'
+                                                       });
+
+                                                   } else {
+                                                   }
+                                               });
+                                           } else if(ret.state != 1){
+                                               // api.toast({
+                                               //     msg: '下载失败',
+                                               //     duration: 2000,
+                                               //     location: 'bottom'
+                                               // });
+                                           }
+                                           if(err){
+                                               api.toast({
+                                                   msg: err,
+                                                   duration: 2000,
+                                                   location: 'bottom'
+                                               });
+
+                                           }
+                                       });
+                                break;
+
+                        }
+                    },
+                    //删除合同附件
+                    removeexitLetter:function(){
+                        this.add_params.exitLetter = '';
+                    },
+                    //删除工资结算附件
+                    removesalaryAccount:function(){
+                        this.add_params.salaryAccount = '';
+                    },
+                    //工资结算附件
+                    salaryAccountFn:function(){
+                        var _this = this;
+                        this.commonEnclosureFn(
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.add_params.salaryAccount = ret.obj[0];
+                            }
+                        )
+                    },
+                    //合同终结附件
+                    exitLetterFn:function(data){
+                        var _this = this;
+                        this.commonEnclosureFn(
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.add_params.exitLetter = ret.obj[0];
+                            }
+                        )
+                    },
+                    //附件图片匹配
+                    typeFile: function(data) {
+                        if(!data)return false;
+                        var fileSplit = data.fileName.split('.');
+                        var type = fileSplit[ fileSplit.length-1].toLowerCase();
+                        console.log(type);
+                        switch (type) {
+                            case 'jpg':
+                            case 'png':
+                                return data.url
+                                break;
+                            case 'mp3':
+                                return  this.topimg[8]
+                                break;
+                            case 'zip':
+                            case 'rar':
+                                return  this.topimg[7]
+                                break;y
+                            case 'avi':
+                            case 'rmvb':
+                                return  this.topimg[6]
+                                break;
+                            case 'txt':
+                                return  this.topimg[5]
+                                break;
+                            case 'doc':
+                            case 'docx':
+                                return this.topimg[4]
+                                break;
+                            case 'ppt':
+                            case 'pptx':
+                                return  this.topimg[3]
+                                break;
+                            case 'pdf':
+                                return  this.topimg[2]
+                                break;
+                            case '':
+                                return  this.topimg[1]
+                                break;
+                            case 'xlsx':
+                                return  this.topimg[0]
+                                break;
+                            default:
+                                return this.topimg[this.topimg.length-1]
+                                break;
+
+                        }
+                    },
+
+                    //预览附件
+                    seeEnclosure:function(url){
+                        photoBrowser.open({
+                            images: [url],
+                            // activeIndex: i,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+                    //获取合同类型
+                    getcontractTypeFn:function(data){
+                        // this.commonFn('contractType', '合同类型')
+                        this.commonEnclosurefnc(
+                            'contractType',
+                            '合同类型',
+                            data
+                        )
+                    },
+                    //删除附件
+                    delenclosureFn:function(data,i){
+                        data.splice(i,1)
+                    },
+                    //选取附件（合同）
+                    trainEnclosureFn: function(data) {
+                        var _this = this;
+                        this.commonEnclosureFn(
+                            function(ret) {
+                                data.trainPhoto.push(ret.obj[0])
+                                console.log($api.jsonToStr(data));
+                            }
+                        )
+                    },
+                    //选取附件（资质 ）
+                    abilityEnclosureFn: function(data) {
+                        var _this = this;
+                        this.commonEnclosureFn(
+                            function(ret) {
+                                data.abilityPhoto.push(ret.obj[0])
+                                console.log($api.jsonToStr(data));
+                            }
+                        )
+                    },
+                    //选取附件（培训）
+                    contractEnclosureFn: function(data) {
+                        var _this = this;
+                        this.commonEnclosureFn(
+                            function(ret) {
+                                data.contractPhoto.push(ret.obj[0])
+                                console.log($api.jsonToStr(data));
+                            }
+                        )
+                    },
+
+                    //资质或合同时间选取
+                    getabilityIssueDayFn:function(data,key){
+                        var _this = this;
+                        var callback = function(ret) {
+                            console.log($api.jsonToStr(data));
+                            data[key] = ret;
+                            console.log($api.jsonToStr(_this.contractInfo));
+
+                        }
+                        $app.timeFn(callback)
+
+                    },
+
+                    //获取资质级别
+                    getabilityLevelFn:function(data){
+                        // this.commonFn('abilityLevel', '资质级别')
+                        this.commonEnclosurefnc(
+                            'abilityLevel',
+                            '资质级别',
+                            data
+                        )
+                    },
+                    //获取资质类别
+                    getabilityTypeFn:function(data){
+                        console.log($api.jsonToStr(data));
+                        this.commonEnclosurefnc(
+                            'abilityType',
+                            '资质类别',
+                            data
+                        )
+                    },
+                    ////获取资质||合同词典
+                    /*
+                     *type 词典类型且赋值对象key
+                     *title 标题
+                     currparams目标赋值对象
+                     */
+                    commonEnclosurefnc:function(type,title,currparams){
+                        // this.commonFn('abilityType', '资质类别')
+                        var _this = this;
+                        //获取缓存
+                        var educationData = api.getGlobalData({
+                            key: type + '_GlobalData'
+                        });
+                        if (!educationData) {
+                            this.getdicListByType(
+                                type,
+                                function(ret) {
+                                    var data = ret.obj;
+                                    //缓存
+                                    api.setGlobalData({
+                                        key: type + '_GlobalData',
+                                        value: $api.jsonToStr(data)
+                                    });
+                                    var filterData = [];
+                                    data.forEach(function(item) {
+                                        filterData.push(item.label)
+                                    })
+
+                                    _this.actionSheetFn(
+                                        title,
+                                        filterData,
+                                        function(ret) {
+
+                                            var filter_data = data.filter(function(item) {
+                                                return item.label == filterData[ret.buttonIndex - 1];
+                                            });
+                                            // _this.add_params[type] = _this.add_params[type][0];
+                                            if(filter_data.length){
+                                                currparams[type] =  filter_data[0];
+                                            }
+
+                                        }
+                                    )
+                                }
+                            )
+                        } else {
+
+                            var data = $api.strToJson(educationData);
+                            var filterData = [];
+                            data.forEach(function(item) {
+                                filterData.push(item.label)
+                            })
+                            _this.actionSheetFn(
+                                title,
+                                filterData,
+                                function(ret) {
+                                    var filter_data = data.filter(function(item) {
+                                        return item.label == filterData[ret.buttonIndex - 1];
+                                    });
+                                    if(filter_data.length){
+                                        currparams[type] =  filter_data[0];
+                                    }
+                                    // _this.add_params[type] = _this.add_params[type][0];
+                                    // console.log($api.jsonToStr(_this.add_params[type]))
+                                }
+                            )
+                        }
+                    },
+                    //删除培训 ,资质,劳动合同选项
+                    del_opention: function(type, i) {
+                        console.log(i);
+                        var _this = this;
+                        api.confirm({
+                            title: '提示',
+                            msg: '确认删除？',
+                            buttons: ['确定', '取消']
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == '1') {
+                                    switch (type) {
+                                        case 'train':
+                                            _this.trainInfo.splice(i, 1)
+                                            break;
+                                        case 'ability':
+                                            _this.abilityInfo.splice(i, 1)
+                                            break;
+                                        case 'contract':
+                                            _this.contractInfo.splice(i, 1)
+                                            break;
+                                            // default:
+
+                                    }
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+                    //新增培训 ,资质,劳动合同选项
+                    add_optionFn: function(type) {
+                        switch (type) {
+                            case 'train':
+                                this.trainInfo.push(
+                                    {
+                                        trainAgency: '', //机构名称
+                                        trainContent: '', //机构内容
+                                        trainPhoto: [], //机构附件
+                                    }
+                                )
+                                break;
+                            case 'ability':
+                                this.abilityInfo.push(
+                                    {
+                                        abilityName: '', //资质名称
+                                        abilityNo: '', //资质编号
+                                        abilityType: '', //资质类别
+                                        abilityLevel: '', //资质级别
+                                        abilityIssueDay: '', //资质发证日期
+                                        abilityValidDay: '', //资质发证有效日期
+                                        abilityPhoto: [], //资质附件
+                                    }
+                                )
+                                break;
+                            case 'contract':
+                                this.contractInfo.push(
+                                    {
+                                        contractNo: '', //合同编号
+                                        contractStartDay: '', //合同开始时间
+                                        contractEndDay: '', //合同终止时间
+                                        contractType: '', //合同类型
+                                        contractPhoto: [], //合同附件
+                                    }
+                                )
+                                break;
+                                // default:
+
+                        }
+                    },
+                    //选填培训 ,资质,劳动合同展开
+                    trin_toggle: function(type) {
+                        switch (type) {
+                            case 'train':
+                                this.trin_toggle_flag = !this.trin_toggle_flag
+                                break;
+                            case 'ability':
+                                this.ability_toggle_flag = !this.ability_toggle_flag
+                                break;
+                            case 'contract':
+                                this.contract_toggle_flag = !this.contract_toggle_flag
+                                break;
+                                // default:
+
+                        }
+                    },
+                    birthdayFn:function(){
+                        var _this = this;
+                        var callback = function(ret) {
+                            console.log(ret);
+                            _this.add_params.birthday = ret;
+                            _this.$forceUpdate()
+
+                        }
+                        $app.timeFn(callback)
+                    },
+                    //入场时间选择
+                    timeentranceDayFn: function(params) {
+                        var _this = this;
+                        var callback = function(ret) {
+                            console.log(ret);
+                            _this.add_params.entranceDay = ret;
+
+                        }
+                        $app.timeFn(callback,false)
+
+                    },
+                    //项目岗位
+                    stationFn: function() {
+                        this.commonFn('station', '项目岗位')
+
+                    },
+                    //是否为代班
+                    isleaderFn: function() {
+                        this.commonFn('isleader', '是否为代班')
+                    },
+                    //班组
+                    teamIdFn: function() {
+                        api.openWin({
+                            name: 'chooseleader',
+                            url: './chooseleader.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //工种选择
+                    worktypeFn: function() {
+                        this.commonFn('worktype', '工种')
+
+                    },
+                    //人员类别
+                    categoryFn: function() {
+                        this.commonFn('category', '人员类别')
+
+                    },
+                    //婚姻状况
+                    maritalFn: function() {
+                        this.commonFn('marital', '婚姻状况')
+
+                    },
+                    //政治面貌
+                    politicFn: function() {
+                        this.commonFn('politic', '政治面貌')
+
+                    },
+                    //文化程度选择
+                    educationFn: function() {
+                        this.commonFn('education', '文化程度')
+                    },
+                    //附件选取公用方法
+                    commonEnclosureFn: function(callback) {
+                        api.actionSheet({
+                            // title: '底部弹出框测试',
+                            cancelTitle: '取消',
+                            // destructiveTitle: '红色警告按钮',
+                            buttons: ['图库','文件管理']
+                        }, function(ret, err){
+                            if( ret ){
+                                switch (ret.buttonIndex) {
+                                    case 1:
+                                    api.getPicture({
+                                        // sourceType: 'camera',
+                                        encodingType: 'jpg',
+                                        mediaValue: 'pic',
+                                        destinationType: 'url',
+                                        allowEdit: true,
+                                        quality: 50,
+                                        targetWidth: 100,
+                                        targetHeight: 100,
+                                        saveToPhotoAlbum: false
+                                    }, function(ret, err){
+                                        if(ret){
+                                            ajaxFile(
+                                                false,
+                                                '附件上传',
+                                                realNameUplode, {}, {
+                                                    'files': ret.data
+                                                },
+                                                function(ret) {
+                                                    callback(ret)
+                                                }
+                                            )
+
+                                        }else{
+                                             alert(JSON.stringify(err));
+                                        }
+                                    });
+
+
+
+                                        break;
+                                    case 2:
+                                        fileBrowser.skin({
+                                            skin: 2,
+                                            color: {
+                                                bgColor: '', //（可选项）字符串类型；每行的背景颜色，支持 rgb，rgba，#；默认：'#fff'
+                                                titleColor: '', //（可选项）字符串类型；每行的标题颜色，支持 rgb，rgba，#；默认：'#fff'
+                                                subtitleColor: '', //（可选项）字符串类型；每行的副标题颜色，支持 rgb，rgba，#；默认：'#fff'
+                                                timeColor: '', //（可选项）字符串类型；每行的时间颜色，支持 rgb，rgba，#；默认：'#fff'
+                                                lineColor: '', //（可选项）字符串类型；每行的分割线颜色，支持 rgb，rgba，#；默认：'#fff'
+
+                                            }
+                                        });
+                                        fileBrowser.open(function(ret) {
+                                            if (ret) {
+                                                console.log(JSON.stringify(ret));
+                                                ajaxFile(
+                                                    false,
+                                                    '附件上传',
+                                                    realNameUplode, {}, {
+                                                        'files': ret.url
+                                                    },
+                                                    function(ret) {
+                                                        callback(ret)
+                                                    }
+                                                )
+                                            }
+                                        });
+
+                                        break;
+                                    default:
+
+                                }
+
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    //获取词典公用方法
+                    /*
+                     *type 词典类型且赋值对象key
+                     *title 标题
+                     */
+                    commonFn: function(type, title) {
+                        var _this = this;
+                        //获取缓存
+                        var educationData = api.getGlobalData({
+                            key: type + '_GlobalData'
+                        });
+                        console.log(educationData);
+                        if (!educationData) {
+                            this.getdicListByType(
+                                type,
+                                function(ret) {
+                                    var data = ret.obj;
+                                    //缓存
+                                    api.setGlobalData({
+                                        key: type + '_GlobalData',
+                                        value: $api.jsonToStr(data)
+                                    });
+                                    var filterData = [];
+                                    data.map(function(item) {
+                                        filterData.push(item.label)
+                                    })
+
+                                    _this.actionSheetFn(
+                                        title,
+                                        filterData,
+                                        function(ret) {
+                                            _this.add_params[type] = data.filter(function(item) {
+                                                return item.label == filterData[ret.buttonIndex - 1];
+                                            });
+                                            if(_this.add_params[type].length){
+                                                _this.add_params[type] = _this.add_params[type][0];
+                                            }
+
+
+                                        }
+                                    )
+                                }
+                            )
+                        } else {
+                            var data = $api.strToJson(educationData);
+                            var filterData = [];
+                            data.map(function(item) {
+                                filterData.push(item.label)
+                            })
+                            _this.actionSheetFn(
+                                title,
+                                filterData,
+                                function(ret) {
+                                    console.log(ret.buttonIndex);
+                                    // _this.add_params.station = filterData[ret.buttonIndex-1]
+                                    _this.add_params[type] = data.filter(function(item) {
+                                        return item.label == filterData[ret.buttonIndex - 1];
+                                    });
+                                    if(_this.add_params[type].length){
+                                        _this.add_params[type] = _this.add_params[type][0];
+                                    }
+                                    console.log($api.jsonToStr(_this.add_params[type]))
+                                }
+                            )
+                        }
+                    },
+                    //展开
+                    toggleFn: function() {
+                        this.toggleFlag = !this.toggleFlag;
+                    },
+                    //获取数据词典
+                    // type词典类型 就(传入新增实名的字段作为value)
+                    // /callback回调函数
+                    getdicListByType: function(type, callback) {
+                        var _this = this;
+                        $app.post(
+                            true,
+                            realNamedicListByType, {
+                                type: type,
+                                description: '',
+                            },
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                                if (!ret.obj.length) return false;
+                                callback(ret)
+                            }
+
+                        )
+                    },
+
+                    //底部弹出菜单
+                    //title标题
+                    //info 选项信息
+                    actionSheetFn: function(title, info, callback) {
+                        api.actionSheet({
+                            title: title,
+                            cancelTitle: '取消',
+                            // destructiveTitle: '红色警告按钮',
+                            buttons: info
+                        }, function(ret, err) {
+                            if (ret) {
+                                callback(ret)
+                            } else {
+                                //  alert( JSON.stringify( err ) );
+                            }
+                        });
+                    },
+                    // //图片查看
+                    imgSee: function(url, index) {
+
+                        photoBrowser.open({
+                            images: url,
+                            // activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.add_params.photo = ''
+                    },
+                    //图片压缩
+                    compressFn:function(){
+
+
+                    },
+                    //头像拍照
+                    photoFn:function(){
+                        var _this = this;
+                        api.getPicture({
+                            sourceType: 'camera',
+                            encodingType: 'jpg',
+                            mediaValue: 'pic',
+                            destinationType: 'url',
+                            allowEdit: true,
+                            quality: 50,
+                            targetWidth: 480,
+                            targetHeight: 480,
+                            saveToPhotoAlbum: false
+                        }, function(ret, err) {
+                            console.log('拍照'+ $api.jsonToStr(ret));
+                            if (ret) {
+                                var imageName = randomWord(false, 9, 12);
+                                var imageCachePath = api.cacheDir;
+                                imageFilter.compress({
+                                    img: ret.data,
+                                    quality: 0.5,
+                                    save: {
+                                        album: false, //(可选项)布尔值，是否保存到系统相册，默认false
+                                        imgPath: imageCachePath,
+                                        imgName: imageName + '.jpg'
+                                    }
+                                },function( ret, err ){
+                                    console.log('压缩：'+ $api.jsonToStr(ret));
+                                    if( ret.status ){
+                                        var compressUrl = imageCachePath + '/' + imageName + '.jpg';
+                                        _this.saveImg(
+                                            compressUrl,
+                                            function(ret){
+                                                _this.add_params.photo = ret.obj[0];
+                                            }
+                                        )
+                                    }else{
+                                        alert( JSON.stringify( err ) );
+                                    }
+                                });
+
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+                    },
+
+                    //图片||文件上传服务器保存
+                    saveImg: function(file, callback) {
+                        console.log(callback);
+                        ajaxFile(
+                            false,
+                            '图片上传',
+                            realNameUplode, {}, {
+                                'files': file
+                            },
+                            function(ret) {
+                                callback(ret)
+                            }
+                        )
+                    },
+
+                    //图片选择
+                    uploadHeadPic: function() {
+                        var _this = this;
+                        confirmPer('camera,photos', function() {})
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 1,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function(ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    _this.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function(ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    _this.imgSrc.push(ret.path)
+                                    _this.saveImg(
+                                        ret.path,
+                                        function(ret) {
+                                            console.log($api.jsonToStr(ret));
+                                            _this.add_params.photo = ret.obj[0];
+                                        }
+                                    )
+
+                                } else {}
+                            });
+                        }
+                    }
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

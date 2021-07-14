@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/timeAxis/libs/index.css" />
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .propress,
+        .center {
+            width: 95%;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px;
+            padding: 20px 20px;
+            margin-top: 10px;
+
+        }
+
+        .order_code {
+            font-size: 10px;
+            color: rgba(136, 136, 136, 1);
+            float: left;
+        }
+
+        .statu {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .time_active {
+            color: #058FFD;
+
+        }
+
+        .list .item-inner .time_active_bg i {
+            border: 3px solid #008EFF
+        }
+
+        .center_item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 40px;
+            position: relative;
+        }
+
+        .center_item h1 {
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(5, 143, 253, 1);
+        }
+
+        .type {
+            font-size: 14px;
+            color: rgba(153, 153, 153, 1);
+            flex: 0 0 80px;
+        }
+
+        .val {
+            font-size: 14px;
+            color: rgba(102, 102, 102, 1)
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #f5f5f5;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .img_box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .img_item {
+            width: 50px;
+            height: 50px;
+            margin-left: 5px;
+        }
+
+        .info_type {
+            flex: 0 0 100px;
+        }
+
+        .info_val {
+            flex: 1
+        }
+
+        .qvxioa {
+            float: right;
+            width: 3rem;
+            height: 1rem;
+            background: rgba(253, 168, 38, 1);
+            border-radius: 2px;
+            font-size: 0.5rem;
+            text-align: center;
+            color: #ffffff;
+            line-height: 1rem;
+
+        }
+
+        .header-qvxiao {
+            width: 100%;
+            height: 1rem;
+            font-size: 0.2rem;
+        }
+
+        .sbuBtn {
+            width: 12rem;
+            height: 2rem;
+            color: #fff;
+            background: #008EFF;
+            border: 0;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="propress">
+            <div class="header-qvxiao">
+                <p style=" font-size: 0.6rem;" class="order_code">订单编号: <span
+                        v-text="repairDetailInfo.repair.orderId">EFGHHJH1564646456</span></p>
+            </div>
+            <div class="list">
+                <div class="item-inner flex-box-x">
+                    <div class="dot time_active_bg"><i></i></div>
+                    <div class="item-main col-xs-x" v-if="!createDate">
+                        <div class="item-type time_active">待接单</div>
+                    </div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type time_active" v-if="createDate">已接单</div>
+                    </div>
+                    <span class="statu" v-text="createDate" v-if="createDate">2020-07-16 02:05</span>
+                </div>
+                <div class="item-inner flex-box-x">
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type">提交订单</div>
+                    </div>
+                    <span class="statu" v-text="repairDetailInfo.orders[0].createDate">2020-07-16 02:05</span>
+                </div>
+            </div>
+        </div>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">报修信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障类型</span>
+                <span class="val" v-text="repairOrderInfo.faultName"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障问题</span>
+                <span class="val" v-text="repairDetailInfo.repair.description"></span>
+            </li>
+            <li class="center_item img_box">
+                <img class="img_item" :src="item" alt="" v-for="(item,index) in imgUrl">
+            </li>
+        </ul>
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">设备信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">品牌型号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerModel"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">备案号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerPunonNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">自编号</span>
+                <span class="val info_val" v-text="repairDetailInfo.crane.towerNo"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">项目名称</span>
+                <span class="val info_val" v-text="projectInfo.projectName"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">项目地址</span>
+                <span class="val info_val" v-text="projectInfo.address"></span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">联系人</span>
+                <span class="val info_val" v-text="projectInfo.headMan"></span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">联系电话</span>
+                <span class="val info_val" v-text="projectInfo.tel">15123306286&nbsp;&nbsp;&nbsp;<i
+                        class="aui-iconfont aui-icon-phone " style="color:#008EFF"></i></span>
+            </li>
+        </ul>
+
+        <button class="sbuBtn" @click="healthCancelOrder()">确认接单</button>
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    // repairOrderInfo: api.pageParam.repairOrderInfo,
+                    repairOrderInfo: { "towerNo": "1#", "orderId": "EF2020080711120099877779233305191", "stateName": "已完成", "id": 4, "faultName": "限位装置", "createDate": 1596769921000, state: 1 },
+                    repairDetailInfo: null,
+                    imgUrl: [],
+                    createDate: null,
+                    projectInfo: null,
+                },
+                created: function () {
+                    this.getRepairDetailInfo()
+                },
+                methods: {
+                    //查询单个报修明细信息
+                    getRepairDetailInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getRepairDetailInfolURL, {
+                            id: that.repairOrderInfo.id.toString(),
+                        },
+                            function (ret) {
+                                that.repairDetailInfo = ret.obj;
+                                that.imgUrl = that.repairDetailInfo.crane.towerPhoto.split(",");
+                                for (var i = 0; i < that.imgUrl.length; i++) {
+                                    that.imgUrl[i] = that.repairDetailInfo.urlPrefix + that.imgUrl[i]
+                                }
+                                that.repairDetailInfo.orders.map(function (item) {
+                                    switch (item.name) {
+                                        case "订单取消":
+                                            that.createDate = item.createDate;
+                                            break;
+                                        case "已完成":
+                                            that.createDate = item.createDate;
+                                            break;
+                                        case "已接单":
+                                            that.createDate = item.createDate;
+                                            break;
+                                    }
+                                });
+                                // 根据状态渲染页面
+                                if (that.repairDetailInfo.repair.state == 1) {
+                                    that.repairDetailInfo.repair.map(function (item) {
+                                        switch (item.name) {
+                                            case "已接单":
+                                                createDate = item.createDate;
+                                                break;
+                                        }
+                                    });
+                                    document.getElementsByClassName("sbuBtn").style.display = "none"
+                                }
+                                that.getProjectinfo();
+                            }
+                        )
+                    },
+                    //获取项目信息
+                    getProjectinfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            getProjectinfoURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                        },
+                            function (ret) {
+                                that.projectInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //提交
+                    healthCancelOrder: function () {
+                        var that = this;
+                        api.confirm({
+                            title: "确认接单",
+                            msg: '是否确认接单',
+                            buttons: ['确认', '取消']
+                        }, function (ret) {
+                            if (ret.buttonIndex == 1) {
+                                $app.post(
+                                    true,
+                                    repairEditURL, {
+                                    id: that.repairDetailInfo.repair.id.toString(),
+                                    orderId: that.repairDetailInfo.repair.orderId,
+                                    cranesId: "",
+                                    type: "",
+                                    state: "1",
+                                    orderDate: "",
+                                    content: ret.text
+                                },
+                                    function (ret) {
+                                        api.closeFrame();
+                                        api.openWin({
+                                            name: 'index',
+                                            url: 'index.html',
+                                            bounces: false,
+                                        });
+                                    }
+                                )
+                            }
+                        })
+                    }
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

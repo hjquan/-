@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>login</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/forgetPwd.css">
+    <style>
+        [v-cloak]{
+            display: none
+        }
+    </style>
+</head>
+<body>
+    <div id="app" style="background:#fff;" class="aui-content">
+        <header class="aui-bar aui-bar-nav aui-bar-light" style=" background: #fff;">
+            <a class="aui-pull-left aui-btn" tapmode @click="backLogin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="color:rgba(51,51,51,1);">找回密码</div>
+        </header>
+        <ul class="pwd_box " v-cloak>
+            <li class="flex">
+                <input type="number" id="phone" v-model="phone" placeholder="请输入手机号">
+            </li>
+            <li class="flex">
+                <input type="text" v-model="code" placeholder="请输入验证码">
+                <button v-show="show" class="getCode" tapmode @click="sendSms()" id="getCode">获取验证码</button>
+                <button v-show="!show" class="getCode"  id="getCode" v-cloak>重新发送{{count}}</button>
+            </li>
+            <li class="flex">
+                <input type="password" v-model="newPwd" class="pwdInput" id="newPwd" placeholder="设置新密码(6-12位)">
+                <i class="icon  aui-iconfont aui-icon-hide" tapmode  @click="toggleIcon('togglePwd1')" id="togglePwd1"></i>
+            </li>
+            <li class="flex">
+                <input type="password" v-model="comfirgPwd" id="comfirgPwd" class="pwdInput" placeholder="确认新密码(6-12位)">
+                <i class="icon  aui-iconfont aui-icon-hide" tapmode id="togglePwd2" @click="toggleIcon('togglePwd2')"></i>
+            </li>
+
+            <li class="flex">
+                <input tapmode="hover" type="button" tapmode :class="{'btnActive':isLoginFlag}" @click="setpwd()" id="submit" value="确定">
+            </li>
+
+        </ul>
+
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script src="../../script/commonJs/forgetPwd.js"></script>
+</body>
+</html>

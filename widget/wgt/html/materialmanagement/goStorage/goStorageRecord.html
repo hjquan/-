@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <style>
+    .main_box {
+      box-sizing: border-box;
+      /*width:343px;*/
+      margin: 0 auto;
+      /*padding:10px 15px;*/
+      background-color: #F3F3F6;
+      font-family: PingFangSC-Medium, PingFang SC;
+    }
+
+    .list_item {
+      position: relative;
+      padding: 10px;
+
+    }
+
+    .list_item div,
+    .list_item div {
+      display: flex;
+    }
+
+    .list_item div span,
+    .list_item div p {
+      flex: 1
+    }
+
+    .list_item div span,
+    .list_item span {
+      font-size: 12px;
+      color: rgba(150, 150, 155, 1);
+    }
+
+    .list_item div p,
+    .list_item p {
+      font-size: 13px;
+      color: rgba(54, 54, 57, 1);
+    }
+
+    .foot {
+      padding: 0 15px;
+    }
+
+    .foot .list_item {
+      padding: 10px 0;
+    }
+
+    .remarks {
+      display: flex;
+      flex-direction: column;
+      ;
+    }
+
+    .remarks {
+      font-size: 15px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 1, 14, 1);
+    }
+
+    .bottom_before_line::before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: rgba(199, 199, 206, 1);
+      opacity: 0.36;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .imgBox {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .imgBox img {
+      width: 51px;
+      height: 51px;
+      margin-right: 15px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      position: relative;
+
+    }
+
+    .title_txt {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .type_txt {
+      font-size: 17px;
+      font-weight: 500;
+      color: rgba(68, 94, 150, 1);
+    }
+
+    .rt {
+      font-size: 20px;
+      font-weight: 400;
+      color: rgba(0, 1, 14, 1);
+    }
+
+    .title_txt {
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(150, 150, 155, 1);
+    }
+
+    .list_box {
+      background-color: #fff;
+      padding: 0 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+      <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title header_title" id="header_title">入库记录</div>
+      <a class="aui-pull-right aui-btn">
+        <!-- <i class="aui-iconfont aui-icon-trash" @click="delete()"></i> -->
+        <i class="aui-iconfont aui-icon-trash"></i>
+      </a>
+    </header>
+    <div class="main_box mb_25">
+      <ul class="list_box">
+        <li class="item bottom_before_line">
+          <div class="lf">
+            <!-- <input class="aui-radio" type="checkbox" name=""> -->
+            <div class="title_box">
+              <p class="type_txt">钢筋</p>
+              <div class="title_txt">
+                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                <p>单位:<span>kg</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="rt">
+            45
+          </div>
+        </li>
+        <li class="item bottom_before_line">
+          <div class="lf">
+            <!-- <input class="aui-radio" type="checkbox" name=""> -->
+            <div class="title_box">
+              <p class="type_txt">钢筋</p>
+              <div class="title_txt">
+                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                <p>单位:<span>kg</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="rt">
+            45
+          </div>
+        </li>
+        <li class="item bottom_before_line">
+          <div class="lf">
+            <!-- <input class="aui-radio" type="checkbox" name=""> -->
+            <div class="title_box">
+              <p class="type_txt">钢筋</p>
+              <div class="title_txt">
+                <p>规格:<span>54</span></p>&nbsp;&nbsp;
+                <p>单位:<span>kg</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="rt">
+            45
+          </div>
+        </li>
+      </ul>
+      <div class="foot">
+        <ul class="f_list">
+          <li class="list_item bottom_before_line">
+            <div>
+              <span>经办人</span>
+              <span>入库时间</span>
+            </div>
+            <div>
+              <p>包洋</p>
+              <p>2020/3/11 9：00</p>
+            </div>
+          </li>
+          <li class="list_item remarks">
+            <span>备注</span>
+            <p>双龙水泥</p>
+          </li>
+          <li class=" imgBox">
+            <img src="../../../../image/004png" alt="">
+            <img src="../../../../image/004png" alt="">
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../../../script/api.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script src="../../../../script/vue.js"></script>
+  <script src="../../../../script/lunarcalendar.js"></script>
+  <script src="../../../../script/permission.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+  <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+  <script src="../../../../script/commonJS/voiceinput.js"></script>
+  <script>
+    // var vm;
+    apiready = function () {
+      $api.fixStatusBar($api.dom('header'));
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          goOutStorage: {}, //入库信息
+        },
+        created: {},
+        methods: {
+          delete() {
+            this.goOutStorage
+          }
+        }
+      });
+    };
+  </script>
+</body>
+
+</html>

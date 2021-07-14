@@ -1,0 +1,114 @@
+<widget id="A6171612234288" version="0.0.1">
+
+    <name>劦筑</name>
+
+    <description>
+
+        Example For APICloud.
+
+    </description>
+
+    <author email="1798996373@qq.com" href="http://www.apicloud.com">
+
+        Developer
+
+    </author>
+
+    <content src="./login.html"/>
+
+    <access origin="*"/>
+
+    <preference name="pageBounce" value="false"/>
+
+    <preference name="appBackground" value="#000"/>
+
+    <preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+
+    <preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+
+    <preference name="hScrollBarEnabled" value="false"/>
+
+    <preference name="vScrollBarEnabled" value="false"/>
+
+    <preference name="autoLaunch" value="true"/>
+    
+    <preference name="iOS7StatusBarAppearance" value="true"/>
+
+    <preference name="statusBarAppearance" value="true"/>
+
+    <preference name="fullScreen" value="false"/>
+
+    <preference name="autoUpdate" value="true"/>
+
+    <preference name="smartUpdate" value="true"/>
+
+    <preference name="debug" value="false" />
+
+    <preference name="allowKeyboardExtension" value="false" />
+
+    <preference name="softInputMode" value="pan"/>
+
+    <preference name="softInputBarEnabled" value="false" />
+
+    <preference name="dragAndDrop" value="false" />
+
+    <preference name="backgroundMode" value="location"/>
+
+    <preference name="launcher" value="false" />
+    
+    <preference name="checkSslTrusted" value="false" />
+
+    <preference name="appCertificateVerify" value="false" />
+
+    <preference name="interfaceStyle" value="Automatic"/>
+
+    <preference name="useWKWebView" value="false"/>
+
+    <permission name="readPhoneState"/>
+
+    <permission name="call"/>
+
+    <permission name="camera"/>
+
+    <permission name="record"/>
+
+    <permission name="location"/>
+
+    <permission name="fileSystem"/>
+
+    <permission name="internet"/>
+
+    <permission name="bootCompleted"/>
+
+    <permission name="hardware"/>    
+
+    <permission name="contact" />
+
+      
+
+    <feature name="ajpush">
+        <param name="app_key" value="1b7e75db85e20291947f87ee"/>
+        <param name="channel" value="843f1c7cdfc206c9488bc627"/>
+    </feature>
+
+    <preference name="urlScheme" value="grxby6"/>
+
+    <meta-data name="com.openinstall.APP_KEY" value="grxby6"/>
+
+    <feature name="bMap">
+        <param name="android_api_key" value="nHKcSl7E212Ft0604RGdyj5iNUr7x0dB"/>
+        <!-- <param name="android_api_key" value="nHKcSl7E212Ft0604RGdyj5iNUr7x0dB"/> -->
+        <param name="ios_api_key" value="1w6ypW1S5j4qAFRaib1ErNzDQeSxMFv2"/>
+    </feature>        
+
+    <feature name="twoBaiDuOcr">
+        <param name="apiKey" value="xlmrOGTGjTHlGRrnbCue8AUH"/>
+        <param name="secretKey" value="mKZlsc0770bR7dkjtFF0cpkaRyfIBAAQ"/>
+   </feature>
+   <feature name="hikvision"> 
+        <param name="appKey" value="26810f3acd794862b608b6cfbc32a6b8" /> 
+        <param name="secret" value="26810f3acd794862b608b6cfbc32a6b8" />    
+        <!-- <param name="appKey" value="8660862898a14deba979d3b9f3a6f29c" /> 
+        <param name="secret" value="e37db7382af7107bbd440a5171c54a41" />  -->
+   </feature>
+</widget>

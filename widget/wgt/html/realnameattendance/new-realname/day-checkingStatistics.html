@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #header {
+            background-color: #fff
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #fff;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .nav_box {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            /*padding: 5px 0;*/
+            height: 45px;
+            position: relative;
+        }
+
+        .nav_box p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            /*transition: border .5s;*/
+        }
+
+        .nav_box p.nav_active {
+            font-size: 15px;
+            border-bottom: 1px solid #fff;
+        }
+
+        .tab_box {
+            margin: 15px auto 0;
+            /*height: 60px;*/
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .tab_item {
+            height: 35px;
+            line-height: 35px;
+            flex: 0 0 120px;
+            background: rgba(255, 255, 255, .7);
+            /*border: 1px solid rgba(255, 255, 255, 1);*/
+            color: rgba(50, 50, 51, 1);
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            border-top-left-radius: 5px;
+        }
+
+        .tab_item:last-child {
+            border-top-left-radius: 0px;
+            border-top-right-radius: 5px;
+        }
+
+        .tab_item.active {
+            background-color: #fff;
+            color: rgba(5, 143, 253, 1);
+            opacity: 0.7;
+        }
+
+        .timeBox {
+            width: 115px;
+            height: 25px;
+            line-height: 25px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .panel,
+        .panel2 {
+            width: 95%;
+            height: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px 10px 0px 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            padding-bottom: 15px;
+        }
+
+        .content {
+            width: 100%;
+            padding: 0 15px;
+            height: 95%;
+        }
+
+        .top_box {
+            width: 100%;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content_show {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .content_show li {
+            width: 33.3%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .show_item {
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 143, 253, .1);
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .show_item span {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: rgba(34, 172, 56, 1);
+            line-height: 15px;
+        }
+
+        .show_item p {
+            font-size: 12px;
+            font-family: Adobe Heiti Std;
+            font-weight: normal;
+            color: rgba(50, 50, 51, 1);
+            /*line-height: 15px;*/
+        }
+
+        .time_box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .split_line {
+            height: 3px;
+            width: 15px;
+            background-color: #eee;
+            margin: 0 5px;
+        }
+
+        .panel1_conten {
+            width: 100%;
+        }
+
+        .panel1_item {
+            margin-top: 15px;
+            height: 50px;
+            background: rgba(5, 143, 253, .1);
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 5px;
+        }
+
+        .panel1_item div {
+            flex: 1;
+            font-size: 12px;
+        }
+
+        .panel1_item div:last-child {
+            flex: 2;
+        }
+
+        .rt {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex: 1;
+        }
+
+        .rt p {
+            color: #00A856;
+            margin-right: 2px;
+            font-size: 12px;
+        }
+
+        .tab_active {
+            background-color: #fff;
+        }
+
+        .aui-popup-top,
+        .aui-popup-top-left,
+        .aui-popup-top-right {
+            top: 5px
+        }
+
+        .aui-popup .aui-list {
+            background-color: #eee
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .company {
+            font-size: 12px;
+        }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .position-absolute {
+            width: 3rem;
+            height: 3rem;
+            position: absolute;
+            top: 30%;
+            left: 27%;
+        }
+
+        .displayFlex {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .left-centent-right {
+            height: 3rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            background: #e6e6e6;
+            display: flex;
+            padding: 0 1rem;
+            flex-direction: row;
+            /* justify-content: center; */
+            /* align-content: center; */
+            align-items: center;
+
+        }
+
+        .left-centent-right .left {
+            width: 3rem;
+        }
+
+        .left-centent-right .right {
+            font-size: 12px;
+            color: #00A856;
+            width: 12rem;
+            text-align: right;
+        }
+
+
+        .left-centent-right .centent {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+                <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title" v-text="unitInfo.unitName"></div>
+            </header>
+        </div>
+        <div class="panel2 ">
+            <div class="time_box">
+                <div class="timeBox" tapmode @click="starMonthFn()">
+                    <span v-text="startMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+                <div class="split_line"></div>
+                <div class="timeBox" tapmode @click="endMonthFn()">
+                    <span v-text="endMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+            </div>
+            <div class="left-centent-right">
+                <div class="left">
+                    总计
+                </div>
+                <div class="centent">
+
+                </div>
+                <div class="right">
+                    <span>出勤 <span v-text="attendanceDays"></span>天</span>
+                    <span>总工数 <span v-text="totalworkHours"></span>天</span>
+                    <span>总加班 <span v-text="overtimeHours"></span>小时</span>
+                </div>
+            </div>
+            <ul class="panel1_conten" v-if="stationIfo.length">
+                <li class="panel1_item" tapmode @click="openattendanceList(item)" v-for="item in stationIfo">
+                    <div v-text="item.groupName || item.groupName">木工板</div>
+                    <div class="rt">
+                        <p v-if="item.attendanceDays">出勤&nbsp;<span v-text="item.attendanceDays"></span> <span
+                                class="company">天</span></p>
+                        <p v-if="item.totalworkHours">总工数&nbsp;<span v-text="item.totalworkHours"></span> <span
+                                class="company">天</span></p>
+                        <p v-if="item.overtimeHours">加班&nbsp;<span v-text="item.overtimeHours"></span> <span
+                                class="company">小时</span></p>
+                    </div>
+                </li>
+                <!-- <li class="panel1_item">
+                    <div>木工板</div>
+                    <div class="rt">
+                        <p>出勤30天</p>
+                        <p>出勤30天</p>
+                    </div>
+                </li>
+                </li> -->
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    // unitInfo: api.pageParam.unitInfo,
+                    // category: api.pageParam.category,//人员类别
+                    // startMonth: api.pageParam.unitInfo.startMonth,//出勤开始日期
+                    // endMonth: api.pageParam.unitInfo.endMonth,//出勤筛选结束日期
+                    unitInfo: { "totalworkHours": 16, "unitName": "张三劳务公司", "overtimeHours": 3.27, "unitId": "53dbf3df097311eb944700163e030118", "attendanceDays": 2, "startMonth": "2016-10-01", "endMonth": "2020-10-23" },
+                    category: "4",//人员类别
+                    startMonth: "2016-10-01",//出勤开始日期
+                    endMonth: "2020-10-01",//出勤筛选结束日期
+                    stationIfo: '',//出勤统计-班组/岗位统计信息
+                    recordLogClockInfoFlage: true,//显示表示
+                    totalworkHours: 0,   //总工时数
+                    overtimeHours: 0,   //加班工时
+                    attendanceDays: 0,   //出勤天数
+
+                },
+                created: function () {
+                    this.getGroupAndStationCountFn();
+                },
+                methods: {
+                    //月份开始
+                    starMonthFn: function () {
+                        var that = this;
+                        $app.timeFn(
+                            function (ret) {
+                                that.startMonth = ret;
+                                that.getGroupAndStationCountFn()
+                            },
+                            false,
+                            this.startMonth
+                        )
+                    },
+                    //月份结束
+                    endMonthFn: function () {
+                        var that = this;
+                        $app.timeFn(
+                            function (ret) {
+                                that.endMonth = ret;
+                                that.getGroupAndStationCountFn()
+                            },
+                            false,
+                            this.endMonth
+                        )
+                    },
+                    //获取出勤统计
+                    getGroupAndStationCountFn: function () {
+                        var that = this;
+                        var params = {
+                            projectId: $api.getStorage('enterpriseId'),//项目ID
+                            category: this.category,//人员类别
+                            startMonth: that.startMonth,//开始日期
+                            endMonth: that.endMonth,//
+                            unit: that.unitInfo.unitId
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            getGroupAndStationCount,
+                            params,
+                            function (ret) {
+                                that.totalworkHours = 0;
+                                that.overtimeHours = 0;
+                                that.attendanceDays = 0;
+                                console.log($api.jsonToStr(ret));
+                                that.stationIfo = ret.obj;
+                                that.stationIfo.map(function (item) {
+                                    that.totalworkHours += item.totalworkHours;
+                                    that.overtimeHours += item.overtimeHours;
+                                    that.attendanceDays += item.attendanceDays;
+                                });
+                            }
+                        )
+                    },
+                    //打开出勤统计
+                    openattendanceList: function (data) {
+                        var that = this;
+                        data.startMonth = that.startMonth;
+                        data.endMonth = that.endMonth;
+                        api.openWin({
+                            name: 'attendance_list',
+                            url: '../attendance_list.html',
+                            pageParam: {
+                                personalclockinrecord: data,
+                                category: that.category
+                            }
+                        });
+                    },
+                    //返回
+                    closeWin: function () {
+                        api.closeWin();
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

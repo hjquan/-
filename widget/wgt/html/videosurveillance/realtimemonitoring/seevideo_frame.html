@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+
+    <style>
+        html,body{
+            height: 100%;background-color: #fff
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+        .video_box{
+            position: relative;
+        }
+
+        video{
+            width:  100%;
+            height: 200px;
+            background-color: #fff
+        }
+        .lay{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background:rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lay img{
+            width: 60px;
+            height: 60px;
+        }
+        .foot{
+            padding: 0 25px;
+            position: absolute;
+            height: 30px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;;
+            align-items: center;
+            text-align: center;
+            font-size:12px;
+            background:rgba(27,27,27,0.8);
+        }
+        .foot img{
+            width: 15px;
+            height: 15px;
+        }
+
+        /*.foot  > *{flex: 1}*/
+
+        .dateBox{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            /*height: 50px;*/
+            border-bottom: 1px solid #eee
+        }
+        .title{
+            font-size:12px;
+            color:rgba(153,153,153,1);
+        }
+        .date_item{
+            width:100px;
+            text-align: center;
+            height:30px;
+            line-height: 30px;
+            color: #fff;
+            background:rgba(217,217,217,1);
+            border-radius:3px;
+            font-size:12px;
+            color:rgba(102,102,102,1)
+        }
+        .btn{
+            width:50px;
+            height:30px;
+            line-height: 30px;
+            text-align: center;
+            background:rgba(5,143,253,1);
+            border-radius:3px;
+            font-size:12px;
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <div class="video_box">
+            <video src="videofile.ogg" autoplay poster="posterimage.jpg">
+                <source src="https://" type="video/">
+            </video>
+            <div class="lay">
+                <div @click="seedetailFn()"><img src="../../../../image/videosurveillance/paly.png" alt=""></div>
+                <div class="foot">
+                    <span></span>
+                    <span>流畅</span>
+                    <img src="../../../../image/videosurveillance/fullscreen.png" alt="">
+                </div>
+            </div>
+        </div>
+        <!-- <div class="dateBox">
+            <p class="tltel">开始时间:</p>
+            <div class="date_item">2020-07-24</div>
+            <div class="date_item">07:00:00</div>
+            <div class="btn">确定</div>
+        </div> -->
+        <!-- <div class="noData">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div> -->
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+          error: '../../../../image/err.jpg',
+          loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function(){
+
+            //下拉刷新
+            // $app.downrefresh(
+            //     function(){
+            //         // vm.init(false)
+            //
+            //     }
+            // )
+            //
+            // ///上拉加载
+            // $app.uploding(
+            //     function(){
+            //         // vm.init(true)
+            //
+            //     }
+            // )
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    pageParam:'',//接收跨页面参数
+                    pageNo:1,//当前页码
+                    status:0,//人员状态（0在场 1离场）
+                    personList:[],//人员列表信息
+                    copyPersonList:[],//保存人员列表信息（用于检索）
+                    condition:'',//检索条件
+
+                },
+                mounted:function(){
+                },
+                created:function(){
+                    // console.log($api.jsonToStr(api.pageParam.subcontractor));
+                    // this.pageParam = api.pageParam.info;
+                    // this.init(false)
+                },
+                methods:{
+                    //控制视频方向seedetailFn
+                    seedetailFn:function(){
+                        api.openWin({
+                            name: 'see_detail',
+                            url: './see_detail.html',
+                            pageParam: {
+                                name: 'test'
+                            }
+                        });
+
+                    },
+                    //打开详情
+                    openListdeatil:function(){
+                        api.openWin({
+                            name: 'realtimemonitoringlistdetail',
+                            url: './list_detail.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //初始化数据
+                    init:function(loadMore){
+                        var _this = this;
+                        if(loadMore){
+                            this.pageNo++
+                        }else {
+                            this.pageNo = 1
+                        }
+                        var params = {
+                                idcardNo:'',// 身份证号码
+                                name:'',//姓名
+                                teamId:this.pageParam.teamId,//班组ID
+                                projectId:this.pageParam.projectId,//项目ID
+                                category:api.pageParam.subcontractor.category,//人员类别
+                                id:'',//主键ID
+                                pageNo:this.pageNo,//当前页
+                                pageSize:'2',//每页显示条数
+                                station:this.pageParam.station,//项目岗位
+                                status:this.status,//查询人员状态（0入场 1立场）
+                            }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            realNameList,
+                            params,
+                            function(ret){
+                                api.refreshHeaderLoadDone();
+                                console.log($api.jsonToStr(ret));
+                                if(!ret.obj.list){
+                                    _this.personList = [];
+                                }
+                                if(loadMore){
+                                    if(_this.personList.length < ret.obj.count){
+                                        _this.personList = _this.personList.concat(ret.obj.list)
+                                    }else{
+                                        api.toast({
+                                            msg: '暂无更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else{
+                                    _this.personList = ret.obj.list;
+                                }
+                                _this.copyPersonList = $api.strToJson($api.jsonToStr(_this.personList));
+
+                            }
+                        )
+                    },
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #header {
+            background-color: #fff
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        .list_item>* {
+            flex: 1
+        }
+
+        .total {
+
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .total p {
+            color: rgba(255, 0, 0, 1);
+            margin-right: 50px;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">报警</div>
+            </header>
+            <div class="nav">
+                <p>报警设备</p>
+                <p>最近24小时报警</p>
+            </div>
+        </div>
+        <div class="aui-content aui-margin-b-15" id="app">
+            <ul class="list" v-if="callListInfo.length" v-for="(item,index) in callListInfo">
+                <li class="list_item" @click="opencallpolicedetail(item)">
+                    <p class="name"> <span v-text="item.deviceName">
+                            <div class="total">
+                                <p><span v-text="item.alarmCount"></span>次</p>
+                                <i class="aui-iconfont aui-icon-right"></i>
+                            </div>
+                </li>
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+        <script src="../../../../script/api.js"></script>
+        <script src="../../../../script/sha1.js"></script>
+        <script src="../../../../script/common.js"></script>
+        <script src="../../../../script/vue.js"></script>
+        <script src="../../../../script/layimg.js"></script>
+        <script>
+            apiready = function () {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        callListInfo: [],   //报警信息
+
+                    },
+                    mounted: function () {
+                    },
+                    created: function () {
+                        //获取24小时内的报警
+                        this.getCallListInfo();
+                    },
+                    methods: {
+                        //获取24小时内的报警
+                        getCallListInfo: function () {
+                            var that = this;
+                            $app.post(
+                                true,
+                                getAlarmCount,
+                                {
+                                    projectId: $api.getStorage('enterpriseId'),
+                                },
+                                function (ret) {
+                                    console.log("获取24小时内的报警:" + JSON.stringify(ret));
+                                    that.callListInfo = ret.obj;
+                                }
+                            )
+                        },
+                        //打开详情
+                        opencallpolicedetail: function (item) {
+                            api.openWin({
+                                name: 'callpolice_detail',
+                                url: 'callpolice_detail.html',
+                                pageParam: {
+                                    deviceInfo: item
+                                }
+                            });
+                        },
+                    }
+                })
+            }
+            function openealywarning() {
+                api.openFrame({
+                    name: 'earlywarning',
+                    url: './earlywarning.html',
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {
+                    },
+                    bounces: false,
+                    // bgColor: 'transparent',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+
+            }
+            function closeWin() {
+                api.closeWin();
+            }
+        </script>
+</body>
+
+</html>

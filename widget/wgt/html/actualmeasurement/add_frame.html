@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .color_999 {
+            color: #999;
+        }
+
+        .txt_t {
+            color: #323233;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .aui-content .aui-list-item-inner .txt_t_r {
+            font-size: 14px;
+            color: #B4B4B4;
+        }
+
+        .aui-content .aui-list-item-inner .txt_b {
+            color: #7E7E80;
+        }
+
+        .w_80 {
+            width: 70%
+        }
+
+        .txt_b_l {
+            color: #7E7E80;
+            font-size: 14px;
+        }
+
+        .color_ec {
+            color: #EC4031
+        }
+
+        .list_item {
+            height: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            margin-top: 1px;
+            padding: 0 15px;
+        }
+
+        .list_item i {
+            color: #C7C7CC
+        }
+
+        .list_item i.active {
+            color: #F47575
+        }
+
+        .addBtn {
+            width: 90%;
+            height: 40px;
+            line-height: 40px;
+            margin-top: 10px;
+            margin: 10px auto 0;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 6px;
+            color: #fff;
+            text-align: center;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .color_show {
+            color: #8F929A;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+        }
+
+        .detail_img {
+            width: 95%;
+            margin: 0 auto;
+            height: 195px;
+            margin-bottom: 75px;
+        }
+
+        .list_item .i_succ {
+            color: #15BC83
+        }
+
+        .list_item .i_denger {
+            color: #F47575
+        }
+
+        .lf_1 {
+            flex: 1
+        }
+
+        .rt_2 {
+            flex: 3;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .img_location_box {
+            background: #fff;
+        }
+
+        .img_box {
+            box-sizing: border-box;
+            overflow: hidden;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .icon_box {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 35px;
+            height: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .icon_box .location_succ {
+            color: #15BC83
+        }
+
+        .icon_box .location_denger {
+            color: #F47575;
+        }
+        .bor-b{border-bottom: 1px solid #15BC83}
+        .bor_b_e{border-bottom: 1px solid #F47575}
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <ul class="conten_box">
+            <li class="list_item" tapmode @click="addlocation_page()">
+                <div class="lf_1">检查部位&nbsp;<span class="color_ec">*</span></div>
+                <div class=" rt_2 aui-ellipsis-1"><span class="color_show aui-ellipsis-1" v-text="location_name ? location_name : '必选' "></span> <i class="aui-iconfont aui-icon-right"></i></div>
+            </li>
+            <li class="list_item" tapmode @click="addcheck_page()">
+                <div class="lf_1">测量内容 &nbsp;<span class="color_ec">*</span></div>
+                <div class="rt_2 aui-ellipsis-1"><span class="color_show aui-ellipsis-1" v-text="content_name ? content_name : '必选' "></span> <i class="aui-iconfont aui-icon-right"></i></div>
+            </li>
+        </ul>
+        <!-- listDetail.builontentds && listDetail.builontentds[0].drawingPath -->
+        <div class="img_location_box" v-if="listDetail.builontentds && listDetail.builontentds[0].drawingPath ">
+            <div class="conten_box img_box" id="img_canvas" style="margin:10px 0;">
+                <div id="targetImg_box" v-for="items_img in listDetail.builontentds" style="position:relative;">
+                    <img id="targetImg"  :src="items_img.drawingPath" />
+                    <!-- <img id="targetImg"  style="position:relative;transform-origin:center" src="../../../image/logo.png" /> -->
+                    <div v-for="items in listDetail.contents">
+                        <div class="icon_box" v-for="(item,index) in items.areas" :style="{'top':(item.locY) + 'px','left':(item.locX) + 'px'}" @click="itemDetails(item)">
+                            <i class="aui-iconfont aui-icon-location " :class="[item.isQualified == 1 ? 'location_denger bor_b_e': 'location_succ']"></i>
+                            <p class="bor-b" :class="[item.isQualified == 1 ? 'location_denger bor_b_e': 'location_succ']" v-text="item.describe"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <ul class="conten_box" style="margin-top:10px" v-for=" (items,i)  in listDetail.contents">
+                <li class="list_item" v-for=" (item,child_i)  in items.areas" @click="itemDetails(item)">
+                    <div class="i_succ" :class="{'i_denger':item.isQualified == 1}" v-cloak>
+                        <i class="aui-iconfont aui-icon-location i_succ" :class="{'i_denger':item.isQualified == 1}">&nbsp;</i>
+                        &nbsp;{{item.describe}}</div>
+                    <div> <i class="aui-iconfont aui-icon-right "></i></div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="addBtn" v-show="addBtnshow" @click="addJump()">新增</div>
+    </div>
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/aui-dialog.js"></script>
+    <script src="../../../script/hammer.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            var dialog = new auiDialog();
+            //监听检查部位
+            api.addEventListener({
+                name: 'add_actual_location_event'
+            }, function(ret, err) {
+                if (ret) {
+                    var data = ret.value.add_actual_chekck;
+                    var name = ret.value.parent_name;
+                    vm.location = data;
+                    vm.location_name = name + '_' + data.area_name;
+                    vm.content_name = '';
+                    vm.content = '';
+                    vm.listDetail = '';
+
+                } else {}
+            });
+            //监听新增测量点成功事件刷新列表
+            api.addEventListener({
+                name: 'actual_refsh_list_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.getListDetailFn()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            //监听测量内容
+            api.addEventListener({
+                name: 'add_actual_chekck_event'
+            }, function(ret, err) {
+                if (ret) {
+                    var data = ret.value.add_actual_chekck;
+                    vm.content_name = ret.value.name_join;
+                    vm.content = data;
+                    vm.getListDetailFn()
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    'location_name': '', //区域名称
+                    'content_name': '', //检查内容名称
+
+                    'location': '', //部位
+                    'content': '', //测量内容
+                    'listDetail': '', //列表详情数据
+                    'img_react':'',//记录图片宽高
+                },
+                computed: {
+                    addBtnshow: function() {
+                        if (this.location && this.content) {
+                            return true;
+                        } else {
+                            return false
+                        }
+                    }
+                },
+                mounted: function() {
+                    var _this = this;
+
+                },
+                watch: {},
+                methods: {
+                    //查看子级详情
+                    itemDetails: function(data) {
+                        var _this = this;
+                        var newVal = $api.strToJson($api.jsonToStr(_this.listDetail));
+                        newVal.itemDetail = data;
+                        newVal.location = _this.location;
+                        api.openWin({
+                            name: 'addItem_detail',
+                            url: './additem_detail.html',
+                            pageParam: {
+                                'actual_info': newVal,
+                            }
+                        });
+
+                    },
+                    initHammer: function() {
+                        var _this = this;
+                        var elm = document.getElementById('targetImg_box');
+                        const hammertime = new Hammer(elm, {});
+                        hammertime.get('pinch').set({
+                            enable: true
+                        });
+                        var posX = 0,
+                            posY = 0,
+                            scale = 1,
+                            last_scale = 1,
+                            last_posX = 0,
+                            last_posY = 0,
+                            max_pos_x = 0,
+                            max_pos_y = 0,
+                            transform = '';
+                        const el = elm;
+
+                        hammertime.on('doubletap pan pinch panend pinchend pinchin pinchout', function(ev) {
+                            // console.log($api.jsonToStr(ev));
+                            if (ev.type === 'doubletap') {
+                                transform = 'translate3d(0, 0, 0) ' + 'scale3d(2, 2, 1) ';
+                                scale = 2;
+                                last_scale = 2;
+                                try {
+                                    if (window.getComputedStyle(el, null).getPropertyValue('-webkit-transform').toString() !== 'matrix(1, 0, 0, 1, 0, 0)') {
+                                        transform =
+                                            'translate3d(0, 0, 0) ' +
+                                            'scale3d(1, 1, 1) ';
+                                        scale = 1;
+                                        last_scale = 1;
+                                    }
+                                } catch (err) {}
+                                el.style.webkitTransform = transform;
+                                transform = '';
+                            }
+
+                            // pan
+                            if (scale !== 1) {
+                                posX = last_posX + ev.deltaX;
+                                posY = last_posY + ev.deltaY;
+                                max_pos_x = Math.ceil((scale - 1) * el.clientWidth / 2);
+                                max_pos_y = Math.ceil((scale - 1) * el.clientHeight / 2);
+                                // if (posX > max_pos_x) {
+                                //     posX = max_pos_x;
+                                // }
+                                // if (posX < -max_pos_x) {
+                                //     posX = -max_pos_x;
+                                // }
+                                // if (posY > max_pos_y) {
+                                //     posY = max_pos_y;
+                                // }
+                                // if (posY < -max_pos_y) {
+                                //     posY = -max_pos_y;
+                                // }
+                            }
+
+
+                            // pinch
+                            if (ev.type === 'pinchin') {
+                                console.log('缩小');
+                                console.log($api.jsonToStr(ev));
+                            }
+                            if (ev.type === 'pinchout') {
+                                console.log('放大');
+                                console.log($api.jsonToStr(ev));
+                            }
+                            if (ev.type === 'pinch') {
+                                scale = Math.max(.999, Math.min(last_scale * (ev.scale), 4));
+                            }
+                            if (ev.type === 'pinchend') {
+                                last_scale = scale;
+                            }
+
+                            // panend
+                            if (ev.type === 'panend') {
+                                last_posX = posX < max_pos_x ? posX : max_pos_x;
+                                last_posY = posY < max_pos_y ? posY : max_pos_y;
+                            }
+
+                            if (scale !== 1) {
+                                transform =
+                                    'translate3d(' + posX + 'px,' + posY + 'px, 0) ' +
+                                    'scale3d(' + scale + ', ' + scale + ', 1)';
+                            }
+
+                            if (transform) {
+                                el.style.webkitTransform = transform;
+                            }
+                        });
+                    },
+                    //获取检查详情数据
+                    getListDetailFn: function() {
+                        var _this = this;
+                        var params = {
+                            "componentId": this.content.componentId,
+                            "areaId": this.location.area_id,
+                            "projectId": $api.getStorage('enterpriseId'),
+                            "gaugeItemId": this.content.gaugeitemId
+                        }
+                        $app.post(
+                            false,
+                            actualmeasurementListDetails,
+                            params,
+                            function(ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.listDetail = ret.obj;
+                                if(_this.listDetail.builontentds[0].drawingPath){
+                                    _this.$nextTick(function(){
+                                        _this.initHammer()
+                                    })
+                                }
+
+                            }
+                        )
+                    },
+                    //新增跳转
+                    addJump: function() {
+
+                        var _this = this;
+                        var newVal = $api.strToJson($api.jsonToStr(_this.listDetail));
+
+                        newVal.location = _this.location;
+                        newVal.checkContentname = this.content_name;
+                        newVal.location_name = _this.location_name;
+                        if(!this.listDetail.builontentds[0].drawingPath){
+                            api.openWin({
+                                name: 'actual_additem',
+                                url: './additem.html',
+                                pageParam: {
+                                    'actual_info': newVal
+
+
+                                }
+                            });
+                        }else{
+                            api.openWin({
+                                name: 'imageOverlays',
+                                url: './imageOverlays.html',
+                                pageParam: {
+                                    'actual_info': newVal
+
+                                }
+                            });
+                        }
+
+                    },
+                    //打开部位
+                    addlocation_page: function() {
+                        var _this = this;
+                        api.openWin({
+                            name: 'add_location_actual',
+                            url: './add_location.html',
+                            pageParam: {
+                                'addactuallocation': _this.location
+                            }
+                        });
+
+                    },
+                    //打开检查内容
+                    addcheck_page: function() {
+                        if (!this.location) {
+                            dialog.alert({
+                                title: "提示",
+                                msg: '请先选择检查部位',
+                                buttons: ['确定']
+                            }, function(ret) {
+                                console.log(ret)
+                            })
+                            return false;
+                        }
+                        var _this = this;
+                        api.openWin({
+                            name: 'add_actualcheck',
+                            url: './add_actualcheck.html',
+                            pageParam: {
+                                'add_actual_chekck': _this.content,
+                                'areaId': _this.location.area_id
+                            }
+                        });
+
+                    },
+
+
+
+
+                },
+                created: function() {}
+            })
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+  <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+  <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+  <style>
+    .box {
+      background-color: #F9F9FB
+    }
+
+    .hover {
+      opacity: 0.6;
+    }
+
+    .header_title {
+      padding-left: 15px;
+      height: 45px;
+      line-height: 45px;
+      font-size: 15px;
+      font-weight: 400;
+      color: #363639;
+      position: relative;
+    }
+
+    .flex_start {
+      justify-content: flex-start !important;
+    }
+
+
+    .triange_bg:before {
+      content: '';
+      height: 26px;
+      width: 26px;
+      background: url('../../../image/triangle.png') 0 0 no-repeat;
+      background-size: cover;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .list_box {
+      margin: 10px;
+      background-color: #fff;
+    }
+
+    .list_item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+
+    }
+
+    .item {
+      width: 33.3%;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      align-items: center;
+      padding: 15px;
+      height: 90pt;
+      position: relative;
+    }
+
+    .item p {
+      font-size: 15px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 1, 14, 1);
+      margin-top: 5px;
+      line-height: 15px;
+    }
+
+    .bottom_before_line::before {
+      content: "";
+      display: block;
+      width: 90%;
+      height: 1px;
+      background-color: #F9F9FB;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .wz-hint {
+      width: 20px;
+      height: 20px;
+      background: #FF4030;
+      border-radius: 50%;
+      /* align-content: center; */
+      text-align: center;
+      line-height: 20px;
+      font-size: 10px;
+      color: #fff;
+      font-weight: bold;
+      /* float: right; */
+      position: absolute;
+      left: 70%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <ul class="box">
+      <li class="list_box">
+        <h1 class="header_title bottom_before_line">物资盘点</h1>
+        <ul class="list_item">
+          <li class="item" @click="openGoStorage()">
+            <img src="../../../image/wzManagement/wz_home_icon_ruku.png" alt="">
+            <p>入库</p>
+            <div class="wz-hint">2</div>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_chuku.png" alt="">
+            <p>出库</p>
+            <div class="wz-hint">2</div>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_kucun.png" alt="">
+            <p>库存</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_zulin.png" alt="">
+            <p>租赁</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_tongji.png" alt="">
+            <p>统计</p>
+          </li>
+        </ul>
+      </li>
+      <li class="list_box">
+        <h1 class="header_title bottom_before_line">物资采购</h1>
+        <ul class="list_item">
+          <li class="item" @click="">
+            <img src="../../../image/wzManagement/wz_home_icon_shenqing.png" alt="">
+            <p>采购申请</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_qingdan.png" alt="">
+            <p>待购清单</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_wzpici.png" alt="">
+            <p>物资单价</p>
+          </li>
+        </ul>
+      </li>
+      <li class="list_box">
+        <h1 class="header_title bottom_before_line">信息维护</h1>
+        <ul class="list_item">
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_fenlei.png" alt="">
+            <p>物资分类</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_shangjia.png" alt="">
+            <p>商家</p>
+          </li>
+          <li class="item">
+            <img src="../../../image/wzManagement/wz_home_icon_changjia.png" alt="">
+            <p>厂家</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <script src="../../../script/api.js"></script>
+  <script src="../../../script/sha1.js"></script>
+  <script src="../../../script/common.js"></script>
+  <script src="../../../script/vue.js"></script>
+  <script>
+    apiready = function () {
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          bankHint: 0, //入库提示标实
+          goOutHint: null, //出库标实
+        },
+        methods: {
+
+          openGoStorage() {
+            api.openWin({
+              name: 'goStorage',
+              url: './goStorage/index.html',
+              pageParam: {
+                // name: 'test'
+              }
+            });
+          }
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            min-height: 80%;
+            background-color: #fff
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: auto;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 45px;
+        }
+        .mt_90{
+            margin-top: 90px;
+        }
+        /*.bottom{
+            margin-top: 110px;
+        }*/
+
+        .bottom li {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            padding: 10px;
+        }
+
+        .bottom img {
+            width: 35px;
+            height: 40px;
+        }
+
+        .noImage {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        [v-cloak]{
+            display: none
+        }
+        #search{
+            padding-right: 8px;
+        }
+        .clearInput{
+            position: absolute;
+            top: 0px;
+            right: 5px;
+        }
+        .backBox{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 45px;
+            color: #03a9f4;
+            font-size: 14px;
+            padding-left:15px;
+            background-color: #fff;
+            box-shadow: 1px 1px 2px #f5f5f5;
+
+        }
+        .backBox i{
+            font-size: 21px;
+            font-weight: bold;
+        }
+        .backBox span{
+            color:#000;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:80vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app" >
+        <div class="fixd">
+            <div class="aui-searchbar" id="search">
+                <div class="aui-searchbar-input aui-border-radius">
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <form action="javascript:void 0">
+                        <input type="search" placeholder="请输入资料名称" v-model.trim="inputValue" id="search-input"  @keyup.13="getAllList()">
+                        <i class="aui-iconfont aui-icon-close clearInput" tapmode @click="clearInput()" v-show="inputValue"></i>
+                    </form>
+                </div>
+                <div class="aui-searchbar-cancel" tapmode @click="getAllList()">搜索</div>
+            </div>
+            <!-- <header class="aui-bar aui-bar-nav aui-bar-light" v-if="returnPrefix != '-1'" tapmode @click="goBack()">
+
+                <a class="aui-pull-left aui-btn" >
+                    <span class="aui-iconfont aui-icon-back"></span>
+                </a>
+                <div class="aui-title header_title" id="">返回上一级</div>
+            </header> -->
+            <div class="backBox" v-if="returnPrefix != '-1'" tapmode @click="goBack()">
+                <i class="aui-iconfont aui-icon-back"></i>&nbsp;&nbsp;
+                <span v-text="backName"></span>
+            </div>
+
+        </div>
+        <div class="main_box" :class="{'mt_90': returnPrefix != '-1'}">
+            <div class="aui-card-list" v-cloak>
+                <div class="aui-card-list-content" v-if="info.length">
+
+                    <ul class="aui-list aui-media-list">
+                        <li class="aui-list-item aui-list-item-middle" v-for="(item,index) in info" :key="index" tapmode @click="openitem(item)">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-media">
+                                    <img :src="typeFile(item.objectSuffix)" style="width:45px;height:45px;" class=" aui-list-img-sm">
+                                    <!-- <img :src="topimg[1]" style="width:40px;height:35px;" class=" aui-list-img-sm"> -->
+                                </div>
+                                <div class="aui-list-item-inner aui-list-item-arrow">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-14" v-text="item.objectName">AUI</div>
+                                        <!-- <div class="aui-list-item-right " >08:00</div> -->
+                                    </div>
+                                    <div class="aui-list-item-text aui-ellipsis-1" >
+                                        <div class="aui-list-item-title aui-font-size-14" v-text="item.updateTime"></div>
+                                        <div class="aui-list-item-title aui-font-size-12 txt_c" v-text="item.objectSize"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
+                <div class="noData" v-else>
+                    <img src="../image/noData.png" alt="">
+                    <p>还没有相关数据哦~</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script src="../script/sha1.js"></script>
+    <script src="../script/common.js"></script>
+    <script type="text/javascript" src="../script/vue.js"></script>
+
+
+    <script>
+        var office,docInteraction;
+        apiready = function() {
+                api.addEventListener({
+                    name: 'projectInit2'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.init();
+                        vm.inputValue= '';
+                    }else{
+                    }
+                });
+
+                office = api.require('officePreview');
+                docInteraction = api.require('docInteraction');
+                // aliOSS = api.require("aliOSS");
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        inputValue:'',//数据过滤
+                        backName:'',//上一层文件
+                        info: '', //列表数据
+                        returnPrefix: '', //判断是否到达顶层（用于返回）
+                        topimg: [ //文件匹配
+                            '../image/data/xslx.png',
+                            '../image/data/Group.png',
+                            '../image/data/pdf.png',
+                            '../image/data/ppt.png',
+                            '../image/data/word.png',//5
+                            '../image/data/txt.png',
+                            '../image/data/video.png',
+                            '../image/data/zip.png',
+                            '../image/data/audio.png',
+                            '../image/data/img.png',//10
+                            '../image/data/wz.png'
+                        ]
+                    },
+                    created: function() {
+                        this.init();
+                    },
+                    methods: {
+                        //清除input输入的类容
+                        clearInput:function(){
+                            this.inputValue ='';
+                            this.init()
+                        },
+                        //获取全部文件列表（不包含文件夹）
+                        getAllList:function(){
+                            if(this.inputValue == ''){
+                                return
+                            }
+                            var getAllObjectsByPrefixInfo =
+                                api.getPrefs({
+                                    sync: true,
+                                    key: 'getAllObjectsByPrefixInfo'
+                                })
+
+                            if(getAllObjectsByPrefixInfo){
+                                api.showProgress({
+                                    style: 'default',
+                                    animationType: 'fade',
+                                    title: '努力加载中...',
+                                    modal: true
+                                });
+                                setTimeout(function(){
+                                    vm.filterInput()
+                                },500)
+
+                                return false
+                            }
+
+                            var params = {
+                                "prefix": ''
+                            }
+                            ajaxPost(
+                                true,
+                                '加载中...',
+                                getAllObjectsByPrefix,
+                                params,
+                                function(ret) {
+                                    if(ret.obj.length){
+                                        // $api.setStorage('getAllObjectsByPrefixInfo', ret.obj);
+                                        api.setPrefs({
+                                            key: 'getAllObjectsByPrefixInfo',
+                                            value: JSON.stringify(ret.obj)
+
+                                        });
+                                        setTimeout(function(){
+                                            vm.filterInput()
+                                        },500)
+                                    }
+
+                                }
+                            )
+                        },
+                        //过滤文件
+                        filterInput:function(){
+                            console.log('filter');
+                            var reg = new RegExp(this.inputValue.split('').join('.*'),'gi')
+                            // var allList = $api.getStorage('getAllObjectsByPrefixInfo')
+
+                            var allList =JSON.parse(api.getPrefs({
+                                    sync: true,
+                                    key: 'getAllObjectsByPrefixInfo'
+                                })
+                            )
+
+                            if(allList){
+                                var data = [];
+                                data =allList.filter(function(item) {
+                                    var itemName = item.objectName;
+                                    if (reg.test(itemName)) {
+                                        return item
+                                    }
+                                })
+                                this.info = data;
+                                api.hideProgress();
+                                // if (!this.info) {
+                                //     this.info = allList
+                                // }
+                            }
+                        },
+                        //获取文件及文件夹
+                        init: function(item) {
+                            var params = {
+                                "prefix": item ? item.prefix : ''
+                            }
+                            ajaxPost(
+                                true,
+                                '加载中...',
+                                getListObjectsByPrefix,
+                                params,
+                                function(ret) {
+                                    vm.info = ret.obj;
+                                    vm.returnPrefix = ret.returnPrefix;
+                                    if(ret.obj.length){
+                                        var name = ret.obj[0].prefix.split('/');
+                                        vm.backName = name[name.length-2];
+                                    }else{
+                                        vm.backName = '返回上一级';
+                                    }
+                                }
+                            )
+                        },
+                        //进入子文件
+                        openitem: function(item) {
+                            console.log($api.jsonToStr(item));
+                            console.log(item.isDir);
+                            if (item.isDir) {
+                                console.log('init');
+                                this.init(item)
+                            } else {
+                                console.log('123');
+                                vm.getUrl(item.prefix, item.objectName,item.objectSuffix)
+                            }
+                        },
+                        //获取文件地址并打开预览
+                        getUrl: function(item, name,typeType) {
+                            var typeBox = ['doc','docx','xls','xlsx','ppt','pptx','pdf','txt','jpg','jpeg','bmp','gif','png'];
+                            var isFlag = typeBox.indexOf(typeType) == -1 ? false : true;
+                            if(isFlag){
+                                var params = {
+                                    "prefix": item
+                                }
+                                ajaxPost(
+                                    true,
+                                    '加载中...',
+                                    getFileUrl,
+                                    params,
+                                    function(ret) {
+                                        console.log(ret.obj);
+                                        var data = {
+                                            'url':ret.obj,
+                                            'fileType':typeType,
+                                            'name':name
+
+
+                                        }
+                                        api.openWin({
+                                            name: 'office',
+                                            url: '../commonpage/office.html',
+                                            pageParam: {
+                                                office: data,
+
+                                            }
+                                        });
+
+                                        // office.open({
+                                        //         url:ret.obj,
+                                        //         topBarColor: '#3394EC',
+                                        //         title: name,
+                                        //         fileType: typeType
+                                        //     },
+                                        //     function(ret, err) {
+                                        //         if (ret.code == 1) {
+                                        //             alert("文档url为空");
+                                        //         }
+                                        //     });
+
+                                    }
+                                )
+                            }else{
+                                api.toast({
+                                    msg: '此文件不支持预览',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+
+                            }
+
+                        },
+                        goBack: function() {
+                            var params = {
+                                "prefix": vm.returnPrefix
+                            }
+                            ajaxPost(
+                                true,
+                                '加载中...',
+                                getListObjectsByPrefix,
+                                params,
+                                function(ret) {
+                                    vm.info = ret.obj;
+                                    vm.returnPrefix = ret.returnPrefix
+                                }
+                            )
+                        },
+                        //匹配对应图片
+                        typeFile: function(type) {
+                            switch (type) {
+                                case 'jpg':
+                                case 'png':
+                                    return  this.topimg[9]
+                                    break;
+                                case 'mp3':
+                                    return  this.topimg[8]
+                                    break;
+                                case 'zip':
+                                case 'rar':
+                                    return  this.topimg[7]
+                                    break;y
+                                case 'avi':
+                                case 'rmvb':
+                                    return  this.topimg[6]
+                                    break;
+                                case 'txt':
+                                    return  this.topimg[5]
+                                    break;
+                                case 'doc':
+                                case 'docx':
+                                    return this.topimg[4]
+                                    break;
+                                case 'ppt':
+                                case 'pptx':
+                                    return  this.topimg[3]
+                                    break;
+                                case 'pdf':
+                                    return  this.topimg[2]
+                                    break;
+                                case '':
+                                    return  this.topimg[1]
+                                    break;
+                                case 'xlsx':
+                                    return  this.topimg[0]
+                                    break;
+                                default:
+                                    return this.topimg[this.topimg.length-1]
+                                    break;
+
+                            }
+                        }
+
+                    }
+
+                })
+
+
+
+            }
+    </script>
+
+</html>

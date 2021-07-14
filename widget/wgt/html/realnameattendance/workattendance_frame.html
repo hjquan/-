@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>日历</title>
+
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .title_box {
+            height: 40px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(1, 1, 1, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 0px 0px 1px #eee;
+        }
+
+        .title_lf {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .title_rt {
+            flex: 2;
+            display: flex;
+            justify-content: space-around;
+            font-size: 15px;
+            /*align-items: center;*/
+        }
+
+        .title_rt p {
+            color: rgba(34, 172, 56, 1);
+        }
+
+        .timeBox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .btn_tiem {
+            width: 125px;
+            height: 25px;
+            line-height: 25px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .split_line {
+            width: 10px;
+            height: 2px;
+            margin: 0 5px;
+            background-color: #000;
+        }
+
+        .list_box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .list_item {
+            width: 100%;
+        }
+
+        .list_title {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .list_title h2 {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .list_title p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(44, 154, 66, 1);
+        }
+
+        .list_content {
+            background: rgba(238, 238, 238, 1);
+            padding: 10px 20px;
+            flex: 1;
+            margin: 10px;
+        }
+
+        .list_content div {
+            font-size: 12px;
+            color: rgba(44, 154, 66, 1);
+            background: rgba(238, 238, 238, 1);
+        }
+
+        .circl {
+            width: 6px;
+            height: 6px;
+            background: rgba(166, 166, 166, 1);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .food {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .fs_12 {
+            font-size: 10px;
+            font-weight: bold
+        }
+
+        .fixed {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .time_box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 50px;
+            margin-top: 10px;
+        }
+
+        .split_line {
+            height: 3px;
+            width: 15px;
+            background-color: #eee;
+            margin: 0 5px;
+        }
+        .timeBox {
+            width: 115px;
+            height: 25px;
+            line-height: 25px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: rgba(0, 0, 0, 1);
+        }
+        .timeBox span,.timeBox i{background-color: rgba(238, 238, 238, 1); }
+        .sub_txt{
+            font-size:10px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(34,172,56,1);
+        }
+        .circl_category_2{
+            width:6px;
+            height:6px;
+            background:rgba(95,186,107,1);
+            border-radius:50%;
+            margin: 0 auto
+        }
+        .txt_fd span{
+            background-color:  #EEEEEE
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding:30px 20px;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div id="">
+            <div id="swiperBox">
+                <!-- <div class="time_box">
+                    <div class="timeBox" tapmode @click="staerDateFn()">
+                        <span v-text="startDate">2020-05-25</span>&nbsp;
+                        <i class="aui-iconfont aui-icon-down"></i>
+                    </div>
+                    <div class="split_line"></div>
+                    <div class="timeBox" tapmode @click="endDateFn()">
+                        <span v-text="endDate">2020-05-25</span>&nbsp;
+                        <i class="aui-iconfont aui-icon-down"></i>
+                    </div>
+
+                </div>
+                <ul class="title_box">
+                    <li class="title_lf">
+                        总计
+                    </li>
+                    <li class="title_rt">
+                        <p>出勤<span v-text="statisticalLogInfo.ycqts"></span>天</p>
+                        <p>总工数<span v-text="statisticalLogInfo.twhs"></span></p>
+                        <p>加班<span v-text="statisticalLogInfo.tohs"></span>小时</p>
+                    </li>
+                </ul> -->
+                <div class="month">
+                    <ul v-cloak>
+                        <!--点击会触发pickpre函数，重新刷新当前日期 @click(vue v-on:click缩写) -->
+                        <li class="arrow" @click="pickPre()">❮</li>
+                        <li class="year-month" @click="openTimeFn()" >
+                            <span class="choose-year" v-text="currentYear + '年'"></span>
+                            <span class="choose-month" v-text="(currentMonth+'').length <=1 ? ('0'+currentMonth + '月') : currentMonth + '月'"></span>
+                        </li>
+                        <li class="arrow" @click="pickNext()">❯</li>
+                    </ul>
+
+                </div>
+
+                <!-- 星期 -->
+                <ul class="weekdays">
+                    <li>一</li>
+                    <li>二</li>
+                    <li>三</li>
+                    <li>四</li>
+                    <li>五</li>
+                    <li style="color:#C7C7CC">六</li>
+                    <li style="color:#C7C7CC">日</li>
+                </ul>
+                <!-- 日期 -->
+
+                <ul class="days">
+                    <!-- 核心 v-for循环 每一次循环用<li>标签创建一天 -->
+                    <li v-for="(dayobject,index) in days" tapmode @click="getItemFn(dayobject,index)">
+                        <!--本月-->
+                        <!--如果不是本月  改变类名加灰色-->
+
+                        <div class="dayBox" v-cloak>
+                            <span v-if="dayobject.day.getMonth()+1 != currentMonth" style="display:none" v-cloak class="other-month" :class="{'weekdaysColor':(dayobject.day.getDay() == 6 || dayobject.day.getDay()==0)}">{{ dayobject.day.getDate() }}</span>
+
+                            <!--如果是本月  还需要判断是不是这一天-->
+                            <span v-else>
+                            <!--今天  同年同月同日-->
+                            <span v-if="dayobject.day.getFullYear() == new Date().getFullYear() && dayobject.day.getMonth() == new Date().getMonth() && dayobject.day.getDate() == new Date().getDate()"
+                                class="active" v-cloak
+                                >{{ dayobject.day.getDate() }}</span>
+                            <span v-cloak v-else :class="[{'weekdaysColor': (dayobject.day.getDay() ==6 || dayobject.day.getDay() ==0)},{'currenDayIndex':index == currentDayIndex}]">{{ dayobject.day.getDate() }}</span>
+                            </span>
+                            <!-- dateRaduis textcontent-->
+                            <template v-if="dayobject.contentShow">
+                                <span class="sub_txt" v-if="pageParams.category == 2" >
+                                    {{ dayobject.contentShow ? dayobject.contentShow.currentHour :'0'}}
+                                </span>
+                                <span class="circl_category_2" v-else></span>
+                            </template>
+                        </div>
+
+                    </li>
+                </ul>
+
+                <!-- 打卡记录 -->
+                <ul class="list_box" >
+                    <li class="list_item" v-for="item in personAmrsAndGcrs.amrs">
+                        <div class="list_title">
+                            <div class="circl"></div>
+                            <h2 v-text="currDate">2020-04-01</h2>&nbsp;&nbsp;
+                            <p>工数&nbsp;&nbsp;<span v-text="item.hours">1.20</span></p>
+                        </div>
+                        <div class="list_content txt_fd">
+                            <div>-&nbsp;&nbsp; <span v-text="item.startDate"></span> &nbsp;&nbsp;<span v-text="'上班打卡'"></span> </div>
+                            <div>-&nbsp;&nbsp; <span v-text="item.endDate"></span> &nbsp;&nbsp;<span v-text="'下班打卡'"></span> </div>
+                        </div>
+                        <!-- <div class="food">
+                        过闸记录
+                        &nbsp;
+                        <i class="aui-iconfont aui-icon-top fs_12"></i>
+                    </div> -->
+                    </li>
+                    <li class="list_item" v-if="personAmrsAndGcrs && personAmrsAndGcrs.gcrs.length">
+                        <div class="food" tapmode @click="toggleGateFn()">
+                            过闸记录 &nbsp;
+                            <i class="aui-iconfont fs_12" :class=" [isGateFlag ? ' aui-icon-down' : ' aui-icon-top']"></i>
+                        </div>
+                        <div class="list_content txt_fd" v-show="isGateFlag">
+                            <div v-for="item in personAmrsAndGcrs.gcrs">-&nbsp;&nbsp; <span v-text="item.gateDate"></span> &nbsp;&nbsp;<span v-text="item.gateType"></span> </div>
+                        </div>
+                    </li>
+                    <li>
+
+                    </li>
+                </ul>
+
+
+
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/touchFn.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script>
+        apiready = function() {
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                pageParams:'',//接收跨页面参数
+                currentDay: new Date().getDate(),
+               currentMonth: '',
+               currentYear:'' ,
+               currentWeek: 1,
+               days: [],
+               statisticalLogInfo: [], //获取个人考勤统计信息
+               personAmrsAndGcrs:'',//获取获取人员打卡记录和过闸记录
+               currentDayIndex:'',//当前选择的日期下标
+               currDate:'',//当前点击时间
+               isGateFlag:false,//过闸记录显示隐藏
+               startDate:'',//开始日期（用于筛选）
+            //    endDate:'',//结束日期（用于筛选）
+            },
+            computed: {
+
+            },
+            created: function() {
+                this.pageParams = api.pageParam.workattendanceinfo ;
+                console.log($api.jsonToStr(this.pageParams));
+                this.category = api.pageParam.category;
+                this.currentYear = new Date().getFullYear();
+                this.currentMonth = new Date().getMonth() + 1;
+
+                this.getInit();
+
+            },
+            computed:{
+
+            },
+            mounted: function() {
+                //监听左右滑动事件切换菜单
+                //   EventUtil.listenTouchDirection(document.getElementById('swiperBox'), false, this.pickNext, this.pickPre)
+            },
+            methods: {
+                openTimeFn:function(){//自定义查询时间
+                    timeSelector.fnOpenSelector({
+                        title: ' ',                          //选填 |  '时间选择'    |  String         |  选择器标题文案
+                        sureText: '完成',                          //选填 |    '完成'      |  String        |   确定按钮文案
+                        isShowUnit: true,                         //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                        itemShowCount: 5,                         //选填 |      5        |  Number         |  显示的行数
+                        itemHeight: 55,                           //选填 |      55       |  Number         |  行高度（单位px）
+                        date: vm.currentYear+'/'+vm.currentMonth                          //选填 |   new Date    |  Date/String     |  默认选中的时间
+                    }, function(ret){
+                        if(!ret) return false;
+                        var date = new Date(ret.date)
+                        var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth()+1)).getTime();//选择的时间年月
+                        var currenDateTime = new Date();//当前时间毫秒数
+                        var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth()+1)).getTime();//当前时间年月
+                        if(!ret){return }
+                        if(selectDate > curenDate){
+                            api.toast({
+                                msg: '不能选择大于当前月份',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+
+                        vm.currentYear = date.getFullYear() ;
+                        vm.currentMonth = date.getMonth()+1;
+                        vm.getInit(vm.currentYear+'-'+vm.currentMonth)
+
+                    })
+                },
+
+                //切换过闸记录显示与隐藏
+                toggleGateFn:function(){
+                    this.isGateFlag = !this.isGateFlag;
+                },
+
+                //
+                getPersonAmrsAndGcrsFn:function(){
+                    var _this = this;
+                    var params = {
+                        'personId':this.pageParams.id,
+                        'queryDate':_this.currDate
+                    }
+                    console.log($api.jsonToStr(params));
+                    $app.post(
+                        true,
+                        getPersonAmrsAndGcrs,
+                        params,
+                        function(ret){
+                            console.log($api.jsonToStr(ret));
+                            _this.personAmrsAndGcrs= ret.obj;
+                        }
+                    )
+                },
+                getItemFn:function(data,index){//获取当前下的数据
+                        this.currentDayIndex = index;
+                        this.currDate = $app.formDate(data.day,'-');
+                        this.getPersonAmrsAndGcrsFn()
+
+                },
+                //获取数据
+                getInit:function() {
+                    var _this = this;
+                    var startDate = this.currentYear + '-' + $app.fillDate(this.currentMonth) + '-' + '01';
+                    var params = {
+                       'personId':this.pageParams.id,//人员ID
+                       'startDate':startDate,//开始日期
+                       'endDate':  this.currentYear + '-' + $app.fillDate(this.currentMonth) + '-' + $app.getCountDays(startDate)  //结束日期
+                   }
+                    console.log($api.jsonToStr(params));
+                    // var params = {
+                    //     "personId":"041bd1618de5494f8d1ce9c890991d20",
+                    //     "startDate":"2020-02-01",
+                    //     "endDate":"2020-02-28"
+                    // }
+                    $app.post(
+                        true,
+                        getPersonAttendanceCount,
+                        params,
+                        function(ret) {
+                            console.log($api.jsonToStr(ret.obj));
+                            _this.statisticalLogInfo = ret.obj;
+                            _this.initData(_this.currentYear + '-' + $app.fillDate(_this.currentMonth))
+                        }
+                    )
+                },
+                //构建日历
+                initData: function(cur) {
+                    var that = this;
+                    var leftcount = 0; //存放剩余数量
+                    var date;
+                    if (cur) {
+                        date = new Date(cur);
+                    } else {
+                        var now = new Date();
+                        var d = new Date(that.formatDate(now.getFullYear(), now.getMonth(), 1));
+                        d.setDate(35);
+                        date = new Date(that.formatDate(d.getFullYear(), d.getMonth() + 1, 1));
+                    }
+                    that.currentDay = date.getDate();
+                    that.currentYear = date.getFullYear();
+                    that.currentMonth = date.getMonth() + 1;
+
+                    that.currentWeek = date.getDay(); // 1...6,0
+                    if (that.currentWeek == 0) {
+                        that.currentWeek = 7;
+                    }
+                    var str = that.formatDate(that.currentYear, that.currentMonth, that.currentDay);
+                    that.days.length = 0;
+                    // 今天是周日，放在第一行第7个位置，前面6个
+                    //初始化本周
+                    for (var i = that.currentWeek - 1; i >= 0; i--) {
+                        var d = new Date(str);
+                        d.setDate(d.getDate() - i);
+                        var dayobject = {}; //用一个对象包装Date对象  以便为以后预定功能添加属性
+                        dayobject.day = d;
+                        that.days.push(dayobject); //将日期放入data 中的days数组 供页面渲染使用
+                    }
+                    //其他周
+                    for (var i = 1; i <= 42 - that.currentWeek; i++) {
+                        var d = new Date(str);
+                        d.setDate(d.getDate() + i);
+                        var dayobject = {};
+                        dayobject.day = d;
+                        that.days.push(dayobject);
+                    }
+                    var newlog = vm.statisticalLogInfo.sensus;
+                    newlog.forEach(function(b){
+                        if(newlog.length){
+                            that.days.forEach(function(a){
+                                var date = $app.formDate(a.day,'-');
+                                // console.log(date.day);
+                                // console.log($api.jsonToStr(b))
+
+                                if(date ==  b.currentDay){
+                                    a.contentShow = b;
+                                     return false;
+                                }
+                            })
+
+                        }else{
+                            a.contentShow = ''
+                        }
+
+                    })
+
+
+                },
+                //上一月
+                pickPre: function(year, month) {
+                    // setDate(0); 上月最后一天
+                    // setDate(-1); 上月倒数第二天
+                    // setDate(dx) 参数dx为 上月最后一天的前后dx天
+                    if (this.currentMonth <= 1) {
+                        this.currentMonth = 12;
+                        vm.currentYear--
+                    } else {
+                        vm.currentMonth--;
+                    }
+                    this.getInit(this.currentYear+'-'+this.currentMonth);
+                },
+                //下一月
+                pickNext: function(year, month) {
+                    var curtDate_y = parseInt(new Date().getFullYear()); //年份
+                    var curtDate_m = parseInt(new Date().getMonth() + 1); //月份
+                    if (vm.currentYear >= curtDate_y && vm.currentMonth >= curtDate_m) {
+                        api.toast({
+                            msg: '不能查看大于当前月份考勤',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        return false;
+
+                    }
+                    if (this.currentMonth >= 12) {
+                        this.currentMonth = 1;
+                        this.currentYear++
+                    } else {
+                        this.currentMonth++
+                    }
+                    this.getInit(this.currentYear+'-'+this.currentMonth);
+                },
+                pickYear: function(year, month) {
+                    // alert(year + "," + month);
+                },
+                // 返回 类似 2016-01-02 格式的字符串
+                formatDate: function(year, month, day) {
+                    var y = year;
+                    var m = month;
+                    if (m < 10) m = "0" + m;
+                    var d = day;
+                    if (d < 10) d = "0" + d;
+                    return y + "-" + m + "-" + d
+                },
+
+
+
+
+            }
+        })
+
+
+        }
+    </script>
+</body>
+
+</html>

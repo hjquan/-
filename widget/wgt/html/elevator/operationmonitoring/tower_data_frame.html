@@ -1,0 +1,379 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background-color: #000;
+        }
+
+        .img {}
+
+        .img img {
+            width: 180px;
+            height: 310px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /*show*/
+
+        .show {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 15px;
+        }
+
+        .show-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .line {
+            width: 25px;
+            height: 5px;
+            background: rgba(253, 167, 38, 1);
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+
+        .show-item p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .danger {
+            background-color: #f00;
+        }
+
+        .footer {
+            background-color: #000;
+            margin-bottom: 20px;
+        }
+
+        .date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .date h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .date i {
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .f_show {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .show_item {
+            width: 25%;
+            min-height: 10%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .show_item div {
+            width: 85px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 5px;
+            border: 1px solid rgba(3, 163, 69, 1);
+        }
+
+        .show_item div.danger {
+            background: #f00;
+        }
+
+        .show_item h2 {
+            font-size: 15px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item h3 {
+            font-size: 12px;
+            color: rgba(254, 254, 254, 1);
+        }
+
+        .show_item .react {
+            width: 85px;
+            height: 50px;
+            line-height: 50px;
+            border: 1px solid rgba(3, 163, 69, 1);
+            font-size: 15px;
+            color: rgba(3, 163, 69, 1);
+            padding: 0;
+        }
+
+        .show_item .react_danger {
+            border: 1px solid rgba(255, 0, 0, 1);
+            color: #FF0000
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <div class="img">
+            <img src="../../../../image/towercrane/elevator.png" alt="">
+            <div class="show">
+                <div class="show-item">
+                    <div class="line"></div>
+                    <p>预警</p>
+                </div>
+                <div class="show-item">
+                    <div class="line danger"></div>
+                    <p>预警</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="date">
+                <h2 v-text="newTime">dsfds</h2>&nbsp;
+                <i class="aui-iconfont aui-icon-recovery" @click="getElevatorRealTimeInfo()"></i>
+            </div>
+            <ul class="f_show">
+                <li class="show_item">
+                    <div style=" min-height: 108px;">
+                        <h2>额重(t)</h2>
+                        <h2>0.2</h2>
+                        <h3> </h3>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="waringWeightState" style=" min-height: 108px;">
+                        <h2>实重(t)</h2>
+                        <h2 class="waringWeightState-text" v-text="realTimeInfo.realWeight">0.2</h2>
+                        <h2> </h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="waringHeightDownState waringHeightUpState" style=" min-height: 108px;">
+                        <h2>高度(m)</h2>
+                        <h2 class="waringHeightDownState-text">上：<span v-text="realTimeInfo.realHeightUp">2.4</span>
+                        </h2>
+                        <h2 class="waringHeightDownState-text">下：<span v-text="realTimeInfo.realHeightDown">2.4</span>
+                        </h2>
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="waringDipYState waringDipXState" style=" min-height: 108px;">
+                        <h2>倾角(°)</h2>
+                        <h2 class="waringDipYState-text">X：<span v-text="realTimeInfo.realDipX">2.4</span></h2>
+                        <h2 class="waringDipYState-text">Y：<span v-text="realTimeInfo.realDipY">2.4</span></h2>
+                    </div>
+                </li>
+                <li class="show_item waringUpmaxState" class="show_item">
+                    <div class="react waringUpmaxState-text">
+                        上限
+                    </div>
+                </li>
+                <li class="show_item waringDownmaxState" class="show_item">
+                    <div class="react waringDownmaxState-text">
+                        下限
+                    </div>
+                </li>
+                <li class="show_item waringAheadLock">
+                    <div class="react waringAheadLock-text">
+                        内门
+                    </div>
+                </li>
+                <li class="show_item waringBackLock">
+                    <div class="react waringBackLock-text">
+                        外门
+                    </div>
+                </li>
+                <li class="show_item waringSpeedState">
+                    <div class="react waringSpeedState-text">
+                        高速
+                    </div>
+                </li>
+                <!-- <li class="show_item">
+                    <div class="react react_danger">
+                        天窗
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="react">
+                        防坠
+                    </div>
+                </li>
+                <li class="show_item">
+                    <div class="react">
+                        控制
+                    </div>
+                </li> -->
+            </ul>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    liftRunMonitor: api.pageParam.liftRunMonitor,
+                    realTimeInfo: {},
+                    newTime: $app.formDate(false, '-', true).substring(0, 17),
+                },
+                created: function () {
+                    //获取升降机运行实时数据数据
+                    this.getElevatorRealTimeInfo();
+                },
+                methods: {
+                    //获取升降机运行实时数据数据
+                    getElevatorRealTimeInfo: function () {
+                        var that = this;
+                        that.newTime = $app.formDate(false, '-', true).substring(0, 17);
+                        var prame = {
+                            ccid: that.liftRunMonitor.ccid,
+                            // ccid: "89810321203469800125",
+                        };
+                        console.log("获取升降机运行实时数据数据:" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getElevatorRealTimeInfo,
+                            prame,
+                            function (ret) {
+                                that.realTimeInfo = ret.obj[0];
+                                console.log("获取升降机运行实时数据数据:" + JSON.stringify(ret));
+                                that.domFunction();
+                            }
+                        )
+                    },
+                    //根据数据渲染dom
+                    domFunction: function () {
+                        if (this.realTimeInfo.waringWeightState == 1) {
+                            document.getElementsByClassName("waringWeightState")[0].setAttribute('style', 'border: 1px solid #FDA726; min-height: 108px;');
+                            document.getElementsByClassName("waringWeightState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringWeightState == 2) {
+                            document.getElementsByClassName("waringWeightState")[0].setAttribute('style', 'border: 1px solid #f00; min-height: 108px;');
+                            document.getElementsByClassName("waringWeightState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //倾角Y预警/报警状态(0
+                        if (this.realTimeInfo.waringDipYState == 1) {
+                            document.getElementsByClassName("waringDipYState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringDipYState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringDipYState == 2) {
+                            document.getElementsByClassName("waringDipYState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringDipYState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //倾角X预警/报警状态(0正常1预警2报警)
+                        if (this.realTimeInfo.waringDipXState == 1) {
+                            document.getElementsByClassName("waringDipXState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringDipXState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringDipXState == 2) {
+                            document.getElementsByClassName("waringDipXState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringDipXState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //高度下限预警/报警状态(0正常1预警2报警)
+                        if (this.realTimeInfo.waringHeightDownState == 1) {
+                            document.getElementsByClassName("waringHeightDownState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringHeightDownState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringHeightDownState == 2) {
+                            document.getElementsByClassName("waringHeightDownState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringHeightDownState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //高度上限预警/报警状态(0正常1预警2报警)
+                        if (this.realTimeInfo.waringHeightUpState == 1) {
+                            document.getElementsByClassName("waringHeightUpState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringHeightUpState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringHeightUpState == 2) {
+                            document.getElementsByClassName("waringHeightUpState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringHeightUpState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //速度报警状态(0正常 1报警)
+                        if (this.realTimeInfo.waringSpeedState == 1) {
+                            document.getElementsByClassName("waringSpeedState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringSpeedState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringSpeedState == 2) {
+                            document.getElementsByClassName("waringSpeedState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringSpeedState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //前门锁报警状态(0正常
+                        if (this.realTimeInfo.waringAheadLock == 1) {
+                            document.getElementsByClassName("waringAheadLock")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringAheadLock-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringAheadLock == 2) {
+                            document.getElementsByClassName("waringAheadLock")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringAheadLock-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //后门锁报警状态
+                        if (this.realTimeInfo.waringBackLock == 1) {
+                            document.getElementsByClassName("waringBackLock")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringBackLock-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringBackLock == 2) {
+                            document.getElementsByClassName("waringBackLock")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringBackLock-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //上极限报警状态
+                        if (this.realTimeInfo.waringUpmaxState == 1) {
+                            document.getElementsByClassName("waringUpmaxState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringUpmaxState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringUpmaxState == 2) {
+                            document.getElementsByClassName("waringUpmaxState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringUpmaxState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+                        //下极限报警状态(
+                        if (this.realTimeInfo.waringDownmaxState == 1) {
+                            document.getElementsByClassName("waringDownmaxState")[0].setAttribute('style', 'border: 1px solid #FDA726;');
+                            document.getElementsByClassName("waringDownmaxState-text")[0].setAttribute('style', 'color: #FDA726;');
+                        }
+                        if (this.realTimeInfo.waringDownmaxState == 2) {
+                            document.getElementsByClassName("waringDownmaxState")[0].setAttribute('style', 'border: 1px solid #f00;');
+                            document.getElementsByClassName("waringDownmaxState-text")[0].setAttribute('style', 'color: #f00;');
+                        }
+
+                    },
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

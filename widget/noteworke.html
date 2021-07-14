@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./commonUi/aui/css/aui.css">
+    <title>Document</title>
+    <style>
+        .content{
+            width: 100vw;
+            height:100vh;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            color:#999;
+        }
+        .main{
+            margin-top: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main img{width: 65px;height:65px;}
+        .main p{
+            line-height: 40px;
+            text-align: center;
+        }
+        .btn{
+            width:120px;
+            line-height: 40px;
+            height:40px;
+            border-radius: 5px;
+            border:1px solid #058FFD;
+            text-align: center;
+            margin-top: 20px;
+            color:#058FFD;
+        }
+        .active{background: #058FFD;color:#fff}
+        .active .aui-icon-recovery{
+            transform: rotate(1080deg);
+        }
+        .aui-icon-recovery{
+            transition: all 6s;
+            font-weight: bold;
+        }
+        .footer{
+            position: fixed;
+            bottom: 30px;
+            padding: 0 15px;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="main">
+            <img src="./image/nonetworke.png" alt="">
+            <p>连接网络失败！</p>
+            <div class="btn" onclick="refsh()">
+                <i class="aui-iconfont aui-icon-recovery"></i>
+                <span>重新加载</span>
+            </div>
+        </div>
+        <div class="footer">
+            <h3>解决办法</h3>
+            <p>1.iphone手机:依次进入设置 --> 筑云迹 --> 无线数据,将[WLAN]与[蜂窝移动网]项打钩</p>
+            <p>2.安卓手机:进入筑迹云APP开启[WLAN]和[移动网络]按钮</p>
+            <p>3.检查你的手机是否可上网</p>
+        </div>
+    </div>
+    <script src="./script/api.js"></script>
+    <script>
+        apiready = function(){
+        }
+        function refsh(){
+            $api.addCls($api.dom('.btn'), 'active');
+            if(api.connectionType !=  'none'){
+                api.closeWin();
+            }
+            setTimeout(function(){
+                $api.removeCls($api.dom('.btn'), 'active')
+            },3000)
+        }
+
+    </script>
+</body>
+</html>

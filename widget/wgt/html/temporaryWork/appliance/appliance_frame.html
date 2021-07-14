@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .bg_f {
+            margin-bottom: 0.5rem;
+            background: #2a82e4;
+        }
+
+        .mian_item {
+            border-bottom: 1px #e3e4e5 solid;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .text-right-img {
+            float: right;
+            width: 1rem;
+        }
+
+        .text-left-img {
+            float: left;
+            width: 1rem;
+            margin-top: 2px;
+        }
+
+        .form {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .form p {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            padding-bottom: 10px;
+        }
+
+        .header-name {
+            padding: 10px;
+        }
+
+        .explain-text {
+            padding: 10px;
+        }
+
+        .explain-text p {
+            font-size: 12px;
+        }
+
+        .upImg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .footer {
+            width: 100%;
+            height: 7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button-submit {
+            width: 50%;
+            height: 2rem;
+            border: 0;
+            border-radius: 3px;
+            background: #2a82e4;
+            color: #ffffff;
+        }
+
+        .add_btn {
+            border: 1px #e3e4e5 solid;
+        }
+
+        .del-workerInfo {
+            width: 3rem;
+            color: #2a82e4;
+        }
+
+        .header-workerInfo {
+            height: 1.4rem;
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .del-content {
+            flex: 1;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .capital {
+            width: 100%;
+            height: 30px;
+            background-color: #ffffff;
+            padding-right: 20px;
+            text-align: end;
+            color: black;
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app" class="content">
+        <li class="mian_item" @click="select1()">
+            <p> 用工事由<span class="requid">*</span></p>
+            <input class="input_rt" type="text" style="padding-right: 0;" v-model="subjectMatterName" placeholder="请选择"
+                onfocus="this.blur();">
+            <img class="text-right-img" src="../../../../image/clocking-in/right.png" alt="">
+        </li>
+        <li class="form" style="border-bottom: 1px #e3e4e5 solid;">
+            <p> 具体工作内容<span class="requid">*</span></p>
+            <textarea name="name" placeholder="请输入" rows="15" cols="80" v-model="workContent"></textarea>
+        </li>
+        <li class="mian_item">
+            <p> 出工班组名称<span class="requid">*</span></p>
+            <input class="input_rt" type="text" placeholder="请输入" v-model="workerTeamName">
+        </li>
+        <header class="header-name">预计使用明细</header>
+        <section v-for="(item,index) in mechanicsDetails">
+            <section class="header-workerInfo" v-if="mechanicsDetails.length > 1">
+                <article>机械班组：<span v-text="index+1"></span></article>
+                <article class="del-content"></article>
+                <article class="del-workerInfo" @click="delWorkerInfo(index)">删除</article>
+            </section>
+            <li class="mian_item">
+                <p> 机械名称<span class="requid">*</span></p>
+                <input class="input_rt" type="text" placeholder="请输入型号功能" v-model="item.mechanicsName">
+            </li>
+            <li class="mian_item">
+                <p> 机械数量<span class="requid">*</span></p>
+                <input class="input_rt" type="text" @change="calculateTotal(item)" placeholder="请输入"
+                    onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                    onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}"
+                    v-model="item.mechanicsNumber">
+            </li>
+            <li class="mian_item">
+                <p> 使用时间<span class="requid">*</span></p>
+                <input class="input_rt" type="text" placeholder="请输入  小时" v-model="item.mechanicsDuration"
+                    @change="calculateTotal(item,'mechanicsDuration')">
+            </li>
+            <li class="mian_item">
+                <p> 小时单价<span class="requid">*</span></p>
+                <input class="input_rt" type="text" placeholder="请输入  元/小时" v-model="item.price"
+                    @change="calculateTotal(item,'price')">
+            </li>
+            <!-- <li class="mian_item">
+                <p> 大写<span class="requid">*</span></p>
+                <input class="input_rt" type="text" placeholder="请输入" v-model="item.capitalization">
+            </li> -->
+            <li class="mian_item" style="border-bottom: 0;">
+                <p> 预计金额<span class="requid">*</span></p>
+                <input class="input_rt" type="text" placeholder="自动计算结果" v-model="item.money" onfocus="this.blur();">
+            </li>
+            <div class="capital" v-text="item.capitalization"></div>
+        </section>
+        <li class="form" style="margin-top: 5px;margin-bottom: 5px;" @click="addWorker()">
+            <img class="text-left-img" src="../../../../image/temporaryWork/add-img.png" alt="">
+            <span style="color: #1296db">添加细明</span>
+        </li>
+        <li class="mian_item" @click="totalCount()">
+            <p>本次申请预计总费用<span class="requid">*</span></p>
+            <input class="input_rt" type="text" placeholder="自动计算结果" v-model="totalMoney" onfocus="this.blur();">
+        </li>
+        <li class="mian_item" @click="selectBearTypeName()">
+            <p>费用承担方式<span class="requid">*</span></p>
+            <input class="input_rt" type="text" placeholder="请选择" v-model="bearTypeName" onfocus="this.blur();">
+        </li>
+        <li class="mian_item" v-if="bearTypeNameFalge === 2 || bearTypeNameFalge === 3 ">
+            <p> 责任班组名称</p>
+            <input class="input_rt" type="text" placeholder="请输入" v-model="responsibleTeamName">
+        </li>
+        <li class="mian_item" v-if="bearTypeNameFalge === 3 ">
+            <p>责任班组承担比例系数<span class="requid">*</span></p>
+            <input class="input_rt" type="text" placeholder="请输入"
+                onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}"
+                v-model="bearProportion" @change="predictCost()">
+            <span style="padding-right: 15px; color: #cdd1d6;" v-if="bearProportion">%</span>
+        </li>
+        <article class="explain-text" v-if="bearTypeNameFalge === 2 || bearTypeNameFalge === 3 ">
+            <p>责任班组承担比例系数说明：</p>
+            <p>项目部与班组分摊时按照班组分摊比例系数填写；</p>
+        </article>
+        <li class="mian_item" v-if="bearTypeNameFalge === 2 || bearTypeNameFalge === 3 ">
+            <p> 预计责任班组承担费用<span class="requid">*</span></p>
+            <input class="input_rt" type="text" placeholder="自动计算结果" v-model="responsibleTeamMoney"
+                onfocus="this.blur();">
+        </li>
+        <li class="mian_item" style="border-bottom: 0;">
+            <p> 使用前资料照片<span class="requid">*</span></p>
+            <div></div>
+        </li>
+        <div class="img_box">
+            <div class="imgUpdate border_bottom_after"
+                style="padding:10px 15px; align-content: flex-start; flex-wrap: wrap;">
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover" style="margin-bottom: 0.5rem;">
+                    <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index)
+                        tapmode="hover"></i>
+                    <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div class="add_btn" style="background-color: #fff;" @click="uploadHeadPic()" tapmode
+                    v-if="imgSrc.length < 8"><i class="aui-iconfont aui-icon-camera"></i></div>
+            </div>
+        </div>
+        <li class="mian_item" @click="openExaminePer()">
+            <p> 选择审批人<span class="requid">*</span></p>
+            <input class="input_rt" type="text" style="padding-right: 0;" placeholder="请选择" v-model="approvalUserName"
+                @click="openExaminePer()" onfocus="this.blur();">
+            <img class="text-right-img" src="../../../../image/clocking-in/right.png" alt="">
+        </li>
+        <section class="footer">
+            <button class="button-submit " @click="verification()">提交</button>
+        </section>
+    </section>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    workerInfo: [{ das: 1 }],
+                    // 上传图片字段start
+                    isCloseBtn: true,//是否显示删除图片icon
+                    imgSrc: [],
+                    serverImg: "",//服务器返回图片地址
+                    lableUrl: "",//标注图片地址(更改：该字段已清除)
+                    srcImgUrl: "",//原图片地址（多张逗号分隔）
+                    compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+                    // 上传图片字段end
+                    i: 0,  //
+                    //新增数据
+                    subjectMatterId: "",  //用工事由ID
+                    subjectMatterName: "",  //用工事由名称
+                    workContent: "",  // 具体工作内容
+                    typeId: "",// 用工类型id
+                    workerTeamName: "",// 用工班组名称
+                    totalMoney: 0,// 预计总金额
+                    bearTypeId: "",// 费用承担方式ID
+                    bearTypeName: "",// 费用承担方式名称
+                    responsibleTeamName: "",// 责任班组名称
+                    bearProportion: "",// 责任班组承担比例系数
+                    responsibleTeamMoney: "",// 责任班组承担费用
+                    approvalUserId: "",// 审批人ID
+                    approvalUserName: "",// 审批人名称
+                    projectId: "",// 项目ID
+                    createUserId: "",// 创建人ID
+                    createUserName: "",// 创建人名称
+                    msgContent: "",// 消息内容（用于发送待办和推送）
+                    msgModule: "",// 消息module（用于发送待办和推送
+                    msgTitle: "",// 消息标题（用于发送待办和推送）
+                    mechanicsDetails: [{
+                        mechanicsName: "",// 机械名称
+                        mechanicsNumber: "",// 工人数量
+                        mechanicsDuration: "",// 机械使用时长
+                        price: "",// 单价
+                        money: "",// 预计金额
+                        capitalization: "", //大写
+                    }],// 用工明细
+                    verificationFalge: true,
+                    bearTypeNameFalge: 0,
+                },
+                created: function () {
+                    var that = this;
+                    //监听用工选择数据
+                    api.addEventListener({
+                        name: 'selectDictFlage'
+                    }, function (ret, err) {
+                        // console.log("选择的数据：" + JSON.stringify(ret.value))
+                        that.subjectMatterId = ret.value.subjectMatterId;
+                        that.subjectMatterName = ret.value.selectName;
+                    });
+                    //监听用工选择数据
+                    api.addEventListener({
+                        name: 'selectApproval'
+                    }, function (ret, err) {
+                        // console.log("选择的数据：" + JSON.stringify(ret.value))
+                        that.approvalUserName = ret.value.approvalUserName;
+                        that.approvalUserId = ret.value.approvalUserId;
+                    });
+                    if (api.pageParam.applyInfo) {
+                        this.init();
+                    }
+                },
+                methods: {
+                    //计算预计费用
+                    predictCost: function () {
+                        if (this.bearProportion > 100) {
+                            this.bearProportion = 100;
+                        }
+                        if (0 < this.bearProportion <= 100) {
+                            this.responsibleTeamMoney = (this.totalMoney * this.bearProportion / 100).toFixed(2)
+                        }
+                    },
+                    totalCount: function () {
+                        var that = this;
+                        that.totalMoney = 0;
+                        if (this.mechanicsDetails[0].money) {
+                            this.mechanicsDetails.map(function (items) {
+                                that.totalMoney = $app.accAdd(that.totalMoney, items.money);
+                            });
+                        }
+                    },
+                    //计算用工明细总价
+                    calculateTotal: function (item, falge) {
+                        if (item.mechanicsNumber > 10000) {
+                            item.mechanicsNumber = 9999;
+                        }
+                        if (falge === 'mechanicsDuration') {
+                            item.mechanicsDuration = Math.abs(parseFloat(item.mechanicsDuration))
+                        }
+                        if (falge === 'price') {
+                            item.price = Math.abs(parseFloat(item.price))
+                        }
+                        if (item.mechanicsNumber && item.mechanicsDuration && item.price) {
+                            item.money = (item.mechanicsNumber * item.mechanicsDuration * item.price).toFixed(2)
+                            item.capitalization = $app.changeNumMoneyToChinese(item.money);
+                        }
+                    },
+                    //初始化函数
+                    init: function () {
+                        var that = this;
+                        var applyInfo = api.pageParam.applyInfo;
+                        this.subjectMatterId = applyInfo.subjectMatterId;
+                        this.subjectMatterName = applyInfo.subjectMatterName;
+                        this.workContent = applyInfo.workContent;
+                        this.workerTeamName = applyInfo.workerTeamName;
+                        this.totalMoney = applyInfo.totalMoney;
+                        this.bearTypeId = applyInfo.bearTypeId;
+                        this.bearTypeName = applyInfo.bearTypeName;
+                        this.responsibleTeamName = applyInfo.responsibleTeamName;
+                        this.bearProportion = applyInfo.bearProportion;
+                        this.responsibleTeamMoney = applyInfo.responsibleTeamMoney;
+                        // this.srcImgUrl = applyInfo.srcImgUrl;
+                        // this.compressImgUrl = applyInfo.compressImgUrl;
+                        this.approvalUserId = applyInfo.approvalUserId;
+                        this.approvalUserName = applyInfo.approvalUserName;
+                        this.mechanicsDetails = applyInfo.mechanicsDetails;
+                        this.mechanicsDetails.map(function (item) {
+                            item.capitalization = $app.changeNumMoneyToChinese(item.money)
+                        });
+                        switch (this.bearTypeName) {
+                            case "项目部与责任班组分摊":
+                                this.bearTypeNameFalge = 3
+                                break;
+                            case "责任班组承担":
+                                this.bearTypeNameFalge = 2
+                                break;
+                        }
+                    },
+
+                    // 费用承担方式名称
+                    selectBearTypeName: function () {
+                        var that = this;
+                        $app.getDictInfo("16", function (dictCodeInfo) {
+                            api.actionSheet({
+                                cancelTitle: '取消',
+                                buttons: dictCodeInfo.name
+                            }, function (ret, err) {
+                                that.bearTypeName = dictCodeInfo.name[ret.buttonIndex - 1];
+                                that.bearTypeId = dictCodeInfo.dictionariesId[ret.buttonIndex - 1];
+                                that.bearTypeNameFalge = ret.buttonIndex - 1;
+                                if (that.bearTypeNameFalge === 2) {
+                                    that.responsibleTeamMoney = that.totalMoney;
+                                }
+                            });
+                        });
+                    },
+                    //删除工人班组明细
+                    delWorkerInfo: function (index) {
+                        this.mechanicsDetails.splice(index, 1);
+                    },
+                    //细明的工人
+                    addWorker: function () {
+                        this.mechanicsDetails.push({
+                            mechanicsName: "",// 机械名称
+                            mechanicsNumber: "",// 工人数量
+                            mechanicsDuration: "",// 机械使用时长
+                            price: "",// 单价
+                            money: "",// 预计金额
+                            capitalization: "", //大写
+                        });
+                    },
+                    //选择审批人员
+                    openExaminePer: function () {
+                        api.openFrame({
+                            name: 'examinePer',
+                            url: '../examinePer.html',
+                        });
+                    },
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function (fncFn) {
+                        if (vm.serverImg) {
+                            var srcImgUrl = this.serverImg.map(function (item) {
+                                return item.srcPath
+                            })
+                            var compressImgUrl = this.serverImg.map(function (item) {
+                                return item.compressPath
+                            })
+                            if (srcImgUrl.length > 1) {
+                                vm.srcImgUrl = srcImgUrl.join(',');
+                                vm.compressImgUrl = compressImgUrl.join(',');
+                            } else {
+                                vm.srcImgUrl = srcImgUrl[0];
+                                vm.compressImgUrl = compressImgUrl[0];
+                            }
+                            fncFn()
+                        }
+                    },
+                    verification: function () {
+                        var that = this;
+                        that.verificationfalge = true;
+                        if (!this.subjectMatterName) {
+                            api.toast({
+                                msg: '用工事由不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+                        if (!this.workContent) {
+                            api.toast({
+                                msg: '具体工作内容不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+                        if (!this.workerTeamName) {
+                            api.toast({
+                                msg: '出工班组名称不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+                        this.mechanicsDetails.map(function (item) {
+                            if (!item.mechanicsName) {
+                                api.toast({
+                                    msg: '机械名称不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                            if (!item.mechanicsNumber) {
+                                api.toast({
+                                    msg: '机械数量不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                            if (!item.mechanicsDuration) {
+                                api.toast({
+                                    msg: '机械使用时长不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                            if (!item.price) {
+                                api.toast({
+                                    msg: '小时单价不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                        });
+
+                        if (!this.bearTypeName) {
+                            api.toast({
+                                msg: '费用承担方式不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+
+                        if (this.bearTypeNameFalge === 2 || this.bearTypeNameFalge === 3) {
+                            if (!this.responsibleTeamName) {
+                                api.toast({
+                                    msg: '责任班组名称不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                        }
+                        if (this.bearTypeNameFalge === 3) {
+                            if (!this.bearProportion) {
+                                api.toast({
+                                    msg: '责任班组承担比例系数不能为空',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                that.verificationfalge = false;
+                                return false;
+                            }
+                        }
+                        if (!this.imgSrc.length) {
+                            api.toast({
+                                msg: '图片不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+                        if (!this.approvalUserName) {
+                            api.toast({
+                                msg: '审批人不能为空',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            that.verificationfalge = false;
+                            return false;
+                        }
+                        this.saveImg();
+                    },
+                    //图片上传服务器保存
+                    saveImg: function () {
+                        var compressImg = [];
+                        var that = this;
+                        console.log("开始上传图片:" + JSON.stringify(this.verificationfalge));
+                        if (this.verificationfalge) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        }
+                                    });
+                                })(i);
+                            }
+
+                            var timer = setInterval(function () {
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeFile, {
+                                        projectId: $api.getStorage('enterpriseId')
+                                    }, {
+                                        imgFile: compressImg
+                                    },
+                                        function (ret) {
+                                            console.log("上传图片返回数据：" + JSON.stringify(ret))
+                                            that.isCloseBtn = false;
+                                            that.serverImg = '';
+                                            that.compressImgUrl = '';
+                                            ret.obj.map(function (item) {
+                                                that.serverImg += item.srcPath + ','
+                                                that.compressImgUrl += item.compressPath + ','
+                                            });
+                                            that.serverImg = that.serverImg.substr(0, that.serverImg.length - 1);
+                                            that.compressImgUrl = that.compressImgUrl.substr(0, that.compressImgUrl.length - 1);
+                                            that.submit();
+                                        }
+                                    )
+                                }
+                            }, 1000)
+                        }
+                    },
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 8,
+                                styles: {
+                                    bg: '#000000',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //提交函数
+                    submit: function () {
+                        // if (this.subjectMatterName && this.workContent) {
+                        //     api.toast({
+                        //         msg: '数据不能为空',
+                        //         duration: 2000,
+                        //         location: 'bottom'
+                        //     });
+                        //     return false;
+                        // }
+                        var parme = {
+                            subjectMatterId: this.subjectMatterId,
+                            subjectMatterName: this.subjectMatterName,
+                            workContent: this.workContent,
+                            workerTeamName: this.workerTeamName,
+                            totalMoney: this.totalMoney,
+                            bearTypeId: this.bearTypeId,
+                            bearTypeName: this.bearTypeName,
+                            responsibleTeamName: this.responsibleTeamName,
+                            bearProportion: this.bearProportion,
+                            responsibleTeamMoney: this.responsibleTeamMoney,
+                            srcImgUrl: this.serverImg,
+                            compressImgUrl: this.compressImgUrl,
+                            approvalUserId: this.approvalUserId,
+                            approvalUserName: this.approvalUserName,
+                            projectId: $api.getStorage('enterpriseId'),
+                            createUserId: $api.getStorage('enterLoginInfo').userId,
+                            createUserName: $api.getStorage('enterLoginInfo').name,
+                            msgContent: $api.getStorage('enterLoginInfo').name + "申请的零星机械事前申请" + "[用工事由：" + this.subjectMatterName + "]",  //消息内容
+                            msgModule: "mechanicsApply",  //消息module
+                            msgTitle: "零星机械事前申请",  //消息标题
+                            mechanicsDetails: this.mechanicsDetails,  //零星机械使用申请明细
+                        }
+                        console.log("提交数据：" + JSON.stringify(parme));
+                        $app.post(
+                            false,
+                            addmechanicsApplyURL,
+                            parme,
+                            function (ret) {
+                                console.log("新增返回数据：" + $api.jsonToStr(ret))
+                                api.sendEvent({
+                                    name: 'addAppliance'
+                                });
+                                api.closeWin();
+                            }
+                        )
+                    },
+                    select1: function () {
+                        api.openFrame({
+                            name: 'selectType',
+                            url: 'selectType.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                            },
+                            bounces: false,
+                            bgColor: 'transparent',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+                    //选择审批人员
+                    openExaminePer: function () {
+                        api.openWin({
+                            name: 'examinePer',
+                            url: '../examinePer.html',
+                        });
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

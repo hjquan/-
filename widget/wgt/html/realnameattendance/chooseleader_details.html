@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../css/voice.css">
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_45 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn_box {
+            width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin:0 auto;
+        }
+
+        .btn_item {
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            background: #d2d2d2;
+            /*border: 1px solid rgba(5, 143, 253, 1);*/
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+            color: #fff;
+        }
+
+        .btn_active {
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .mian_item .write {
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .require {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 0, 0, 1);
+        }
+
+        .show {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        .show_item {
+            width: 275px;
+            height: 45px;
+            border: 1px solid rgba(210, 210, 210, 1);
+            border-radius: 5px;
+            margin-top: 7px;
+            text-align: center;
+            line-height: 35px;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+            display: flex;
+            justify-content: center;;
+            align-items: center;
+            padding: 0 5px
+        }
+        .show_item input{
+            width: 30px;
+            height: 30px;
+            border: 1px solid #d2d2d2;
+            border-radius: 3px;
+            margin: 0 5px;
+            text-align: center;
+            color: #058FFD;
+            font-size: 10px;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%);
+        }
+        .show_item .workeTime{width: 60px;}
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">新增班组</div>
+                <!-- <a class="aui-pull-right aui-btn" >
+                    <span class="btn color_d5" tapmode >评价</span>
+                </a> -->
+            </header>
+
+        </div>
+        <div class="main_box mb_45">
+
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>班组名称<span class="require">*</span></p>
+                    <input class="write" type="text" readonly v-model="ruleinfo.ruleName" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>选择考勤规则<span class="require"></span></p>
+                    <!-- <input class="write" type="text" v-model="ruleinfo.ruleName" placeholder="请输入"> -->
+                    <span></span>
+                </li>
+                <li class="addcontent" >
+                    <ul class="show line_after_1">
+                        <li class="show_item"  tapmode >
+                            <span>上班时间</span>&nbsp;&nbsp;
+                            <input type="text"  readonly  v-model="ruleinfo.workStartDate" class="txt_blue workeTime">
+                        </li>
+                        <li class="show_item">
+                            <span>下班时间</span>&nbsp;&nbsp;
+                            <input type="text"   readonly  v-model="ruleinfo.workEndDate" class="txt_blue workeTime">
+                        </li>
+
+                    </ul>
+                    <ul class="show">
+                        <li class="show_item">
+                            <span>加班计算 (下班后</span>
+
+                            <input type="text"  readonly v-model="ruleinfo.overtiameComeHour" class="txt_blue">
+                            <span>分钟，开始计算加班)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>迟到计算 (下班后</span>
+                            <input type="text"  readonly v-model="ruleinfo.belateComeTime" class="txt_blue">
+                                <span>分钟，开始计算迟到)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>早退计算 (下班后</span>
+                            <input type="text" readonly  v-model="ruleinfo.earlierComeTime" class="txt_blue">
+                            <span>分钟，开始计算早退)</span>
+                        </li>
+                        <li class="show_item">
+                            <span>旷工计算 (下班后</span>
+                            <input type="text"  readonly v-model="ruleinfo.stayawayAll" class="txt_blue">
+                            <span>分钟，开始计算旷工)</span>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+
+
+
+
+            </ul>
+
+            
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <!-- <script src="../../../script/lunarcalendar.js"></script> -->
+    <!-- <script src="../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script> -->
+    <script>
+        var vm;
+        apiready = function() {
+            $api.fixStatusBar($api.dom('header'));
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    ruleinfo: '' //考勤规则
+                },
+
+                watch: {
+
+                },
+                computed: {
+
+
+
+                },
+                mounted: function() {
+
+
+                },
+                created: function() {
+                    var data = api.pageParam.chooseleader;
+
+                    this.ruleinfo = {
+                        ruleName: data.ruleName, //考勤名称/班组名称
+                        elastic: '0', //考勤类型
+                        overtiameComeHour: data.overtiameComeHour, //加班时间
+                        belateComeTime: data.belateComeTime, //迟到时间
+                        earlierComeTime: data.earlierComeTime, //早退时间
+                        stayawayAll: data.stayawayAll, //旷工时间
+                        workStartDate: data.workStartDate, //工作开始时间
+                        workEndDate: data.workEndDate, //工作结束时间
+                    }
+                },
+                methods: {
+
+                    // submitRole:function(){
+                    //     if(!this.ruleinfo.workStartDate || !this.ruleinfo.workEndDate)return false;
+                    //     console.log($api.jsonToStr(this.ruleinfo));
+                    //     $app.post(
+                    //         true,
+                    //         realNameruleAdd,
+                    //         this.ruleinfo,
+                    //         function(ret){
+                    //             console.log($api.jsonToStr(ret));
+                    //             api.toast({
+                    //                 msg: ret.msg,
+                    //                 duration: 2000,
+                    //                 location: 'bottom'
+                    //             });
+                    //         }
+                    //     )
+                    // }
+                }
+            })
+
+
+        };
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

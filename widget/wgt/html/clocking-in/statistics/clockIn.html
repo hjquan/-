@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #F5F5F5;
+        }
+
+        .height {
+            height: 100%;
+            width: 100%;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+
+        .bg_f {
+            background: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .content {
+            margin-top: 2.3rem;
+            width: 100%;
+            background: #ffffff;
+        }
+
+        .main-div {
+            width: 100%;
+            background-color: #fff;
+        }
+
+
+        .month-name {
+            line-height: 2rem;
+            float: left;
+        }
+
+        .month-list {
+            height: 2.5rem;
+            width: 100%;
+            border-bottom: 1px #F5F5F5 solid;
+            margin-top: 0.1rem;
+            padding-right: 0.5rem;
+        }
+
+        .float-right {
+            float: right;
+            line-height: 2.5rem;
+            color: #909090;
+        }
+
+        .month-user-name {
+            line-height: 2.5rem;
+            float: left;
+            margin-left: 0.5rem;
+        }
+
+        .month-user-name-span {
+            color: #909090;
+            font-size: 0.7rem;
+        }
+
+        .kaoqing-text {
+            height: 3rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .name-img {
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            background: #058FFD;
+            float: left;
+            line-height: 2.5rem;
+            font-size: 0.5rem;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .clock-list {
+            width: 100%;
+            background-color: #ffffff;
+            padding-left: 0.2rem;
+            display: none;
+        }
+
+        .display-block {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="height">
+        <header class="aui-bar aui-bar-nav bg_f header" id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" @click="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title color_3"><span v-text="todayTime"></span>细明</div>
+            <div class="content">
+                <div class="aui-tab" id="tab">
+                    <div class="aui-tab-item aui-active" onclick="randomSwitchBtn(this,1)">全部</div>
+                    <div class="aui-tab-item" onclick="randomSwitchBtn(this,2)">迟到(<span
+                            v-text="attendanceForDay.lateCount"></span>)</div>
+                    <div class="aui-tab-item" onclick="randomSwitchBtn(this,3)">早退(<span
+                            v-text="attendanceForDay.laveCount"></span>)</div>
+                    <div class="aui-tab-item" onclick="randomSwitchBtn(this,4)">外勤(<span
+                            v-text="attendanceForDay.outCount"></span>)</div>
+                    <div class="aui-tab-item " onclick="randomSwitchBtn(this,5)">缺卡(<span
+                            v-text="attendanceForDay.missCount"></span>)</div>
+                </div>
+            </div>
+        </header>
+        <!--全部 -->
+        <div class="clock-list display-block">
+            <div class="month-list" v-for="(item,index) in allClockInInfo.recordList" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.cardCount"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+            <!--全部 -->
+            <div class="month-list" v-for="(item,index) in allClockInInfo.recordList1" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.cardCount"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+            <!--全部 -->
+            <div class="month-list" v-for="(item,index) in allClockInInfo.recordList2" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.cardCount"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+        </div>
+        <!-- 迟到 -->
+        <div class="clock-list clock-list1">
+            <div class="month-list" v-for="(item,index) in leateTimeInfo" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.leateTime"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+        </div>
+        <!-- 早退 -->
+        <div class="clock-list clock-list2">
+            <div class="month-list" v-for="(item,index) in leaveEarlyTimeInfo" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.leateTime"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+        </div>
+        <!-- 外勤 -->
+        <div class="clock-list clock-list3">
+            <div class="month-list" v-for="(item,index) in outAttendanceForInfo" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    外勤<span v-text="item.outCount"></span>次
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+        </div>
+        <!-- 缺卡 -->
+        <div class="clock-list clock-list4">
+            <div class="month-list" v-for="(item,index) in allClockInInfo.recordList1" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.cardCount"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+            <div class="month-list" v-for="(item,index) in allClockInInfo.recordList2" @click="openUserInfo(item)">
+                <div class="name-img" v-text="item.name">
+                </div>
+                <div class="month-user-name">
+                    <span v-text="strNum(item.name,7)"></span> (<span class="month-user-name-span"
+                        v-text="item.position"></span>)
+                </div>
+                <div class="float-right">
+                    <span v-text="item.cardCount"></span>
+                    <i class="aui-iconfont aui-icon-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/aui-dialog.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script//jquery-3.0.0.min.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    attendanceForDay: api.pageParam.attendanceForDay || null,//打卡人数统计
+                    // todayTime: "2020-08-12",//统计时间
+                    // attendanceForDay: {
+                    //     lateCount: 0,
+                    //     laveCount: 0,
+                    //     outCount: 0,
+                    //     missCount: 0,
+                    // },
+                    todayTime: api.pageParam.todayTime || null,//统计时间
+                    allClockInInfo: [],  //指定天，打卡信息
+                    leateTimeInfo: [],  //迟到信息
+                    leaveEarlyTimeInfo: [],  //早退信息
+                    outAttendanceForInfo: [], //外勤信息
+                },
+                created: function () {
+                    //获取制定日期打卡信息
+                    this.getClockInInfo();
+                    //获取早退信息
+                    this.getLeaveEarlyTime();
+                    //获取迟到信息
+                    this.getLeateTime();
+                    //获取外勤信息
+                    this.getOutAttendanceForDay();
+                },
+                methods: {
+                    //跳转靠请页面
+                    openUserInfo: function (userInfo) {
+                        console.log("++++++++++:" + JSON.stringify(userInfo));
+                        if ($api.getStorage('userId') === JSON.stringify(userInfo.userId)) {
+                            api.openFrame({
+                                name: '../index',
+                                url: '../index.html',
+                                pageParam: {
+                                    userInfo: userInfo
+                                }
+                            });
+                        } else {
+                            api.openFrame({
+                                name: 'clocking-info',
+                                url: 'clocking-info.html',
+                                pageParam: {
+                                    userInfo: userInfo
+                                }
+                            });
+                        }
+                    },
+                    //获取外勤信息
+                    getOutAttendanceForDay: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            outAttendanceForDayListURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            date: that.todayTime,
+                        }, function (ret) {
+                            // console.log("考勤天统计信息1：" + JSON.stringify(ret));
+                            that.outAttendanceForInfo = ret.obj;
+                        })
+                    },
+                    //获取迟到信息
+                    getLeateTime: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            laveEarlyForDayListURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            date: that.todayTime,
+                            type: "0"
+                        }, function (ret) {
+                            // console.log("考勤天统计信息1：" + JSON.stringify(ret));
+                            that.leateTimeInfo = ret.obj;
+                        })
+                    },
+                    //获取早退信息
+                    getLeaveEarlyTime: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            laveEarlyForDayListURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            date: that.todayTime,
+                            type: "0"
+                        }, function (ret) {
+                            // console.log("考勤天统计信息2：" + JSON.stringify(ret));
+                            that.leaveEarlyTimeInfo = ret.obj;
+                        })
+                    },
+                    //获取制定日期打卡信息
+                    getClockInInfo: function () {
+                        var that = this;
+                        $app.post(
+                            true,
+                            attendanceForDayListURL, {
+                            projectId: $api.getStorage('enterpriseId'),
+                            date: that.todayTime,
+                        }, function (ret) {
+                            // console.log("考勤天统计信息：" + JSON.stringify(ret));
+                            that.allClockInInfo = ret.obj;
+                            // console.log("考勤天统计信息：" + JSON.stringify(that.allClockInInfo));
+                        })
+                    },
+                    strNum: function (txt, num) {
+                        var str = txt;
+                        str = str.substr(0, num);
+                        return str;
+                    },
+                    closeWin: function () {
+                        api.closeFrame({
+                            name: 'clockIn'
+                        });
+                    },
+                },
+            });
+        }
+        // 随意切换按钮
+        function randomSwitchBtn(tag, falge) {
+            if (tag == $api.dom('.aui-tab-item.aui-active')) return;
+            var eHeaderLis = $api.domAll('.aui-tab-item'),
+                index = 0;
+            for (var i = 0, len = eHeaderLis.length; i < len; i++) {
+                if (tag == eHeaderLis[i]) {
+                    index = i;
+                } else {
+                    $api.removeCls(eHeaderLis[i], 'aui-active');
+                    document.getElementsByClassName("clock-list")[i].style.display = "none"
+                }
+            }
+            $api.addCls(eHeaderLis[index], 'aui-active');
+            document.getElementsByClassName("clock-list")[index].style.display = "block"
+        }
+
+    </script>
+    <script>
+    </script>
+</body>
+
+</html>

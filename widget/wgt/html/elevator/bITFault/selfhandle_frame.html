@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            font-family: PingFang SC;
+            font-weight: 500;
+            background: rgba(245, 245, 245, 1);
+        }
+
+        .box-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 30px;
+            align-items: center;
+            position: relative;
+            background-color: #fff
+        }
+
+        .b_b_line:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #F5F5F5;
+        }
+        .list_item{background-color: #fff}
+        .title{
+            height:40px;
+            line-height: 40px;
+            padding: 0 15px;
+            background:rgba(5,143,253,0.3);
+            font-size:10px;
+            color:rgba(101,101,101,1);
+        }
+        textarea{
+            font-size:12px;
+            color:rgba(51,51,51,1);
+            min-height: 75px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+
+        }
+        .img_box{
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 15px;
+        }
+        .img_item{
+            margin-right: 5px;
+            width: 60px;
+            height: 60px;
+        }
+        .carem_add{
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+        }
+        .carem_add i{
+            font-size: 30px;
+        }
+        .btn{
+            width: 80%;
+            height:46px;
+            line-height: 46px;
+            background:rgba(5,143,253,1);
+            border-radius:5px;
+            margin: 0 auto;
+            text-align: center;
+            color: #fff;
+            font-size:18px;
+            color:rgba(255,255,255,1);
+            margin-top: 40px;
+        }
+
+
+
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <ul class="list_box">
+            <li class="list_item">
+                <h2 class="title">原因</h2>
+                <textarea name="name" class="" placeholder="请输入文字" rows="8" cols="80"></textarea>
+                <div class="img_box">
+                    <img class="img_item" src="../../../../image/logo.png" alt="">
+                    <div class="carem_add">
+                        <i class="aui-iconfont aui-icon-camera"></i>
+                    </div>
+                </div>
+            </li>
+            <li class="list_item">
+                <h2 class="title">处理</h2>
+                <textarea name="name" class="" placeholder="请输入文字" rows="8" cols="80"></textarea>
+                <div class="img_box">
+                    <img class="img_item" src="../../../../image/logo.png" alt="">
+                    <div class="carem_add">
+                        <i class="aui-iconfont aui-icon-camera"></i>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="btn">完成</div>
+
+    </div>
+
+<script type="text/javascript" src="../../../../script/api.js"></script>
+<script src="../../../../script/sha1.js"></script>
+<script src="../../../../script/common.js"></script>
+<script type="text/javascript" src="../../../../script/vue.js"></script>
+
+<script type="text/javascript">
+    apiready = function() {
+        var app = new Vue({
+            el: '#app',
+            data: {
+                nav_txt: '', //nav文本
+                cur_nav_i: 0,
+            },
+            created: function() {
+                this.nav_txt = [{
+                    txt: '实时数据',
+                    type: 0,
+                }, {
+                    txt: '运行数据',
+                    type: 1,
+                }, {
+                    txt: '基本数据',
+                    type: 2,
+                }, ]
+            },
+            methods: {
+                //添加页面
+                addBtn:function(){
+                    api.openWin({
+                        name: 'dailymanagement_add',
+                        url: './add.html',
+                        pageParam: {
+                            name: 'test'
+                        }
+                    });
+
+                },
+                //点击切换当前nav
+                curtoggleFn: function(data, i) {
+                    this.cur_nav_i = i;
+                }
+
+            },
+        })
+
+    }
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+        .img_box{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff
+        }
+        #box{
+            position: relative;
+            border: 1px solid #f0f0f0;
+
+        }
+        .icon_box {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 35px;
+            height: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .location_succ{
+            color: #15BC83
+        }
+        /*.img{position: relative;}*/
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">点击选择位置</div>
+                <a class="aui-pull-right aui-btn" @click="comfigBtn" style="color:#058FFD">
+                    选好了
+                </a>
+            </header>
+        </div>
+        <div class="img_box">
+            <div id="box"  tapmode  @click="selemap()">
+                <img class="img" alt="" :src="info.builontentds[0].drawingPath">
+                <div v-if="locX || locY">
+                    <div class="icon_box"  :style="{'top':locY+'px','left':locX+'px'}" >
+                        <i class="aui-iconfont aui-icon-location location_succ" ></i>
+                        <p class="bor-b location_succ" ></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/hammer.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            $api.fixStatusBar($api.dom('header'));
+            var dialogBox = api.require('dialogBox');
+
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    info:'',
+                    locX:'',
+                    locY:'',
+
+                },
+                created:function(){
+                    var data = api.pageParam.actual_info;
+                    this.info= data;
+                    var _this = this;
+                    this.$nextTick(function(){
+                        var x=0;
+                        var y=0;
+                        var _node=document.getElementById('box');
+                        var hand=new Hammer(_node);
+                        hand.get('pinch').set({enable:true});
+                        hand.on("pinchmove pinchstart pinchin pinchout",function(e){//缩放
+
+                            if(e.type == "pinchstart"){
+                                this.scaleIndex = this.scaleCount || 1;
+                            }
+                            this.scaleCount= this.scaleIndex*e.scale;
+                            _node.style.transform = "scale(" + (this.scaleIndex * e.scale)+ ")"
+                        });
+                        hand.on('doubletap',function(e){//双击
+                        x=0;
+                        y=0;
+                        this.scaleCount=1;
+                        _node.style.transform = "translateX(0px) translateY(0px) scale(1)";
+                        })
+
+                        hand.on('panright panleft panup pandown',function(e){//拖动
+                            console.log(e.deltaX);
+                            console.log(e.deltaY);
+                            _node.style.transform="translateX("+(e.deltaX+x)+"px)"+"translateY("+(e.deltaY+y)+"px)"+"scale(" + (this.scaleCount * e.scale)+ ")"
+                            _this.pointerX = e.deltaX+x;
+                            _this.pointerY = e.deltaY+y
+                        })
+                        hand.on('panend',function(e){
+                            x=e.deltaX+x;
+                            y=e.deltaY+y;
+                        })
+                    })
+                },
+                methods: {
+
+                    },
+                    //选取区域位置
+                    selemap:function(event){
+                        var e = event || window.event;
+
+                        var curEl = document.getElementById('box');
+                        this.locX = e.screenX;
+                        this.locY = e.screenY;
+                        console.log('scrennX:'+ e.screenX);
+                        console.log('scrennY:'+ e.screenY);
+                        console.log('offsetLeft:'+ curEl.offsetLeft);
+                        console.log('offsetTop:'+ curEl.offsetTop);
+                        console.log(this.locX);
+                        console.log(this.locY);
+                    },
+                    //确认选取位置并跳转
+                    comfigBtn:function(){
+                        var _this = this;
+                        if(!this.locX ||  !this.locY){
+                            api.alert({
+                                title: '提示',
+                                msg: '请选择区域',
+                            }, function(ret, err){
+
+                            });
+                            return false;
+                        }
+                        var data = {
+                            locX:_this.locX,
+                            locY:_this.locY
+                        }
+                        api.openWin({
+                            name: 'actual_additem',
+                            url: './additem.html',
+                            pageParam: {
+                                'actual_info': api.pageParam.actual_info,
+                                'detailMap':data
+                            }
+                        });
+
+                    }
+                }
+            })
+
+
+
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+
+    </script>
+</body>
+
+</html>

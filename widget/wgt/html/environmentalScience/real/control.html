@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>塔机</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        body,
+        html {
+            font-family: PingFang SC;
+            font-weight: 500;
+            height: 100%;
+            background: #ffffff;
+        }
+
+        .centent-header {
+            padding-left: 6%;
+            height: 3rem;
+            line-height: 3rem;
+            background: #ffffff;
+        }
+
+        .control-page {
+            margin-left: 6%;
+            width: 88%;
+            height: 20rem;
+            border: 2px #e3e4e5 solid;
+            border-radius: 0.5rem;
+        }
+
+        .control-page-header {
+            height: 30%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-page-header img {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-page-content {
+            height: 20%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-page-content2 {
+            height: 20%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .direction {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+
+        .right {
+            width: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-text {
+            margin-top: 0.5rem;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app" style="height: 100%;">
+        <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+            <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="color:#555555;">设备<span v-text="sprayDeviceInfo.deviceName"></span></div>
+        </header>
+        <div>
+            <div class="centent-header">远程控制</div>
+            <div class="control-page">
+                <div class="control-page-header" v-if="sprayDeviceInfo.workStatus =='0'" @click="sprayControl(1)">
+                    <img class="direction" src="../../../../image/environmentalScience/strate-img.png" alt="">
+                    <p>开始</p>
+                </div>
+                <div class="control-page-header" v-if="sprayDeviceInfo.workStatus !=='0'" @click="sprayControl(2)">
+                    <img class="direction" src="../../../../image/environmentalScience/stop-img.png" alt="">
+                    <p style="color: red;">停止</p>
+                </div>
+                <div class="control-page-content">
+                    <img style="transform: rotate(-90deg);" class="direction"
+                        src="../../../../image/environmentalScience/right.png" alt="" @click="sprayControl(32)">
+                    <p class="img-text">上仰</p>
+                </div>
+                <div class="control-page-content2">
+                    <div class="right">
+                        <img class="direction" style="transform: rotate(180deg);"
+                            src="../../../../image/environmentalScience/right.png" alt="" @click="sprayControl(52)">
+                        <p class="img-text">左旋</p>
+                    </div>
+                    <div class="right">
+                        <img class="direction" src="../../../../image/environmentalScience/right.png" alt=""
+                            @click="sprayControl(62)">
+                        <p class="img-text">右旋</p>
+                    </div>
+                </div>
+                <div class="control-page-content">
+                    <img class="direction" style="transform: rotate(90deg);"
+                        src="../../../../image/environmentalScience/right.png" alt=" " @click="sprayControl(42)">
+                    <p class="img-text">下俯</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            api.parseTapmode();
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    sprayDeviceInfo: api.pageParam.sprayDeviceInfo,
+                    starteFlage: 0,
+                    // sprayDeviceInfo: { "deviceType": "1", "workStatus": "0", "onlineStatus": "1", "id": "2", "isNewRecord": false, "deviceId": "2", "deviceName": "2#雾炮", "projectId": "e76a19cf18f2498c99f66017c05f07d6" }
+                },
+                created: function () {
+
+                },
+                methods: {
+                    //喷淋设备远程控制
+                    sprayControl: function (opType) {
+                        var that = this;
+                        var prame = {
+                            id: that.sprayDeviceInfo.id,
+                            opType: opType + ""
+                        };
+                        console.log("喷淋设备远程控制" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            sprayControlURL,
+                            prame,
+                            function (ret) {
+                                // console.log("喷淋设备远程控制" + JSON.stringify(ret))
+                                that.getSprayDeviceInfoById();
+                            }
+                        )
+                    },
+                    //查询单个喷淋设备详情
+                    getSprayDeviceInfoById: function () {
+                        var that = this;
+                        var prame = {
+                            id: that.sprayDeviceInfo.id
+                        };
+                        console.log("查询单个喷淋设备详情参数：" + JSON.stringify(prame))
+                        $app.post(
+                            true,
+                            getSprayDeviceInfoByIdURL,
+                            prame,
+                            function (ret) {
+                                console.log("查询单个喷淋设备详情" + JSON.stringify(ret))
+                                that.sprayDeviceInfo = ret.obj;
+                            }
+                        )
+                    },
+                }
+            })
+        }
+        function closeWin() {
+            api.closeWin();
+
+        }
+    </script>
+
+</body>
+
+</html>

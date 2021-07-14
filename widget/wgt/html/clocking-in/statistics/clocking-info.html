@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+  <title></title>
+  <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+  <style>
+    html {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #fff;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+    }
+
+    .aui-bar-nav .aui-btn .aui-iconfont {
+      color: #0590FF
+    }
+
+    .color_3 {
+      color: #323233 !important;
+    }
+
+    .bg_f {
+      background: #fff
+    }
+
+    .container-header {
+      width: 100%;
+      height: 2.4rem;
+      padding-left: 1rem;
+      border-bottom: 1px #e3e4e5 solid;
+      border-top: 0;
+    }
+
+    .name-img {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      background: #058FFD;
+      float: left;
+      line-height: 2.5rem;
+      font-size: 0.5rem;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .user-info {
+      height: 2.4rem;
+      margin-left: 0.8rem;
+      float: left;
+    }
+
+    .clocking-time {
+      height: 2.4rem;
+      line-height: 2.4rem;
+      margin-right: 5%;
+      font-size: 0.8rem;
+      color: #3D79A9;
+      float: right;
+    }
+
+    .clocking-title {
+      width: 100%;
+      height: 2.4rem;
+      padding-left: 1.5rem;
+      font-size: 0.7rem;
+      line-height: 2.4rem;
+      color: #909090;
+    }
+
+    .clocking {
+      width: 100%;
+      position: relative;
+    }
+
+    .office-start-time {
+      color: #909090;
+      font-size: 0.7rem;
+      padding-left: 1.5rem;
+    }
+
+    .office-start-time li {
+      width: 0.5rem;
+      height: 0.5rem;
+      background: #058FFD;
+      border-radius: 50%;
+      float: left;
+      margin-top: 0.2rem;
+    }
+
+    .clocking-radius {
+      height: 10rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .clocking-radius-div {
+      width: 5.8rem;
+      height: 5.8rem;
+      background: #2DDDA6;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(45, 221, 166, 1) 0%, rgba(27, 199, 140, 1) 100%);
+      box-shadow: 0px 4px 12px 0px rgba(190, 247, 229, 1), 0px 1px 6px 0px rgba(111, 243, 200, 1);
+    }
+
+    .clocking-radius-text {
+      width: 9rem;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .clocking-correct-work {
+      height: 10rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .clocking-radius-d {
+      height: 10rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .clocking-correct-work-none {
+      height: 10rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .clocking-correct-div {
+      width: 5.8rem;
+      height: 5.8rem;
+      background: #2DDDA6;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(46, 170, 255, 1) 0%, rgba(5, 143, 253, 1) 100%);
+      box-shadow: 0px 4px 12px 0px rgba(165, 214, 250, 1), 0px 1px 6px 0px rgba(108, 195, 255, 1);
+    }
+
+    .clocking-correct-text {
+      width: 11rem;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .clocking-succeed-text {
+      margin-left: 1.75rem;
+      border-left: 1px #C7C7CC solid;
+      padding-left: 1rem;
+      margin-top: -0.6rem;
+      padding-top: 1rem;
+      margin-bottom: -0.6rem;
+      padding-bottom: 1rem;
+      height: 6rem;
+    }
+
+    .clocking-succeed-time {
+      font-weight: bold;
+      font-size: 0.8rem;
+      display: inline;
+    }
+
+    .clocking-error {
+      margin-top: 0.6rem;
+      margin-bottom: 2rem;
+      color: #3D79A9;
+      font-size: 0.7rem;
+      display: none;
+    }
+
+    footer {
+      width: 100%;
+      height: 2.8rem;
+      position: absolute;
+      bottom: 0.1rem;
+      border-top: 1px #e3e4e5 solid;
+    }
+
+    .footer-ul {
+      display: flex;
+      justify-content: center;
+    }
+
+    .footer-ul li {
+      width: 33.3%;
+      height: 2.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-ul li img {
+      width: 22%;
+    }
+
+    .footer-img {
+      width: 1.5rem;
+    }
+
+    .label-normal {
+      border: 1px #058FFD solid;
+      color: #058FFD;
+      display: inline;
+    }
+
+    .label-late {
+      border: 1px #FF8700 solid;
+      color: #FF8700;
+      display: inline;
+    }
+
+    .label-outwork {
+      border: 1px #30C141 solid;
+      color: #30C141;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <header class="aui-bar aui-bar-nav bg_f header " id="header">
+      <a class="aui-pull-left aui-btn aui-btn-left" @click="closeWin()">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title color_3">考勤</div>
+    </header>
+    <div class="container-header">
+      <div class="name-img" v-text="userInfo.name">
+        张一山
+      </div>
+      <div class="user-info">
+        <div class="user-name" v-text="userInfo.name">
+        </div>
+        <div class="clocking-name">
+          考勤组：<span v-text="rulesName"></span>
+        </div>
+      </div>
+      <div class="clocking-time" @click="selectTime()">
+        <span v-text="todayTime"></span>
+        <i class="aui-iconfont aui-icon-down"></i>
+      </div>
+    </div>
+    <!-- 打卡功能模块start -->
+    <div class="clocking-title">
+      新的一天，始于梦想
+    </div>
+    <div class="clocking">
+      <div class="office-start-time">
+        <li></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上班时间 <span v-text="rulesInfo.startWorkTime"></span>
+      </div>
+      <!-- 上班打卡成功后的文档 -->
+      <div id="workTextDom" class="clocking-succeed-text">
+        <div v-if="parseInt(clockingInfo.isStartTime)">
+          <div v-if="parseInt(clockingInfo.isStartTime)" class="clocking-succeed-time">打卡时间 <span
+              v-text="clockingInfo.startTime.substring(11,16)"></span></div>
+          <div class="label-normal">正常</div>
+          <div class="label-late">迟到</div>
+          <div class="label-late">请假</div>
+          <div class="label-late">缺卡</div>
+          <div class="label-outwork">外勤</div>
+          <div class="addImg" v-if="parseInt(clockingInfo.isStartTime)">
+            <img src="../../../../image/clocking-in/kq_icon_place.png" style="float: left;" />
+            <div v-text="clockingInfo.attStartAddress"></div>
+          </div>
+        </div>
+      </div>
+      <div id="workTimeDom" class="office-start-time">
+        <li></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;下班时间 <span v-text="rulesInfo.endWorkTime"></span>
+      </div>
+      <!-- 下班打卡成功后的文档 -->
+      <div id="offWorkTextDom" class="clocking-succeed-text" style="border: 0 ;"
+        v-if="parseInt(clockingInfo.isEndTime)">
+        <div class="clocking-succeed-time">打卡时间 <span v-text="clockingInfo.endTime.substring(11,16)"></span></div>
+        <div class="label-normal" v-if="parseInt(clockingInfo.startStuts)">正常</div>
+        <div class="label-late" v-if="parseInt(clockingInfo.startStuts)">迟到</div>
+        <div class="label-late" v-if="parseInt(clockingInfo.startStuts)">请假</div>
+        <div class="label-late" v-if="parseInt(clockingInfo.startStuts)">缺卡</div>
+        <div class="label-late" v-if="parseInt(clockingInfo.startStuts)">早退</div>
+        <div class="label-outwork" v-if="parseInt(clockingInfo.startStuts)">外勤</div>
+        <div class="addImg">
+          <img src="../../../../image/clocking-in/kq_icon_place.png" style="float: left;" />
+          <div v-text="clockingInfo.attEndAddress"></div>
+        </div>
+        <div class="clocking-title" style="margin-left: -2.5rem;margin-top: 2rem;">
+          今天辛苦了，好好休息
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../../../../script/api.js"></script>
+  <script src="../../../../script/vue.js"></script>
+  <script src="../../../../script/aui-dialog.js"></script>
+  <script src="../../../../script/sha1.js"></script>
+  <script src="../../../../script/common.js"></script>
+  <script>
+
+    var thisRulesId = null; //最外层传值
+    apiready = function () {
+      $api.fixStatusBar($api.dom('.header'));
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          userInfo: api.pageParam.userInfo,  //
+          todayTime: api.pageParam.userInfo.attTime,
+          attStartAddress: null, //上班打开地点
+          startTime: "09:00", //上班打卡时间
+          rulesName: null,   //考勤组
+          endTime: null,     //下班时间
+          attEndAddress: null,  //下班地址
+          rulesInfo: {},  //获取考勤规则
+          clockingInfo: {},  //用户打卡信息
+          startStuts: null,  //打卡状态
+        },
+        created: function () {
+          this.getAttendanceRecord();
+          console.log("==========：" + JSON.stringify(api.pageParam.userInfo));
+        },
+        methods: {
+          //获取用户消息
+          getAttendanceRecord: function () {
+            var that = this;
+            $app.post(
+              true,
+              getAttendanceRecordURL,
+              {
+                projectId: $api.getStorage('enterpriseId'),
+                attTime: this.todayTime,
+                attUserId: $api.getStorage('userId'),
+                attUserName: $api.getStorage('enterLoginInfo').name
+              },
+              function (ret) {
+                console.log("获取用户第一次进入打卡:" + JSON.stringify(ret));
+                that.clockingInfo = ret.obj;
+                that.getRulesInfo(that.clockingInfo.rulesId);
+              }
+            )
+          },
+          //获取考勤规则
+          getRulesInfo: function (rulesId) {
+            var that = this;
+            $app.post(
+              true,
+              attendanceRuleDetailURL, {
+              rulesId: rulesId
+            },
+              function (ret) {
+                console.log("考勤规则：" + JSON.stringify(ret));
+                that.rulesInfo = ret.obj
+              }
+            );
+          },
+          //选择时间
+          selectTime: function () {
+            var that = this;
+            api.openPicker({
+              type: 'date',
+              maxDate: that.todayTime,
+              date: that.todayTime,
+              title: '选择时间'
+            }, function (ret, err) {
+              if (ret) {
+                that.todayTime = ret.year + '-' + that.addZero(ret.month) + '-' + that.addZero(ret.day)
+                //获取打卡信息
+                that.getAttendanceRecord();
+              }
+            });
+          },
+          //补充o
+          addZero: function (s) {
+            return s < 10 ? '0' + s : s
+          },
+          closeWin: function () {
+            api.closeWin();
+          }
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>

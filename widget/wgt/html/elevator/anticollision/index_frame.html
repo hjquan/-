@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+
+        html,body{height: 100%;background-color: #000;}
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+        .box{
+            padding-top: 50px;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            min-height: 100%
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+        .circel_dashed{
+            width:100px;
+            height:100px;
+            background:rgba(0,153,68,0.2);
+            border:3px dashed rgba(0,153,68,1);
+            border-radius:50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .circel{
+            width:40px;
+            height:40px;
+            background:rgba(0,153,68,1);
+            border:3px solid rgba(0,153,68,1);
+            border-radius:50%;
+            text-align: center;
+            line-height: 40px;
+            position: relative;
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(254,254,254,1);
+            z-index: 100
+        }
+        .line{
+            width:30px;
+            height:3px;
+            background:rgba(246,246,246,1);
+            position: absolute;
+            top: 48px;
+            left: 48px;
+            z-index: 10;
+        }
+        .circel_dashed_un{
+            background:rgba(153,153,153,0.2);
+            border:3px dashed rgba(153,153,153,1);
+        }
+        .circel_un{
+            background:rgba(98,98,98,1);
+            border:3px solid rgba(98,98,98,1);
+        }
+        .show{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(254,254,254,1);
+            padding: 0;
+            margin:10px 0;
+        }
+        .line_cir{
+            width:25px;
+            height:25px;
+            background:rgba(0,153,68,1);
+            border:1px solid rgba(0,153,68,1);
+            border-radius:50%;
+            margin-right: 10px;
+        }
+        .danger_txt{
+            color:rgba(255,1,1,1);
+            padding-left: 30px;
+            line-height: 30px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <div class="box">
+            <div class="circel_dashed" @click="operationmonitoringFn()">
+                <div class="circel">
+                    1#
+                </div>
+                <div class="line"></div>
+            </div>
+            <div class="circel_dashed circel_dashed_un">
+                <div class="circel circel_un">
+                    1#
+                </div>
+                <div class="line"></div>
+            </div>
+        </div>
+        <div class="show">
+            <div class="show_line show">
+                <div class="line_cir "></div><span>在线升降机</span>
+            </div>
+            <div class="show_offline show">
+                <div class=" line_cir"></div><span>离线升降机</span>
+            </div>
+        </div>
+        <p class="danger_txt">目前报警升降机：无</p>
+        <p class="danger_txt">注：点击在线升降机可查看运行数据</p>
+        <!-- <div class="noData">
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div> -->
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        // Vue.use(VueLazyload, {
+        //   error: '../../../../image/err.jpg',
+        //   loading: '../../../../image/lay_img.gif'
+        // });
+
+        apiready = function(){
+
+            //下拉刷新
+            // $app.downrefresh(
+            //     function(){
+            //         // vm.init(false)
+            //
+            //     }
+            // )
+            //
+            // ///上拉加载
+            // $app.uploding(
+            //     function(){
+            //         // vm.init(true)
+            //
+            //     }
+            // )
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    pageParam:'',//接收跨页面参数
+                    pageNo:1,//当前页码
+                    status:0,//人员状态（0在场 1离场）
+                    personList:[],//人员列表信息
+                    copyPersonList:[],//保存人员列表信息（用于检索）
+                    condition:'',//检索条件
+
+                },
+                mounted:function(){
+                },
+                created:function(){
+                    // console.log($api.jsonToStr(api.pageParam.subcontractor));
+                    // this.pageParam = api.pageParam.info;
+                    // this.init(false)
+                },
+                methods:{
+                    //打开operationmonitoring
+                    operationmonitoringFn:function(){
+                        api.openWin({
+                            name: 'operationmonitoring',
+                            url: '../operationmonitoring/tower_data.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+
+
+
+                    //打开新页面
+                    deviceInfoFn:function(data){
+                        api.openWin({
+                            name: 'deviceInfo',
+                            url: './deviceInfo.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //初始化数据
+                    init:function(loadMore){
+                        var _this = this;
+                        if(loadMore){
+                            this.pageNo++
+                        }else {
+                            this.pageNo = 1
+                        }
+                        var params = {
+                                idcardNo:'',// 身份证号码
+                                name:'',//姓名
+                                teamId:this.pageParam.teamId,//班组ID
+                                projectId:this.pageParam.projectId,//项目ID
+                                category:api.pageParam.subcontractor.category,//人员类别
+                                id:'',//主键ID
+                                pageNo:this.pageNo,//当前页
+                                pageSize:'2',//每页显示条数
+                                station:this.pageParam.station,//项目岗位
+                                status:this.status,//查询人员状态（0入场 1立场）
+                            }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            realNameList,
+                            params,
+                            function(ret){
+                                api.refreshHeaderLoadDone();
+                                console.log($api.jsonToStr(ret));
+                                if(!ret.obj.list){
+                                    _this.personList = [];
+                                }
+                                if(loadMore){
+                                    if(_this.personList.length < ret.obj.count){
+                                        _this.personList = _this.personList.concat(ret.obj.list)
+                                    }else{
+                                        api.toast({
+                                            msg: '暂无更多数据',
+                                            duration: 2000,
+                                            location: 'bottom'
+                                        });
+
+                                    }
+                                }else{
+                                    _this.personList = ret.obj.list;
+                                }
+                                _this.copyPersonList = $api.strToJson($api.jsonToStr(_this.personList));
+
+                            }
+                        )
+                    },
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

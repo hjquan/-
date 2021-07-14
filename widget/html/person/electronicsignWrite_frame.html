@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <!-- <link rel="stylesheet" href="../../css/style.css"> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../css/about.css"> -->
+    <style>
+        html,body{height: 100%;}
+        .txt{color:#058FFD}
+        .txt_active{
+            width:52px;
+            height:26px;
+            line-height: 26px;
+            background:rgba(5,143,253,1);
+            border-radius:2px;
+            font-size: 14px;
+            color: #fff
+        }
+        .left_nav{
+            width: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;;
+            align-items: center;
+        }
+        .item{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .circel,.line{
+            /*flex:1;*/
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .circel_item{
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+        .circel_active div{
+            width:16px;
+            height:16px;
+            border-radius:8px;
+            border:1px solid rgba(255,255,255,1);
+        }
+        .line_item{
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+        .line_item_active{
+            width: 22px;
+            height: 22px;
+            background-color: #25282E;
+            border-radius: 2px;
+        }
+        .line_item_active .aui-icon-pencil{
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app" >
+        <div class="left_nav">
+            <ul class="circel">
+                <li class="circel_item item" :class="{'circel_active':i === curr_c_i}" :style="{'background-color':item}" v-for="(item,i) in colors" @click="cirel_toggle(item,i)">
+                    <div></div>
+                </li>
+            </ul>
+            <ul class="line">
+                <li class="line_item item" :class="{'line_item_active':i === cur_l_i}" v-for="(item,i) in lineWeight" @click="line_toggle(item,i)">
+                    <i class="aui-iconfont aui-icon-pencil"  :style="{'font-size': (item + 4) + 'px'}"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var drawingBoard = api.require('drawingBoard');
+                var left_offset = $api.offset($api.dom('.left_nav'))
+                $api.dom('.left_nav').style.height = api.frameHeight-left_offset.h+ 'px';
+                // // //横屏操作
+                // api.setScreenOrientation({
+                //     orientation: 'landscape_left'
+                // });
+                // // //隐藏状态栏
+                // api.setFullScreen({
+                //     fullScreen: false
+                // });
+
+                //监听重写事件
+                api.addEventListener({
+                    name: 'sign_remove_enevt'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.cleargBoardFn()
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //监听保存签名事件
+                api.addEventListener({
+                    name: 'sign_save_enevt'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.saveFn()
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        colors:['#25282E','#EC4031','#058FFD'],//画笔颜色
+                        curr_c:'#25282E',//当前画笔颜色
+                        curr_c_i:0,//当前画笔下标
+
+                        lineWeight:[6,8,10],//画笔粗细
+                        cur_line_w:6,//当前画笔粗细
+                        cur_l_i:0,//当前下标
+
+                        signUrl:'',//接收签名图片地址
+                    },
+                    created:function(){
+                        var data = api.pageParam.signIfo;
+                        this.signUrl = data;
+                        this.initsign()
+
+
+                    },
+                    methods: {
+
+
+                        //图片保存
+                        updateImg:function(url){
+                            var file = [url];
+                            var _this = this;
+                            ajaxFile(
+                                true,
+                                '图片上传中',
+                                uplodeEnterpriseFileURL, {
+                                    enterpriseId: $api.getStorage('enterpriseId')
+                                }, {
+                                    imgFile: file
+                                },
+                                function(ret){
+                                    console.log('图片保存'+$api.jsonToStr(ret));
+                                    _this.addSign(ret.obj[0])
+                                }
+                            )
+                        },
+                        //初始化签名
+                        initsign: function() {
+                            var _this = this;
+
+                            drawingBoard.open({
+                                rect: {
+                                    x: left_offset.w,
+                                    y: 0,
+                                    w: api.frameWidth-left_offset.w,
+                                    h: api.frameHeight,
+                                },
+                                styles: {
+                                    brush: {
+                                        color:'#25282E',
+                                        width: 2
+                                    },
+                                    bgColor: '#fff'
+                                },
+                                fixedOn: api.frameName
+                            });
+                        },
+
+                        //保存签名图片
+                        saveFn: function() {
+                            var _this = this;
+                            drawingBoard.save({
+                				savePath : 'fs://drawingBoard/'+ randomWord(true, 10, 15) +'.png',
+                				copyToAlbum : false
+                			}, function(ret) {
+                				// alert(JSON.stringify(ret));
+                				// $api.attr($api.byId('img1'), 'src', ret.absolutePath);
+                                console.log('保存签名图片：'+$api.jsonToStr(ret));
+                                _this.updateImg(ret.absolutePath)
+                			});
+                        },
+                        //新增签名
+                        addSign:function(data){
+                            var params = {
+                                "userId": $api.getStorage('userId'),
+                                "sign":this.signUrl.srcPath ? '0' : '1',
+                                "srcPath": data.srcPath,
+                                "compressPath": data.compressPath
+                            }
+                            console.log($api.jsonToStr(params));
+                            $app.post(
+                                true,
+                                addElectronicSignature,
+                                params,
+                                function(ret){
+                                    // console.log($api.jsonToStr(ret));
+                                    api.toast({
+                                        msg: ret.msg,
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                    //
+                                    //刷新
+                                    api.sendEvent({
+                                        name: 'refsh_sign_event',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(function(){
+                                        api.closeWin()
+                                    })
+
+
+                                }
+                            )
+                        },
+                        //颜色选取
+                        cirel_toggle:function(data,i){
+                            this.curr_c = data;
+                            this.curr_c_i = i;
+                            this.drawingBoard()
+                        },
+                        //线宽选取
+                        line_toggle:function(data,i){
+                            this.cur_line_w = data;
+                            this.cur_l_i = i;
+                            this.drawingBoard()
+                        },
+
+                        //关闭签名版
+                        close: function() {
+                            drawingBoard.close();
+                        },
+                        //隐藏签名版
+                        hide: function() {
+                            drawingBoard.hide();
+                        },
+                        //显示签名版
+                        showFn: function() {
+                            drawingBoard.show();
+                        },
+
+                        //清空画板上的所有笔画线条
+                        cleargBoardFn: function() {
+                            drawingBoard.clear();
+                        },
+
+                        //重设画笔样式
+                        drawingBoard: function() {
+                            var that = this;
+                            drawingBoard.resetBrush({
+                                color: that.curr_c,
+                                width: that.cur_line_w
+                            });
+                        }
+
+
+
+                    }
+                })
+
+            }
+        </script>
+</body>
+
+</html>

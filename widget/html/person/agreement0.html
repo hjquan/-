@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>服务协议</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        html,body{
+            background-color: rgba(0,0,0,0.3);
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .a_link{
+            color:#058FFD
+        }
+        .head{
+            height:40px;
+            line-height: 40px;
+        }
+        .container{
+            width: 80%;
+            margin:0 auto;
+            min-height: 300px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #000;
+            font-weight: 600;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .main{
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            padding: 15px;
+        }
+        .btn_box{
+
+            text-align: center;
+            display: flex;
+            justify-content:
+        }
+        .btn{
+            height:45px;
+            line-height: 45px;
+            flex:1;
+        }
+        .btn:last-child{
+            color:#058FFD;
+            border-left: 1px solid #ccc;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="head">
+            服务协议和隐私协议概要
+        </div>
+        <div class="main" style="margin:0pt; orphans:0;">
+            <p style="margin:0pt; orphans:0; text-align:justify; widows:0"><span style="font-family:Calibri; font-size:10.5pt"></span><span style="font-family:宋体; font-size:10.5pt">
+                欢迎您使用筑迹云！筑迹云是由重庆大匠信息科技有限公司研发的建筑办公协同平台，我们将通过《服务协议》和《隐私协议》帮助您了解我们收集、使用、存储和共享个人信息的情况，以及您所享有的相关权利。
+                我们会采用业界领先的安全技术保护好您的个人信息。
+                您可以阅读完整版的
+                <span class="a_link" tapmode onclick="openagreement(1)">《服务协议》</span>
+                及
+                <span class="a_link"  tapmode onclick="openagreement(2)">《隐私协议》</span>
+                了解详细信息。
+                如您同意，请点击“同意”开始接受我们的服务。
+                </span>
+            </p>
+        </div>
+        <div class="btn_box">
+            <div class="btn" tapmode onclick="fnNo(0)">暂不使用</div>
+            <div class="btn" tapmode onclick="fnNo(1)">同意</div>
+        </div>
+    </div>
+
+
+    <script src="../../script/api.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            // $api.fixStatusBar( $api.dom('header') );
+        }
+        function openagreement(type) {
+            var url = './'+ (type == 1?'agreement':'privacyprotocol') +'.html';
+            api.openWin({
+                name: 'agreement'+type,
+                url: url,
+                pageParam: {
+                    name: 'test'
+                }
+            });
+        }
+        function fnNo(tyepRole){
+            api.sendEvent({
+                name: 'clickRole',
+                extra: {
+                    roleFn: tyepRole,
+                }
+            });
+            setTimeout(function(){
+                api.closeFrame()
+            },500)
+
+
+        }
+        function closeWin(){
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

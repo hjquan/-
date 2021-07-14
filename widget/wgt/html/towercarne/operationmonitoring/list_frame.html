@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+        }
+
+        /*.list_item > *{
+            flex: 1
+        }*/
+        .total {
+
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .total p {
+            color: rgba(0, 153, 76, 1);
+            margin-right: 50px;
+        }
+
+        .total p.off {
+            color: rgba(149, 149, 149, 1);
+        }
+
+        .circel {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(0, 153, 68, 1);
+            border-radius: 50%;
+        }
+
+        .offline {
+            border: 2px solid rgba(153, 153, 153, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app">
+        <ul class="list" v-if="towerRunMonitorList.length !== 0">
+            <!-- 报警 -->
+            <li class="list_item" v-if="(item.status == 2) ||(item.status == 3) "
+                v-for="(item,index) in towerRunMonitorList" @click="opentowerData(item)">
+                <div class="lf ">
+                    <div class="circel offline" style="border: 2px solid red;"></div>&nbsp;&nbsp;
+                    <span class="name"><span v-text="item.number">
+                </div>
+                <div class="total">
+                    <p class="off" style="color: red;" v-text="item.statusText"></p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <!-- 预警 -->
+            <li class="list_item" @click="opentowerData(item)" v-if="item.status == 1 "
+                v-for="(item,index) in towerRunMonitorList">
+                <div class="lf ">
+                    <div class="circel " style="border: 2px solid #FEA62A;"></div>&nbsp;&nbsp;
+                    <span class="name"><span v-text="item.number">
+                </div>
+                <div class="total">
+                    <p class="" style="color: #FEA62A;" v-text="item.statusText"></p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li class="list_item" @click="opentowerData(item)" v-if="item.status == 0 "
+                v-for="(item,index) in towerRunMonitorList">
+                <div class="lf ">
+                    <div class="circel "></div>&nbsp;&nbsp;
+                    <span class="name"><span v-text="item.number">
+                </div>
+                <div class="total">
+                    <p class="" v-text="item.statusText"></p>
+                </div>
+                <i class="aui-iconfont aui-icon-right"></i>
+            </li>
+            <li class="list_item" v-if="item.status == 4" v-for="(item,index) in towerRunMonitorList"
+                @click="openOffLine(item)">
+                <div class="lf ">
+                    <div class="circel offline"></div>&nbsp;&nbsp;
+                    <span class="name"><span v-text="item.number">
+                </div>
+                <div class="total">
+                    <p class="off" v-text="item.statusText"></p>
+                </div>
+                <i class="" style="width: 0.7rem;"></i>
+            </li>
+        </ul>
+        <div class="noData" v-else>
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: '../../../../image/err.jpg',
+            loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function () {
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    towerRunMonitorList: [],//塔机运行监控列表
+
+                },
+                created: function () {
+                    this.getTowerRunMonitorList();
+                },
+                methods: {
+                    //打开详情
+                    opentowerData: function (item) {
+                        api.openWin({
+                            name: 'tower_data',
+                            url: './tower_data.html',
+                            pageParam: {
+                                towerRunMonitor: item
+                            }
+                        });
+                    },
+                    //打开新页面
+                    deviceInfoFn: function (data) {
+                        api.openWin({
+                            name: 'deviceInfo',
+                            url: './deviceInfo.html',
+                            pageParam: {
+                            }
+                        });
+                    },
+                    //获取塔机运行监控列表
+                    getTowerRunMonitorList: function () {
+                        var that = this;
+                        var prame = {
+                            projectId: $api.getStorage('enterpriseId'),
+                        };
+                        $app.post(
+                            true,
+                            getTowerRunMonitorListURL,
+                            prame,
+                            function (ret) {
+                                that.towerRunMonitorList = [];
+                                that.towerRunMonitorList = ret.obj;
+                                that.towerRunMonitorList.map(function (item) {
+                                    if (item.status == "0") {
+                                        item.statusText = "正常"
+                                    } else if (item.status == "1") {
+                                        item.statusText = "预警"
+                                    } else if (item.status == "2") {
+                                        item.statusText = "报警"
+                                    } else if (item.status == "3") {
+                                        item.statusText = "违章"
+                                    } else if (item.status == "4") {
+                                        item.statusText = "离线"
+                                    }
+                                });
+                                console.log("获取塔机运行监控列表:" + JSON.stringify(ret));
+                            }
+                        )
+                    },
+                    //离线提醒
+                    openOffLine: function () {
+                        api.alert({
+                            title: '离线提醒',
+                            msg: '该塔机已离线',
+                        }, function (ret, err) {
+
+                        });
+                    },
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

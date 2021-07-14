@@ -1,0 +1,85 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+.flex {
+    display: flex;
+    display: -webkit-flex;
+    display: -moz-flex;
+}
+
+.fx_r_c {
+    justify-content: center;
+}
+
+.fx_c_c {
+    align-items: center;
+}
+
+.hover {
+    opacity: .5
+}
+
+#app {
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.pwd_box {
+    margin-top: 30px;
+}
+
+.pwd_box li {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.pwd_box li:last-child {
+    margin-top: 65px
+}
+
+.pwd_box input {
+    width: 90%;
+    height: 50px;
+    border: 1px solid rgba(230, 230, 230, 1);
+    border-radius: 3px;
+    margin: 10px auto;
+    padding-left: 6px;
+}
+
+.getCode {
+    border: none;
+    padding: 2px 4px;
+    height: 30px;
+    background: rgba(5, 143, 253, 1);
+    border-radius: 3px;
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+    line-height: 30px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(254, 254, 254, 1);
+}
+
+.icon {
+    position: absolute;
+    right: 35px;
+    bottom: 13px;
+    font-size: 30px
+}
+#submit{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color:#fff;
+}
+
+.btnActive {
+    background: #058FFD !important;
+    color: #fff;
+}

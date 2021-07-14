@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./commonUi/aui/css/aui.css">
+    <style>
+        html ,body{
+            background-color: transparent;
+        }
+        .content{
+            width: 100vw;
+            height: 100vh;
+            background-color:rgba(0,0,0,.4);
+            /*overflow: auto;*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .show{
+            min-width: 100px;
+            max-width: 85%;
+            max-height: 500px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .close i{
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+            top:-10px;
+            right:-10px;
+            width: 30px;
+            height:30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 15px;
+            background-color: #fff
+
+        }
+        .txt{
+            max-height: 440px;
+            overflow-y: scroll;
+            word-wrap:break-word;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="content" tapmode onclick="api.closeFrame()">
+
+        <div class="show">
+            <div class="close">
+                <i class="aui-iconfont aui-icon-close"  tapmode onclick="api.closeFrame()"></i>
+
+            </div>
+            <p class="txt" id="showTxt">
+            </p>
+        </div>
+
+    </div>
+    <script src="./script/api.js"></script>
+    <script src="./script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function(){
+            $api.html($api.byId('showTxt'), api.pageParam.content);
+        }
+    </script>
+</body>
+</html>

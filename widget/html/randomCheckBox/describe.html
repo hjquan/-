@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            height: 100%;
+            background: #fff
+        }
+
+        .main_box {
+            height: calc(100%-55px);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .submit {
+            width: 85%;
+            height: 45px;
+            line-height: 45px;
+            color: #fff;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        textarea {
+            height: 500px;
+            background: #fff;
+            font-size: 18px;
+            font-weight: 400;
+            color: #333;
+            line-height: 30px;
+            padding: 15px;
+            text-indent: 30px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode @click="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title" style="font-size:18px;font-weight:500;color:rgba(51,51,51,1);">描述</div>
+        </header>
+        <div class="main_box">
+            <textarea name="name" rows="8" v-model.trim="desContent" cols="80"></textarea>
+        </div>
+        <div class="submit" tapmode="hover" tapmode onclick="openRandom()">保存</div>
+    </div>
+
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                desContent: '',
+                copyContent: '', //原内容
+            },
+            methods: {
+                closeWin: function() {
+
+                    api.sendEvent({
+                        name: 'describeContent',
+                        extra: {
+                            'desContent': vm.copyContent
+                        }
+                    });
+                    setTimeout(function() {
+                        api.closeWin();
+                    }, 200)
+
+                }
+
+            }
+        })
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            vm.desContent = api.pageParam.describeContent;
+            vm.copyContent = api.pageParam.describeContent;
+            api.addEventListener({
+                name: 'keyback'
+            }, function(ret, err) {
+                if (ret) {
+                    api.sendEvent({
+                        name: 'describeContent',
+                        extra: {
+                            'desContent': vm.copyContent
+                        }
+                    });
+                    setTimeout(function() {
+                        api.closeWin();
+                    }, 200)
+
+
+                }
+            });
+
+        };
+
+        function openRandom() {
+            api.sendEvent({
+                name: 'describeContent',
+                extra: {
+                    'desContent': vm.desContent
+                }
+            });
+
+            setTimeout(function() {
+                api.closeWin();
+            }, 200)
+
+        }
+    </script>
+</body>
+
+</html>

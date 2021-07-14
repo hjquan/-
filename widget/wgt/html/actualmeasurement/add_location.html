@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 25px;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 80px;
+            padding: 10px 15px;
+            background-color: #fff;
+        }
+
+        .list_item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .list_left {
+            display: flex;
+        }
+
+        .list_left p {
+            padding: 5px;
+            color: #323233;
+            font-size: 15px;
+            margin-left: 15px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: #7187E5;
+            color: #fff;
+            line-height: 36px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            margin-left: 15px;
+        }
+
+        .bottom_before_line::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: #F5F5F5;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+        .txt_p {
+            color: #B7B7BC
+        }
+
+        .w_5 {
+            flex: 1;
+            /*text-align: right;*/
+        }
+
+        .btn {
+            font-size: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .active {
+            color: #058FFD
+        }
+
+        .title {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+            display: flex;
+            align-items: center;
+            height: 50px;
+            position: relative;
+        }
+
+        .title i {
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0 15px
+        }
+        .footer{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height:45px;
+            background:rgba(255,255,255,1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 10px;
+        }
+        .comfigBtn{
+            width:116px;
+            height:45px;
+            line-height: 45px;
+            background-color: #C7C7CC;
+            color: #fff;
+            text-align: center;
+        }
+        .btnActive{
+            background:rgba(5,144,255,1);
+        }
+        .txt_color_active{
+            color:#058FFD !important
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="openWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">检查部位</div>
+                <!-- <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfonts btn active" >确定</span>
+                </a> -->
+            </header>
+        </div>
+        <div class="main_box" v-if="selctList.length">
+            <div v-for="(items,parent_i) in selctList">
+                <div class="title bottom_before_line" @click="parentFn(items,parent_i)">
+                    <span tapmode :class="{'txt_color_active':selectParentFn(items)}">{{items.area_name}}</span>
+                    <i class="aui-iconfont" :class="[items.toggleShow ? 'aui-icon-down' : 'aui-icon-right' ]" ></i>
+                </div>
+                <ul class="list_box" v-show="items.toggleShow">
+                    <li class="list_item" v-for="(item,child_i) in items.subArea" @click="childFn(item,items.area_name)">
+                        <div class="list_left bottom_before_line " >
+                            <p class="aui-ellipsis-1 "  :class="{'txt_color_active':selectItemFn(item)}" v-text="item.area_name"></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- <div class="footer">
+                <label tapmode><input class="aui-checkbox" v-model="allcheckState"  type="checkbox" name="checkbox" @change=allCheckFn() > &nbsp;全选</label>
+                <div class="comfigBtn" @click="submit()" :class="{'btnActive':allcheckState}">确定</div>
+            </div> -->
+
+        </div>
+        <div class="noData" v-else>
+            <img src="../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            api.parseTapmode()
+                // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    selctList: [], //拉取的列表数据
+                    allcheckState:false,//全选状态
+                    defaultCheck:'',//默认选中数据
+                },
+                computed: {
+
+
+                },
+                watch: {
+                },
+                mounted: function() {},
+
+                created: function() {
+                    console.log('init');
+                    this.defaultCheck = api.pageParam.addactuallocation;
+                    this.init()
+                },
+                methods: {
+                    //父级选中
+                    selectParentFn:function(data){
+                        // console.log($api.jsonToStr(data));
+                        if(!this.defaultCheck){return false}
+                        if(data.area_id === this.defaultCheck.parent_id){
+                            return true;
+                        }else{
+                            return false
+                        }
+                    },
+                    //子级默认选中
+                    selectItemFn:function(data){
+                        if(!this.defaultCheck){return false}
+                        if(data.area_id == this.defaultCheck.area_id){
+                            return true;
+                        }else{
+                            return false
+                        }
+                    },
+                    ///点击父级展开
+                    parentFn:function(data,i){
+                        this.selctList[i].toggleShow = !this.selctList[i].toggleShow;
+                    },
+                    //点击子级选中数据提交
+                    childFn:function(data,parent_name){
+                        console.log($api.jsonToStr(data));
+                        api.sendEvent({
+                            name: 'add_actual_location_event',
+                            extra: {
+                                'add_actual_chekck':data,
+                                'parent_name':parent_name
+                            }
+                        });
+                        setTimeout(function(){
+                            api.closeWin()
+                        },500)
+
+                    },
+
+
+                    //初始化数据
+                    init: function() {
+                        setTimeout(function(){
+                            api.showProgress({
+                                style: 'default',
+                                animationType: 'fade',
+                                title: '努力加载中...',
+                                text: '先喝杯茶...',
+                                modal: true
+                            });
+
+
+                        },100)
+                        var _this = this;
+                        var params = {
+                                "projectId": $api.getStorage('enterpriseId')
+                            }
+                            // console.log($api.jsonToStr(params));
+                        function callback(ret) {
+                            setTimeout(function(){
+                                api.hideProgress();
+                            },100)
+                            ret.obj.forEach(function(items){
+                                items.toggleShow = false;
+                            })
+                            _this.selctList = ret.obj;
+                        }
+                        $app.post(
+                            true,
+                            showAreaList,
+                            params,
+                            callback
+                        )
+                    },
+
+
+                }
+
+            })
+
+        }
+    </script>
+</body>
+
+</html>

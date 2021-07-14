@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <link rel="stylesheet" href="../../../../css/voice.css">
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 65px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn_box {
+            width: 100%;
+            padding: 5px 10px;
+            position: fixed;
+            background: #fff;
+            bottom: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 1px #ccc;
+
+        }
+
+        .btn_item {
+
+            height: 45px;
+            line-height: 45px;
+            color: #058FFD;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn_active {
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .person {
+            padding: 10px;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .person,
+        .lf {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lf img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px
+        }
+
+        .name {
+            color: #000;
+            font-size: 15px;
+        }
+
+        .iphone {
+            color: #555;
+            font-size: 12px;
+        }
+
+        .train_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            /*padding-bottom: 5px;*/
+            position: relative;
+        }
+
+        .train_title {
+            width: 100%;
+            padding: 10px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .train_show {
+            width: 100%;
+            padding-left: 15px;
+        }
+
+        .train_show .train_show_item {
+            padding-left: 25px;
+        }
+
+        .btn_add {
+            color: rgba(5, 143, 253, 1);
+            font-size: 14px;
+            line-height: 45px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .train_box_item {
+            padding: 10px;
+            padding-right: 25px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+        .click_upload i {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D2D2D2;
+        }
+
+        .option_box {
+            width: 100%
+        }
+
+        .hours_cls {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .hours_cls input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #D2D2D2;
+            text-align: center;
+            margin-right: 5px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+
+        .enclosure {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .enclosure img {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+
+        }
+
+        .img_tain {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .click_close {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+        }
+
+        .img_item {
+            width: 50px;
+            height: 50px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+
+            <ul>
+                <li class="mian_item border_bottom_after">
+                    <p>姓名</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1" v-text="userInfo.name"></span>
+                    </p>
+                </li>
+                <li class="mian_item border_bottom_after " style="height:auto">
+                    <p>身份证号码</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1" v-text="userInfo.idcardNo"></span>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>性别</p>
+                    <p tapmode class="aui-ellipsis-1"><span class="aui-ellipsis-1" v-text="userInfo.sex"></span>
+                    </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>民族</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.nation"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>出生日期</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.birthday"></span></p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>住址</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.address"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>手机号码</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.mobile"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>负责塔机</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.beincrane"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>人员类别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.category"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>所属单位</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.unit"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after " style="height:auto">
+                    <p>用户头像</p>
+                    <img :src="userInfo.imgUrl" style="width:3rem; height: 3rem;" alt="" class="lay_img">
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>添加资质证书</p>
+                    <p tapmode><span class="aui-ellipsis-1"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>资质证书名称</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityName"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>资质证书编号</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityNo"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>资质证书类别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityType"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>资质证书级别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityLevel"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>发证日期</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityIssueDay"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after">
+                    <p>有效期至</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="userInfo.abilityValidDay"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after " style="height:auto">
+                    <p>附件</p>
+                    <span>
+                        <img v-for="(item,index) in srcUrl " :src="item"
+                            style="display: block!important;  width:3rem; height: 3rem; float: left;" alt=""
+                            class="img_item">
+                    </span>
+
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script>
+        console.log('openInti');
+        apiready = function () {
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    userInfo: api.pageParam.userInfo,//设备用户
+                    srcUrl: null
+                },
+                created: function () {
+                    console.log("设备用户数据：" + JSON.stringify(this.userInfo))
+                    this.inte();
+                    var that = this;
+                    api.addEventListener({
+                        name: 'deviceUserInfoAddURL'
+                    }, function (ret, err) {
+                        if (ret) {
+                            that.getDeviceUserList();
+                        }
+                    });
+
+                },
+                methods: {
+                    getDeviceUserList: function (category, beincrane) {
+                        var that = this;
+                        var prame = {
+                            idcardNo: that.userInfo.idcardNo,
+                            beincrane: "",
+                            projectId: $api.getStorage('enterpriseId'),
+                            category: "",
+                            craneType: '0'
+                        };
+                        console.log("请求参数：" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getDeviceUserListURL,
+                            prame,
+                            function (ret) {
+                                console.log("返回数据" + JSON.stringify(ret));
+                                that.userInfo = ret.obj[0];
+                                that.inte();
+                            }
+                        )
+                    },
+                    //格式数据
+                    inte: function () {
+                        var that = this;
+                        var abilityPhoto = [];
+                        var abilityPhoto2 = this.userInfo.abilityPhoto.split(',');
+                        abilityPhoto2.map(function (item) {
+                            item = that.userInfo.urlPrefix + item
+                            abilityPhoto.push(item);
+                            console.log(JSON.stringify(that.userInfo.urlPrefix))
+                            console.log(JSON.stringify(item))
+                        });
+                        this.srcUrl = abilityPhoto;
+                    },
+                },
+            })
+        };
+    </script>
+</body>
+
+</html>

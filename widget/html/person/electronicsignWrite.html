@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/about.css">
+    <style>
+        .txt{color:#058FFD}
+        .txt_active{
+            width:52px;
+            height:26px;
+            line-height: 26px;
+            background:rgba(5,143,253,1);
+            border-radius:2px;
+            font-size: 14px;
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" tapmode @click="close()">
+                <span class="aui-iconfont aui-icon-close"></span>
+            </a>
+            <div class="aui-title header_title">电子签名</div>
+
+            <a class="aui-pull-right aui-btn" >
+                <span class="txt" tapmdoe  @click="sign_remove()">重写</span>
+                &nbsp;&nbsp;
+                <span class="txt txt_active" tapmdoe  @click="sign_save()">保存</span>
+            </a>
+
+        </header>
+
+    </div>
+
+
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+        <script type="text/javascript">
+            apiready = function() {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var drawingBoard = api.require('drawingBoard');
+                var offset = $api.offset($api.dom('header'));
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        singurlinfo:'',//接收签名地址
+
+                    },
+                    created:function(){
+                        this.singurlinfo = api.pageParam.signIfo;
+                        this.openFrame();
+
+                    },
+                    methods: {
+
+                        //打开frame
+                        openFrame:function(){
+                            api.openFrame({
+                                name: 'electronicsignWrite_frame',
+                                url: './electronicsignWrite_frame.html',
+                                rect: {
+                                    x: 0,
+                                    y: offset.h,
+                                    w: 'auto',
+                                    h: 'auto'
+                                },
+                                pageParam: {
+                                    signIfo:api.pageParam.signIfo
+                                },
+                                bounces: false,
+                                bgColor: 'rgba(0,0,0,0)',
+                                vScrollBarEnabled: true,
+                                hScrollBarEnabled: true
+                            });
+
+                        },
+                        //创建重写监听事件
+                        sign_remove:function(){
+                            api.sendEvent({
+                                name: 'sign_remove_enevt',
+                                extra: {
+                                }
+                            });
+
+                        },
+                        //创建签名保存事件
+                        sign_save:function(){
+                            
+                            api.openWin({
+                                name: 'sign_yz',
+                                url: './sign_yz.html',
+                                pageParam: {
+                                }
+                            });
+
+
+                        },
+                        //关闭且竖屏
+                        close:function(){
+                            //横屏操作
+                            // api.setScreenOrientation({
+                            //     orientation: 'portrait_down'
+                            // });
+                            // api.setFullScreen({
+                            //     fullScreen: false
+                            // });
+                            setTimeout(function(){
+                                api.closeWin();
+                            },100)
+
+                        },
+                    }
+                })
+
+            }
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #header {
+            background-color: #fff
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">报警原因及处理</div>
+                <a class="aui-pull-right aui-btn" @click="delectCallpoliceInfo()" style="color:#058FFD">
+                    删除
+                </a>
+            </header>
+        </div>
+        <script src="../../../../script/api.js"></script>
+        <script src="../../../../script/sha1.js"></script>
+        <script src="../../../../script/common.js"></script>
+        <script src="../../../../script/vue.js"></script>
+        <script src="../../../../script/layimg.js"></script>
+
+        <script>
+            apiready = function () {
+                //侵入式导航栏
+                $api.fixStatusBar($api.dom('header'));
+                var offset = $api.offset($api.byId('header'));
+                api.openFrame({
+                    name: 'alarmprocessingFinsh_frame',
+                    url: './alarmprocessingFinsh_frame.html',
+                    rect: {
+                        x: offset.l,
+                        y: offset.h,
+                        w: 'auto',
+                        h: 'auto'
+                    },
+                    pageParam: {
+                        callpoliceInfo: api.pageParam.callpoliceInfo
+                    },
+                    bounces: false,
+                    bgColor: 'rgba(0,0,0,0)',
+                    vScrollBarEnabled: true,
+                    hScrollBarEnabled: true
+                });
+                api.closeWin({
+                    name: "callpolice_detail"
+                });
+                var vm = new Vue({
+                    el: '#header',
+                    data: {
+                        callpoliceInfo: api.pageParam.callpoliceInfo,
+                    },
+                    created: function () {
+
+                    },
+                    methods: {
+                        //删除单个报警处理
+                        delectCallpoliceInfo: function () {
+                            var that = this;
+                            var prame = {
+                                id: this.callpoliceInfo.id + "",
+                                userId: $api.getStorage('userId'),
+                                // warnLogId: "7",
+                            };
+                            console.log("删除单个报警信息" + JSON.stringify(prame));
+                            $app.post(
+                                true,
+                                towerAlarmDelURL,
+                                prame,
+                                function (ret) {
+                                    api.closeWin();
+                                }
+                            )
+                        }
+                    }
+                })
+            }
+            function closeWin() {
+                api.closeWin();
+            }
+        </script>
+</body>
+</html>

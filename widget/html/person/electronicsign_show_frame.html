@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于筑迹</title>
+    <!-- <link rel="stylesheet" href="../../css/style.css"> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../css/about.css"> -->
+    <style>
+        html,body{height: 100%;}
+        .container{
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        img{max-width: 100%;max-height: 100%}
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app" >
+        <img :src="imgUrl"   alt=""  >
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+
+            // $api.attr($api.byId('bao'), 'src', api.pageParam.signIfo.srcPath);
+
+            var vm = new Vue({
+                el:'#app',
+                data:{
+                    imgUrl:''
+                },
+                created:function(){
+                    console.log(api.pageParam.signIfo.srcPath);
+                    this.imgUrl = api.pageParam.signIfo.srcPath;
+                    console.log(this.imgUrl);
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

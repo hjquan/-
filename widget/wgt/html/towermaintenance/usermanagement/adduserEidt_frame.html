@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <link rel="stylesheet" type="text/css" href="../../../../css/addlog.css" />
+    <!-- <link rel="stylesheet" href="../../../../css/voice.css"> -->
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 35px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+
+        .btn {
+            width: 80%;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color: #fff;
+            background: rgba(157, 211, 253, 1);
+            border-radius: 5px;
+            margin: 0 auto;
+        }
+
+        .btn_active {
+            background: rgba(5, 143, 253, 1);
+        }
+
+        .toggle {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(85, 85, 85, 1);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .fs_12 {
+            font-size: 12px;
+        }
+
+        .upImg {
+            padding: 10px;
+        }
+
+        .upImg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .img {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .img img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .add_icon {
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(210, 210, 210, 1);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .mian_item .input_rt {
+            padding-left: 15px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 14px
+        }
+
+        .address {
+            min-height: 45px;
+            max-height: 90px;
+            padding: 5px 10px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        .textarea {
+            text-align: right;
+            padding: 0px 15px;
+            line-height: 20px;
+            height: auto;
+            max-height: 90px;
+        }
+
+        .train_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            /*padding-bottom: 5px;*/
+            position: relative;
+        }
+
+        .train_title {
+            width: 100%;
+            padding: 10px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .train_show {
+            width: 100%;
+            padding-left: 15px;
+        }
+
+        .train_show .train_show_item {
+            padding-left: 25px;
+        }
+
+        .btn_add {
+            color: rgba(5, 143, 253, 1);
+            font-size: 14px;
+            line-height: 45px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .train_box_item {
+            padding: 10px;
+            padding-right: 25px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .click_upload {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #D2D2D2;
+        }
+
+        .click_upload i {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D2D2D2;
+        }
+
+        .option_box {
+            width: 100%
+        }
+
+        .hours_cls {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+        }
+
+        .hours_cls input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #D2D2D2;
+            text-align: center;
+            margin-right: 5px;
+            color: #058FFD;
+            border-radius: 3px;
+        }
+
+        .enclosure {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .enclosure img {
+            width: 50px;
+            height: 50px;
+            border-radius: 3px;
+
+        }
+
+        .img_tain {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .click_close {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 7px;
+            top: -5px;
+            right: 0;
+            color: #fff;
+            background: #FF1414;
+            font-size: 10px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+            <ul>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>姓名</p>
+                    <input class="input_rt" v-model="deviceUserInfo.name" type="text " style="color: #8F929A;"
+                        placeholder="请输入" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>身份证号</p>
+                    <input class="input_rt" v-model="deviceUserInfo.idcardNo" type="text" style="color: #8F929A;"
+                        placeholder="请输入" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>性别</p>
+                    <input class="input_rt" v-model="deviceUserInfo.sex" type="text" style="color: #8F929A;"
+                        placeholder="请输入" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>民族</p>
+                    <input class="input_rt" v-model="deviceUserInfo.nation" type="text" style="color: #8F929A;"
+                        placeholder="请输入" disabled>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <!-- <li class="mian_item border_bottom_after" tapmode @click="birthdayFn()"> -->
+                    <p>出生日期</p>
+                    <p tapmode><span v-text="deviceUserInfo.birthday || '请选择'" style="color: #8F929A;"></span> </p>
+                </li>
+                <li class="address border_bottom_after" tapmode>
+                    <p>地址</p>
+                    <textarea placeholder="请输入" v-model="deviceUserInfo.address" class="textarea "
+                        style="color: #8F929A;" disabled></textarea>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>手机号码</p>
+                    <input class="input_rt" maxlength="11" v-model="deviceUserInfo.mobile" type="tel" placeholder="请输入">
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="timeentranceDayFn()">
+                    <p>负责塔机</p>
+                    <p tapmode><span v-text="deviceUserInfo.beincrane"></span> </p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="categoryFn()">
+                    <p>人员类别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="deviceUserInfo.category || '请选择'"></span>
+                    </p>
+                </li>
+                <li class="mian_item border_bottom_after"
+                    v-if="deviceUserInfo.category && deviceUserInfo.category.value != 2">
+                    <p>所属单位</p>
+                    <input class="input_rt" maxlength="11" v-model="deviceUserInfo.unit" type="text" placeholder="请输入">
+                </li>
+                <li class="upImg border_bottom_after">
+                    <p>上传照片</p>
+                    <div class="img_box">
+                        <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                            <div class="imgItem" v-for="(item,index) in imgSrcResult" tapmode="hover">
+                                <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtnResult"
+                                    @click=removeImageResult(index) tapmode="hover"></i>
+                                <img :src="item" alt="" tapmode @click="imgSeeResult(imgSrcResult,index)">
+                            </div>
+                            <div class="add_btn" style="background-color: #fff;" @click="uploadHeadPicResult()" tapmode
+                                v-if="imgSrcResult.length < 1"> <i class="aui-iconfont aui-icon-camera"></i></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="mian_item border_bottom_after" style="margin-right:10px;">
+                    <p>添加资质证书(选填)</p>
+                    <input class="input_rt" type="text" disabled>
+                </li>
+                <li class="mian_item train_show_item border_bottom_after " tapmode>
+                    <p>资质证书名称</p>
+                    <input class="input_rt" v-model="deviceUserInfo.abilityName" type="text" placeholder="请输入">
+                </li>
+                <li class="mian_item train_show_item border_bottom_after" tapmode>
+                    <p>资质证书编号</p>
+                    <input class="input_rt" v-model="deviceUserInfo.abilityNo" type="text" placeholder="请输入">
+                </li>
+                <li class="mian_item train_show_item border_bottom_after " @click="abilityTypeFn()" tapmode>
+                    <p>资质证书类别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="deviceUserInfo.abilityType || '请选择'"></span>
+                </li>
+                <li class="mian_item train_show_item border_bottom_after" @click="abilityLevelFn()" tapmode>
+                    <p>资质证书级别</p>
+                    <p tapmode><span class="aui-ellipsis-1" v-text="deviceUserInfo.abilityLevel || '请选择'"></span>
+                </li>
+                <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityStare()">
+                    <p>资质证书发证日期</p>
+                    <p tapmode><span v-text="deviceUserInfo.abilityIssueDay || '请选择'"></span> </p>
+                </li>
+                <li class="mian_item train_show_item border_bottom_after" tapmode @click="getabilityEnd()">
+                    <p>资质证书有效期</p>
+                    <p tapmode><span v-text="deviceUserInfo.abilityValidDay || '请输入'"></span> </p>
+                </li>
+                <li class="train_box_item train_show_item border_bottom_after" tapmode>
+                    <p>资质证书附件</p>
+                    <div class="img_box">
+                        <div class="imgUpdate border_bottom_after" style="padding:10px 15px;">
+                            <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                                <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn"
+                                    @click=removeImage(index) tapmode="hover"></i>
+                                <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                            </div>
+                            <div class="add_btn" style="background-color: #fff;" @click="uploadHeadPic()" tapmode
+                                v-if="imgSrc.length < 3"><i class="aui-iconfont aui-icon-camera"></i></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="btn btn_active" tapmode @click="submitFn()">
+            完成
+        </div>
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/lunarcalendar.js"></script>
+    <script src="../../../../script/permission.js"></script>
+
+    <script>
+        apiready = function () {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    deviceUserInfo: api.pageParam.userInfo,
+                    //结果图片图片字段
+                    isCloseBtnResult: true,//是否显示删除图片icon
+                    imgSrcResult: [],
+                    serverImgResult: "",//服务器返回图片地址
+                    srcImgUrlResult: "",//原图片地址（多张逗号分隔）
+                    compressImgUrlResult: "",//压缩图片地址（多张逗号分隔）
+                    //上传图片字段
+                    isCloseBtn: true,//是否显示删除图片icon
+                    imgSrc: [],
+                    serverImg: "",//服务器返回图片地址
+                    lableUrl: "",//标注图片地址(更改：该字段已清除)
+                    srcImgUrl: "",//原图片地址（多张逗号分隔）
+                    compressImgUrl: "",//压缩图片地址（多张逗号分隔）
+                    callContent: "",//报警原因
+                    resultContent: "",//处理结果
+                    imgFlage1: false,  //头像
+                    imgFlage2: false,  //证件
+                },
+                created: function () {
+                    var that = this;
+                    //监听选择对象返回的数据
+                    api.addEventListener({
+                        name: 'selectOjc'
+                    }, function (ret, err) {
+                        // console.log(JSON.stringify(ret.value.selectOjcInfo));
+                        var name_join = '';
+                        var id_join = '';
+                        that.totalPerson = 0;
+                        ret.value.selectOjcInfo.map(function (item) {
+                            name_join += item.towerNo + ',';
+                            id_join += item.ccid + ',';
+                            that.totalPerson++;
+                        });
+                        that.totalPerson = name_join.substr(0, 7) + '   等';
+                        that.deviceUserInfo.beincrane = name_join.substr(0, name_join.length - 1);
+                        that.deviceUserInfo.ccid = id_join.substr(0, id_join.length - 1);
+                    });
+                    //格式化数据
+                    this.init();
+                    console.log("传入编辑参数" + JSON.stringify(api.pageParam.userInfo));
+                },
+                methods: {
+                    //选择证书类型
+                    abilityTypeFn: function () {
+                        var that = this
+                        api.actionSheet({
+                            cancelTitle: '取消',
+                            buttons: ['岗位证书', '职业资格证书', '职业技能证书', "其他"]
+                        }, function (ret, err) {
+                            that.type = ret.buttonIndex - 1;
+                            switch (that.type) {
+                                case 0:
+                                    that.deviceUserInfo.abilityType = '岗位证书';
+                                    break;
+                                case 1:
+                                    that.deviceUserInfo.abilityType = '职业资格证书';
+                                    break;
+                                case 2:
+                                    that.deviceUserInfo.abilityType = '职业技能证书';
+                                    break;
+                                case 3:
+                                    that.deviceUserInfo.abilityType = '其他';
+                                    break;
+                            }
+                        });
+                    },
+                    //选择证书类型
+                    abilityLevelFn: function () {
+                        var that = this
+                        api.actionSheet({
+                            cancelTitle: '取消',
+                            buttons: ['普工', '初级工', '高级工', "高级技师"]
+                        }, function (ret, err) {
+                            that.type = ret.buttonIndex - 1;
+                            switch (that.type) {
+                                case 0:
+                                    that.deviceUserInfo.abilityLevel = '普工';
+                                    break;
+                                case 1:
+                                    that.deviceUserInfo.abilityLevel = '初级工';
+                                    break;
+                                case 2:
+                                    that.deviceUserInfo.abilityLevel = '高级工';
+                                    break;
+                                case 3:
+                                    that.deviceUserInfo.abilityLevel = '高级技师';
+                                    break;
+                            }
+                        });
+                    },
+                    //格式化数据
+                    init: function () {
+                        var that = this;
+                        var abilityPhoto = [];
+                        if (this.deviceUserInfo.abilityPhoto !== "") {
+                            var abilityPhoto2 = this.deviceUserInfo.abilityPhoto.split(',');
+                            abilityPhoto2.map(function (item) {
+                                item = that.deviceUserInfo.urlPrefix + item
+                                abilityPhoto.push(item);
+                                console.log(JSON.stringify(that.deviceUserInfo.urlPrefix))
+                                console.log(JSON.stringify(item))
+                            });
+                            if (abilityPhoto.length) {
+                                this.imgSrc = abilityPhoto;
+                            }
+                        }
+                        if (this.deviceUserInfo.imgUrl !== "") {
+                            this.imgSrcResult = [this.deviceUserInfo.imgUrl]
+                        }
+                    },
+                    //选择出生日期
+                    birthdayFn: function () {
+                        var timeDate = new Date();
+                        var that = this;
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (selectDate > curenDate) {
+                                api.toast({
+                                    msg: '时间选择错误',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.deviceUserInfo.birthday = time;
+                        })
+                    },
+                    //选择人员类型
+                    categoryFn: function () {
+                        var that = this
+                        api.actionSheet({
+                            cancelTitle: '取消',
+                            buttons: ['司机', '安装人员', '安拆人员']
+                        }, function (ret, err) {
+                            that.type = ret.buttonIndex - 1;
+                            switch (that.type) {
+                                case 0:
+                                    that.deviceUserInfo.category = '司机';
+                                    break;
+                                case 1:
+                                    that.deviceUserInfo.category = '安装人员';
+                                    break;
+                                case 2:
+                                    that.deviceUserInfo.category = '安拆人员';
+                                    break;
+                            }
+                        });
+                    },
+                    //选择证书反证日期  
+                    getabilityStare: function () {
+                        var timeDate = new Date();
+                        var that = this;
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (selectDate > curenDate) {
+                                api.toast({
+                                    msg: '时间选择错误',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.deviceUserInfo.abilityIssueDay = time;
+                        })
+                    },
+                    //选择证书失效日期  
+                    getabilityEnd: function () {
+                        var timeDate = new Date();
+                        var that = this;
+                        timeSelector.fnOpenSelector({
+                            title: ' ', //选填 |  '时间选择'    |  String         |  选择器标题文案
+                            sureText: '完成', //选填 |    '完成'      |  String        |   确定按钮文案
+                            isShowUnit: true, //选填 |     true      |  Boolean        |  是否显示中文单位名称
+                            itemShowCount: 5, //选填 |      5        |  Number         |  显示的行数
+                            itemHeight: 55, //选填 |      55       |  Number         |  行高度（单位px）
+                            date: timeDate.getFullYear() + '/' + (timeDate.getMonth() + 1) + '/' + timeDate.getDate()   //选填 |   new Date    |  Date/String     |  默认选中的时间
+                        }, function (ret) {
+                            if (!ret) { return }
+                            var date = new Date(ret.date)
+                            var selectDate = new Date(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()).getTime();//选择的时间年月日
+                            var currenDateTime = new Date();//当前时间毫秒数
+                            var curenDate = new Date(currenDateTime.getFullYear() + '-' + (currenDateTime.getMonth() + 1) + '-' + currenDateTime.getDate()).getTime();//当前时间年月日
+
+                            if (selectDate < curenDate) {
+                                api.toast({
+                                    msg: '时间选择错误',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                            var m = (date.getMonth() + 1) + '', day = date.getDate() + '';
+                            var time = date.getFullYear() + '-' + (m.length > 1 ? m : ('0' + m)) + '-' + (day.length > 1 ? day : ('0' + day));
+                            that.deviceUserInfo.abilityValidDay = time;
+                        })
+                    },
+                    // //图片查看
+                    imgSeeResult: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+
+                    //删除图片
+                    removeImageResult: function (index) {
+                        this.imgSrcResult.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilterResult: function () {
+                        var that = this;
+                        if (that.serverImgResult) {
+                            var src_join = this.serverImgResult.map(function (item) {
+                                return item.srcPath
+                            })
+                            var compress_join = this.serverImgResult.map(function (item) {
+                                return item.compressPath
+                            })
+                            that.srcImgUrlResult = src_join.join(',');
+                            that.compressImgUrlResult = compress_join.join(',');
+
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImgResult: function () {
+                        var compressImg = [];
+                        var that = this;
+                        if (that.imgSrcResult.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrcResult.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrcResult[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            console.log("compressImg:" + JSON.stringify(compressImg));
+                            var timer = setInterval(function () {
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeURL, {}, {
+                                        files: compressImg
+                                    },
+                                        function (ret) {
+                                            that.isCloseBtnResult = false;
+                                            that.serverImgResult = '';
+                                            ret.obj.map(function (item) {
+                                                that.serverImgResult += item.fileName + ','
+                                            });
+                                            that.serverImgResult = that.serverImgResult.substr(0, that.serverImgResult.length - 1);
+                                            that.deviceUserInfo.photo = that.serverImgResult;
+                                            if (!that.imgFlage2) {
+                                                that.addDeviceUserInfo();
+                                            } else {
+                                                that.saveImg();
+                                            }
+
+                                        }
+                                    )
+                                }
+                            }, 1000)
+                        }
+                    },
+
+                    // // 图片选择
+                    uploadHeadPicResult: function () {
+                        // confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 1 - that.imgSrcResult.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                    that.imgFlage1 = true;
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrcResult.push(ret.originalPath)
+
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrcResult.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //上传图片
+                    //上传图片处理函数start
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+
+                    //删除图片
+                    removeImage: function (index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+
+                    //图片上传服务器保存
+                    saveImg: function () {
+                        var compressImg = [];
+                        var that = this;
+                        if (that.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < that.imgSrc.length; i++) {
+                                (function (index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: that.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function (ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        }
+                                    });
+                                })(i);
+                            }
+
+                            var timer = setInterval(function () {
+                                console.log("compressImg:" + JSON.stringify(compressImg));
+                                if (compressImg.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeURL, {}, {
+                                        files: compressImg
+                                    },
+                                        function (ret) {
+                                            that.isCloseBtn = false;
+                                            that.serverImg = '';
+                                            ret.obj.map(function (item) {
+                                                that.serverImg += item.fileName + ','
+                                            });
+                                            that.serverImg = that.serverImg.substr(0, that.serverImg.length - 1);
+                                            that.deviceUserInfo.abilityPhoto = that.serverImg;
+                                            that.addDeviceUserInfo();
+                                        }
+                                    )
+                                }
+                            }, 1000)
+                        }
+                    },
+                    // // 图片选择
+                    uploadHeadPic: function () {
+                        // confirmPer('camera,photos', function () { })
+                        var i = 0;
+                        var imgarr = [];
+                        var that = this;
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 3 - that.imgSrc.length,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function (ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                    that.imgFlage2 = true;
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    that.imgSrc.push(ret.originalPath)
+
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function (ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {
+                                }
+                            });
+                        }
+                    },
+                    //选择塔机
+                    timeentranceDayFn: function () {
+                        api.openFrame({
+                            name: 'selectOjc',
+                            url: 'selectOjc.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            }
+                        });
+                    },
+                    //数据验证
+                    submitFn: function () {
+                        if (!(/^1[3456789]\d{9}$/.test(this.deviceUserInfo.mobile))) {
+                            api.toast({
+                                msg: '维保单位负责人联系方式,有误',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+                        }
+                        if (!this.imgFlage1 && !this.imgFlage2) {
+                            this.addDeviceUserInfo();
+                        }
+                        if (!this.imgFlage1 && this.imgFlage2) {
+                            this.saveImg();
+                        }
+                        if (this.imgFlage1) {
+                            this.saveImgResult();
+                        }
+                    },
+                    //编辑人员
+                    addDeviceUserInfo: function () {
+                        var that = this;
+                        var prame = that.deviceUserInfo;
+                        console.log("编辑参数:" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            deviceUserInfoAddURL,
+                            prame,
+                            function (ret) {
+                                api.closeWin();
+                                api.sendEvent({
+                                    name: 'deviceUserInfoAddURL'
+                                });
+                            }
+                        )
+                    },
+                }
+            })
+        };
+    </script>
+</body>
+
+</html>

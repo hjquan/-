@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .main_box {
+            margin-top: 10px;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .color_999 {
+            color: #999;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box">
+            <div class="aui-card-list" v-if="messageinfo.length">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list">
+                        <li class="aui-list-item aui-list-item-middle" v-for="item in messageinfo" tapmode @click="openCheckDeil(item)">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-media" style="width: 3rem;">
+                                    <img :src="item.msgModule == 'notice' ? '../../image/enterprice/notice.png':'../../image/enterprice/check.png'" class="aui-img-round aui-list-img-sm">
+                                </div>
+                                <div class="aui-list-item-inner"  style="width:80%;">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-15 txt_color aui-ellipsis-1" style="width:80%;" v-text="item.msgTitle"></div>
+                                        <div class="color_999  aui-ellipsis-1" v-text="item.createTime"></div>
+                                    </div>
+                                    <div class="aui-list-item-text" style="color:rgba(102,102,102,1);" v-cloak>
+                                        <p style=width:80%; class="aui-ellipsis-1" v-cloak>{{item.msgDetail}}</p>
+                                        <span style="color:#FF1515" v-if="item.isRead == 0">new</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+            <div class="noData" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+
+
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            vm.getUnReadFn(false,getUnReadMessageArraysURL,getAlreadyReadMessageArraysURL);
+            api.setRefreshHeaderInfo({
+                visible: true,
+                loadingImg: 'widget://image/refresh.png',
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...',
+                showTime: true
+            }, function(ret, err){
+                vm.getUnReadFn(false,getUnReadMessageArraysURL,getAlreadyReadMessageArraysURL);
+            });
+            api.addEventListener({
+                name: 'getUnReadFn'
+            }, function(ret, err){
+                if( ret ){
+                    $api.setStorage('tabbarMessageType', '0');
+                    vm.messageinfo = '';
+                    vm.getUnReadFn(false,getUnReadMessageArraysURL,getAlreadyReadMessageArraysURL)
+                }
+            });
+            api.addEventListener({
+                name: 'getAlreadyReadFn'
+            }, function(ret, err){
+                if( ret ){
+                    vm.messageinfo = '';
+                    $api.setStorage('tabbarMessageType', '1');
+                    vm.getUnReadFn(false,getUnReadMessageArraysURL,getAlreadyReadMessageArraysURL)
+                }
+            });
+
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 100 //设置距离底部多少距离时触发，默认值为0，数字类型
+                }
+            }, function(ret, err) {
+                vm.getUnReadFn(true,getUnReadMessageArraysURL,getAlreadyReadMessageArraysURL)
+            });
+
+            //消息列表监听
+            api.addEventListener({
+                name: 'peojectMsgCenterList'
+            }, function(ret, err){
+                vm.getUnReadFn()
+            });
+
+
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                'messageinfo': []
+            },
+            methods: {
+                //打开详情页面
+                openCheckDeil:function(item){
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        updateMessageReadTimeURL,
+                        {
+                            "msgId":item.msgId,
+	                        "userId": $api.getStorage('userId')
+                        },
+                        function(ret){
+                            api.sendEvent({
+                                name: 'refshMessageNumber',
+                                extra: {
+                                }
+                            });
+
+                            setTimeout(function(){
+                                if(item.msgModule == 'notice'){
+                                    api.openWin({
+                                        name: 'msgDetail',
+                                        url: '../msg/msgDetail.html',
+                                        pageParam: {
+                                            notiIfo:item
+                                        }
+                                    });
+
+                                }else{
+                                    api.openWin({
+                                        name: 'InspectionDetails',
+                                        url: '../ledger/InspectionDetails.html',
+                                        pageParam: {
+                                            enterCheckId:item.objectId
+                                        }
+                                    });
+                                }
+                            },500)
+
+                        }
+                    )
+
+
+                },
+                //未读信息列表
+                getUnReadFn: function(loadMore,urla,urlb) {
+                    if($api.getStorage('tabbarMessageType') == '0'){
+                        var url = getUnReadMessageArraysURL
+                    }else{
+                        var url= getAlreadyReadMessageArraysURL
+                    }
+                    vm.reshAjax(loadMore,url)
+                },
+                reshAjax:function(loadMore,url){
+                    if (loadMore) {
+                        this.currentPage++;
+                    } else {
+                        this.currentPage = 1
+                    }
+                    ajaxPost(
+                        true,
+                        '加载中...',
+                        url, {
+                            userId: $api.getStorage('userId'),
+                            enterpriseId: $api.getStorage('enterpriseId'),
+                            showCount: PAGE_NUMBER,
+                            currentPage: vm.currentPage
+                        },
+                        function(ret) {
+                            api.refreshHeaderLoadDone();
+                            if (loadMore) {
+
+                                if (ret.totalResult > vm.messageinfo.length) {
+                                    if(ret.obj){
+                                        var filterData = ret.obj.filter(function(item){
+                                            if(item.msgModule == 'securityCheck' || item.msgModule == 'notice'){
+                                                return item
+                                            }
+                                        })
+                                        filterData.forEach(function(item){
+                                            vm.messageinfo.push(item)
+                                        })
+                                    }
+                                } else {
+                                    api.toast({
+                                        msg: '没有更多数据了...',
+                                        duration: 2000,
+                                        location: 'bottom'
+                                    });
+                                }
+                            } else {
+                                // vm.messageinfo = ret.obj;
+                                if(ret.obj){
+                                    var filterData = ret.obj.filter(function(item){
+                                        if(item.msgModule == 'securityCheck' || item.msgModule == 'notice'){
+                                            return item
+                                        }
+                                    })
+                                    vm.messageinfo = filterData;
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

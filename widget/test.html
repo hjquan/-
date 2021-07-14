@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="./commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            background-color: #fff;
+            height: 100%;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .showBox input {
+            font-size: 18px;
+            border-bottom: 1px solid #ddd !important;
+            text-align: center;
+            margin: 5px;
+        }
+
+        .showBox {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+        }
+
+        .main_box {
+            width: 90%;
+            padding-top: 40px;
+            margin: 0 auto;
+        }
+
+        .title {
+            height: 125px;
+            font-size: 18px;
+        }
+
+        .toggleShow li {
+            line-height: 45px;
+            padding-left: 15px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .toogleCls {
+            display: none;
+        }
+
+        .sj {
+            border-right: 15px solid transparent;
+            border-left: 15px solid transparent;
+            border-top: 15px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="openWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title ">服务器地址</div>
+                <a class="aui-pull-right aui-btn" @click="save()">
+                    <!-- <span class="aui-iconfont aui-icon-plus"></span> -->
+                    <span class="aui-iconfont">保存</span>
+                </a>
+            </header>
+
+        </div>
+        <div class="main_box">
+            <p class="title">服务器地址(http://XXX.XXX.XXX/, 若无端口号 , 端口号位置不填写)</p>
+            <div class="showBox">
+                <span>http://</span>
+                <input type="number" placeholder="119" v-model="number1"><span>.</span>
+                <input type="number" placeholder="23" v-model="number2"><span>.</span>
+                <input type="number" placeholder="146" v-model="number3"><span>.</span>
+                <input type="number" placeholder="206" v-model="number4">:
+                <input type="number" placeholder="8080" v-model="port">
+                <div class="sj" tapmode @click="toggleCls()"></div>
+            </div>
+            <ul class="toggleShow" :class="{'toogleCls' : isFlag}">
+                <li v-for="(item,index) in list" :key="index" v-text="item" tapmode @click="select(index)"></li>
+            </ul>
+        </div>
+    </div>
+    <script src="./script/api.js"></script>
+    <script src="./script/sha1.js"></script>
+    <script src="./script/common.js"></script>
+    <script src="./script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            $api.fixStatusBar($api.dom('header'));
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    number1: '',
+                    number2: '',
+                    number3: '',
+                    number4: '',
+                    port: '',
+                    list: [
+                        'http://119.23.153.66 正式',
+                        'http://119.23.146.206:8080 测试',
+                        'http://192.168.1.150:8080 本地'
+                    ],
+                    isFlag: true
+                },
+                methods: {
+                    save: function() {
+                        if (this.number1 && this.number2 && this.number3 && this.number4) {
+                            var testurl = 'http://' + this.number1 + '.' + this.number2 + '.' + this.number3 + '.' + this.number4 + ':' + this.port + '/ZhuJi_new_project/';
+                            $api.setStorage('storagebaseURL', testurl);
+                            api.openWin({
+                                name: 'login',
+                                url: './login.html',
+                                pageParam: {
+                                }
+                            });
+
+                            setTimeout(function() {
+                                api.closeWin();
+
+                            }, 500)
+
+
+                        } else {
+                            $api.setStorage('storagebaseURL', 'http://119.23.153.66/');
+                            api.openWin({
+                                name: 'login',
+                                url: './login.html',
+                                pageParam: {
+                                }
+                            });
+                            setTimeout(function() {
+                                api.closeWin();
+                            }, 500)
+
+                        }
+
+
+                    },
+                    select: function(index) {
+                        switch (index) {
+                            case 0:
+                                this.number1 = '119';
+                                this.number2 = '23';
+                                this.number3 = '153';
+                                this.number4 = '66';
+                                this.port = ''
+                                break;
+                            case 1:
+                                this.number1 = '119';
+                                this.number2 = '23';
+                                this.number3 = '146';
+                                this.number4 = '206';
+                                this.port = '8080'
+
+                                break;
+                            case 2:
+                                this.number1 = '192';
+                                this.number2 = '168';
+                                this.number3 = '1';
+                                this.number4 = '150';
+                                this.port = '8080'
+
+                                break;
+                            default:
+
+                        }
+                    },
+                    toggleCls: function() {
+                        this.isFlag ? this.isFlag = false : this.isFlag = true;
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

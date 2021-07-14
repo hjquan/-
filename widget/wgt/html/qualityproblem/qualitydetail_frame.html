@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>质量问题</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/timeAxis/libs/index.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .container {
+            margin-bottom: 80px
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .main_box {
+            margin-top: 80px;
+
+        }
+
+        .main_box .title {
+            display: flex;
+            justify-content: space-between;
+            height: 40px;
+            line-height: 40px;
+            padding-left: 20px;
+            padding-right: 10px;
+            position: relative;
+        }
+
+        .main_box .title p {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .beforeLine:before {
+            content: '';
+            width: 4px;
+            height: 14px;
+            background-color: #03a9f4;
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+        }
+
+        .flex_start div:first-child {
+            margin-right: 10px;
+            flex: 1;
+            color: #999;
+        }
+
+        .flex_start div:last-child {
+            flex: 4;
+            color: #333;
+        }
+
+        .listImage {
+            height: 80px;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            background-color: #fff;
+        }
+
+        .listImage img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        img.toVoid {
+            position: absolute;
+            top: 113px;
+            right: 13px;
+            z-index: 200;
+            width: 130px;
+            height: 130px;
+        }
+
+        .show {
+            display: none;
+        }
+
+        .btnBox>div {
+            width: 100%;
+            height: 60px;
+            position: fixed;
+            bottom: 0px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 300;
+            background-color: #fff;
+            padding-top: 5px;
+        }
+
+        .btnBox button {
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+            background: rgba(255, 174, 19, 1);
+            border-radius: 6px;
+            border: none;
+            box-shadow: 0 0 3 #ccc;
+            margin: 0 20px;
+            color: #fff;
+        }
+
+        .btnBox button.active {
+            background-color: #058FFD;
+        }
+
+        .header {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+        }
+
+        .txt_show {
+            padding: 10px;
+            min-height: 50px;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+            line-height: 25px;
+            background-color: #fff;
+        }
+
+        .bg_ff {
+            background-color: #fff;
+        }
+
+        .list {
+            padding-bottom: 20px
+        }
+
+        .flx {
+            display: flex;
+        }
+
+        .flx_s_b {
+            justify-content: space-between;
+        }
+
+        .jg {
+            font-size: 15px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+        }
+
+        .txt_r {
+            text-align: right;
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(144, 144, 144, 1);
+        }
+
+        .red_state {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(5, 143, 253, 1);
+        }
+
+        .statu {
+            font-size: 12px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(120, 120, 120, 1);
+        }
+
+        .list .item-inner .dot i {
+            left: 2px;
+        }
+
+        .btnBox .rectificationBtn {
+            width: 335px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            margin: 0 auto;
+            margin-bottom: 5px
+        }
+
+        .btnBox .rectification {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .imgBox {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .showimg {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
+
+        .img_t {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="btnBox" v-if="checkDetail.isNextStep == 1">
+            <div class="rectification" v-if="checkDetail.state == 2 && checkDetail.isBack == 0">
+                <div class="rectificationBtn" @click="openRectficationWin('整改')">整改</div>
+            </div>
+            <div v-else>
+                <button tapmode="hover" v-if="checkDetail.isBack == 1" @click="openRectficationWin('复查退回')">退回</button>
+                <button tapmode="hover" class="active" @click="openRectficationWin('复查通过')">通过</button>
+            </div>
+        </div>
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" tapmode onclick="openWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">质量问题</div>
+            <a class="aui-pull-right aui-btn">
+                <i class="aui-iconfont aui-icon-back" tapmode @click="triggerRevoke()" v-if="revokeBtn"></i>
+                <!-- <img class="img_t" src="../../../image/qualityproblem/nav_icon_dayin.png" alt=""> -->
+                <!-- <i class="aui-iconfont aui-icon-menu"></i> -->
+            </a>
+        </header>
+        <div class="main_box" v-cloak v-if="checkDetail">
+            <div class="main-top">
+                <p class="txt_show" v-if="checkDetail.content" v-text="checkDetail.content"></p>
+                <ul class="aui-list">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner flx flx_s_a">
+                            <div class="flx" style="margin-right:13px;">
+                                <i class="aui-iconfont aui-icon-location"></i>&nbsp;&nbsp;
+                                <span class="jg" v-text="checkDetail.areaName">1#_2f</span>
+                            </div>
+                            <div class="aui-list-item-input txt_r">
+                                <p v-text="checkDetail.questionDetails"></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="listImage" v-if="checkDetail.imgUrl && checkDetail.imgUrl.length">
+                    <img :src="src_data.compressUrl" v-for="(src_data,index) in checkDetail.imgUrl" alt="详情图"
+                        @click="imgSee(checkDetail.imgUrl,index)">
+                </div>
+                <ul class="aui-list">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                责任人
+                            </div>
+                            <div class="aui-ellipsis-1 flx flx_s_b">
+                                <span class="jg aui-ellipsis-1" style="width:200px;"
+                                    v-text="checkDetail.personliableName"
+                                    @click="opencontentDisplayFn(checkDetail.personliableName)"></span>
+                                <span class="red_state" @click="openredSateFn(checkDetail.zrSubject)"
+                                    tapmode>阅读状态</span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="aui-list-item" tapmode>
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                劳务单位
+                            </div>
+                            <div class="aui-ellipsis-1 jg" v-text="checkDetail.laborTeamName">
+                                按键搜
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" v-if="checkDetail.zgMeasures">
+                        <div class="aui-list-item-inner flex_start">
+                            <div>
+                                整改措施
+                            </div>
+                            <div class="aui-ellipsis-2 jg" v-text="checkDetail.zgMeasures">
+                                挨打嘛啦拉手门打开来拉大了阿里斯顿来看奥施康定啦阿拉山口达克拉拉屎的徕卡爱上了达拉斯拉升到拉萨蓝灯
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item ">
+                        <div class="aui-list-item-inner flex_start">
+                            <div style="color:#999">
+                                整改期限
+                            </div>
+                            <div class="aui-ellipsis-1" v-cloak>
+                                {{checkDetail.deadline}}
+                                <span v-if="checkDetail.state != 3">
+                                    <span style="color:#FF1515"
+                                        v-if="checkDetail.day < 0 ">(逾期{{-checkDetail.day}}天)</span>
+                                    <span v-cloak v-else>(剩余{{checkDetail.day}}天)</span>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="list bg_ff">
+                <div class="item-inner flex-box-x" :class="{'active':index == 0}" style="justify-content:baseline"
+                    v-for="(items,index) in record_box">
+                    <div class="item-date">
+                        <div class="date" v-text="items.endTime" style="font-size:10px;"></div>
+                    </div>
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x aui-ellipsis-1">
+                        <div class="item-type aui-ellipsis-1" style="font-size:14px;" v-cloak v-text="items.userName"
+                            @click="opencontentDisplayFn(items.userName)"></div>
+                        <div class="item-content" style="font-size:14px;" v-cloak v-if="items.content"
+                            v-text="items.content"></div>
+
+                        <div class="imgBox" v-if="items.imgUrl && items.imgUrl.length">
+                            <img class="showimg" v-for="(item,index) in items.imgUrl" :src="item.compressUrl" alt=""
+                                @click="imgSee(items.imgUrl,index)">
+                        </div>
+                    </div>
+                    <span class="statu" v-cloak v-text="items.nodeName"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            api.addEventListener({
+                name: 'refsh_quelity_detail_event'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.init();
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    zgBtn: false,//控制整改按钮state
+                    // backBtn:false,// 退回按钮
+                    checkDetail: '',
+                    record_box: []//请求操作记录集合
+                },
+                computed: {
+                    revokeBtn: function () {
+                        if ((this.checkDetail.isRevoke) == 1 && (this.checkDetail.createUserId == $api.getStorage('userId'))) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+
+
+                },
+                create: function () {
+
+                },
+                methods: {
+                    //阅览信息
+                    opencontentDisplayFn: function (data) {
+                        api.openFrame({
+                            name: 'opencontentDisplayFn',
+                            url: '../../../contentDisplay.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                content: data
+                            },
+                            bounces: false,
+                            bgColor: 'transparent',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+
+                    },
+                    //调用撤回fn
+                    triggerRevoke: function () {
+                        var _this = this;
+                        api.confirm({
+                            title: '是否撤销',
+                            // msg: 'testmsg',
+                            buttons: ['确定', '取消']
+                        }, function (ret, err) {
+                            if (ret) {
+                                var index = ret.buttonIndex;
+                                if (index == 1) {
+                                    _this.checkDetail.isFlow == 1 ? _this.revokeFn(fnc) : _this.norevokeFn(fnc);
+                                    function fnc() {
+                                        // 处理区责任人息id
+                                        var userId_filter = _this.checkDetail.personliable.map(function (item) {
+                                            return item.userId;
+                                        })
+                                        // //处理额人信息名称
+                                        var name_filter = _this.checkDetail.personliable.map(function (item) {
+                                            return item.name;
+                                        })
+
+
+
+                                        //劳动队处理id
+                                        var laborTreamId_filter = _this.checkDetail.laborTeam.map(function (item) {
+                                            return item.laborTreamId;
+                                        })
+                                        //劳动队处理name
+                                        var laborTreamName_filter = _this.checkDetail.laborTeam.map(function (item) {
+                                            return item.laborTreamName;
+                                        })
+
+
+
+
+
+                                        var params = {
+                                            "imgSrc": [],
+
+                                            "areaId": _this.checkDetail.area.area_id,//区域id
+                                            "areaName": _this.checkDetail.areaName,//区域名称
+                                            "questionType": _this.checkDetail.questionType && _this.checkDetail.questionType.dictionaries_id,//问题类型(更改:只需要传第一级问题类型id)
+
+                                            "personliableId": userId_filter.join(','),//责任人ID
+                                            "personliableName": name_filter.join(','),//责任人名称
+
+                                            "laborTeamId": laborTreamId_filter.join(','),//劳务队ID
+                                            "laborTeamName": laborTreamName_filter.join(','),//劳务队名称
+
+
+                                            "deadline": _this.checkDetail.deadline,//整改到期日期
+                                            "lableUrl": "",//标注图片地址(更改：该字段已清除)
+
+                                            "srcImgUrl": '',//原图片地址（多张逗号分隔）
+                                            "compressImgUrl": '',//压缩图片地址（多张逗号分隔）
+                                            "voiceUrl": '',//语音文件地址
+                                            "content": _this.checkDetail.content,//问题描述
+                                            "questionDetails": _this.checkDetail.questionDetails,//问题类型名称(更改：只需要传第一级)
+                                            "voiceLong": '',//语音时长
+                                            "zgMeasures": _this.checkDetail.zgMeasures,//整改措施
+                                            "zgVoice": '',//整改语音文件路径
+                                            "zgVoiceLong": '',//整改措施语音时长
+                                            "isFlow": _this.checkDetail.isFlow//是否进入流程(更改的)（1进入流程 0不进入）
+                                        }
+                                        console.log($api.jsonToStr(params));
+                                        api.setPrefs({
+                                            key: 'savequality_add_draft',
+                                            value: $api.jsonToStr(params)
+                                        });
+                                        api.sendEvent({
+                                            name: 'refsh_quelity_list_event',
+                                            extra: {
+                                            }
+                                        });
+
+                                        setTimeout(function () {
+                                            api.closeWin();
+                                        }, 500)
+                                    }
+
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+                    //质量流程撤销
+                    revokeFn: function (fnc) {
+                        var params = {
+                            "businessId": this.checkDetail.qualityId, //"业务ID == 问题ID",
+                            "flowId": this.checkDetail.flowId, //"流程ID",
+                            "projectId": this.checkDetail.projectId, //"项目ID",
+                            "userId": $api.getStorage('userId'),//"当前处理人得ID == 当前用户",
+                            "problemType": '1'//"问题类型（1、质量问题2、安全问题3、隐蔽工程验收4、安全验收 5、任务管理）"
+                        }
+                        $app.post(
+                            true,
+                            revokeFlow,
+                            params, function (ret) {
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                fnc()
+
+                            }
+                        )
+                    },
+                    //不进入流程撤销
+                    norevokeFn: function (fnc) {
+                        var params = { 'qualityId': vm.checkDetail.qualityId }
+                        $app.post(
+                            true,
+                            revokeFreeFlow,
+                            params,
+                            function (ret) {
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                fnc()
+
+                            }
+
+                        )
+                    },
+                    //整改||退回|| 通过 按钮控制状态
+                    zgBtnFn: function () {
+                        var data = this.checkDetail;
+                        var currenUserId = $api.getStorage('userId');
+                        // data.personliable.forEach(function(item){
+                        //     if(item.userId == currenUserId){
+                        if (data.createUserId == currenUserId && data.state == 2 && data.isBack == 0) {
+                            vm.zgBtn = true;
+                        } else {
+
+                            vm.zgBtn = false
+                        }
+                        //     }
+                        // })
+
+                    },
+                    //打开整改新页面
+                    openRectficationWin: function (typeBtn) {
+                        api.openWin({
+                            name: 'qualityrectification',
+                            url: './qualityrectification.html',
+                            pageParam: {
+                                'detailInfo': $api.jsonToStr(vm.checkDetail),
+                                'btnType': typeBtn
+                            }
+                        });
+
+                    },
+                    //请求记录流程
+                    initrecordInit: function () {
+                        // var receiving  = api.pageParam.qualitydetailinfo;
+
+                        var params = {
+                            "qualityId": vm.checkDetail.qualityId,
+                            "isFlow": vm.checkDetail.isFlow,
+                            "flowId": vm.checkDetail.flowId,
+
+                        }
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            getOperationRecordList,
+                            params,
+                            function (ret) {
+                                vm.record_box = ret.obj;
+
+                            }
+                        )
+                    },
+                    //初始化详情
+                    init: function () {
+                        var receiving = api.pageParam.qualitydetailinfo;
+                        var params = {
+                            "qualityId": receiving.qualityId || receiving.objectId,
+                            "userId": $api.getStorage('userId'),
+                            "isFlow": receiving.isFlow || '',
+                            "projectId": $api.getStorage('enterpriseId')
+
+                        }
+                        console.log($api.jsonToStr(params));
+                        ajaxPost(
+                            true,
+                            '加载中...',
+                            qualityDetails,
+                            params,
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                //刷新首页
+                                api.sendEvent({
+                                    name: 'enterpriseIndexList',
+                                    extra: {
+                                    }
+                                });
+                                //刷新消息中心未读列表
+                                api.sendEvent({
+                                    name: 'getUnReadFn',
+                                    extra: {
+                                    }
+                                });
+
+                                vm.checkDetail = ret.obj;
+                                vm.zgBtnFn()
+                                vm.initrecordInit();
+                            }
+                        )
+                    },
+                    // //图片查看
+                    imgSee: function (url, index) {
+                        var Img_url_box = url.map(function (item) {
+                            return item.srcUrl
+                        })
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: Img_url_box,
+                            activeIndex: index,
+                            placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else { }
+                        });
+                    },
+                    openredSateFn: function (data) {
+                        api.openWin({
+                            name: 'redstate',
+                            url: './redstate.html',
+                            pageParam: {
+                                redstateInfo: data
+                            }
+                        });
+
+                    },
+                }
+            })
+            vm.init();
+
+
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>

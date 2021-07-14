@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: linear-gradient(0deg, rgba(255, 255, 255, 1), rgba(5, 143, 253, 1));
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #fff;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .nav_box {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            /*padding: 5px 0;*/
+            height: 45px;
+            position: relative;
+        }
+
+        .nav_box p {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 1);
+            /*transition: border .5s;*/
+        }
+
+        .nav_box p.nav_active {
+            font-size: 15px;
+            border-bottom: 1px solid #fff;
+        }
+
+        .tab_box {
+            margin: 15px auto 0;
+            /*height: 60px;*/
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .tab_item {
+            height: 35px;
+            line-height: 35px;
+            flex: 0 0 120px;
+            background: rgba(255, 255, 255, .7);
+            /*border: 1px solid rgba(255, 255, 255, 1);*/
+            color: rgba(50, 50, 51, 1);
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            border-top-left-radius: 5px;
+        }
+
+        .tab_item:last-child {
+            border-top-left-radius: 0px;
+            border-top-right-radius: 5px;
+        }
+
+        .tab_item.active {
+            background-color: #fff;
+            color: rgba(5, 143, 253, 1);
+            opacity: 0.7;
+        }
+
+        .timeBox {
+            width: 115px;
+            height: 25px;
+            line-height: 25px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .panel,
+        .panel2 {
+            width: 95%;
+            height: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px 10px 0px 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            padding-bottom: 15px;
+        }
+
+        .content {
+            width: 100%;
+            padding: 0 15px;
+            height: 95%;
+        }
+
+        .top_box {
+            width: 100%;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content_show {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .content_show li {
+            width: 33.3%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .show_item {
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 143, 253, .1);
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .show_item span {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: rgba(34, 172, 56, 1);
+            line-height: 15px;
+        }
+
+        .show_item p {
+            font-size: 12px;
+            font-family: Adobe Heiti Std;
+            font-weight: normal;
+            color: rgba(50, 50, 51, 1);
+            /*line-height: 15px;*/
+        }
+
+        .time_box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .split_line {
+            height: 3px;
+            width: 15px;
+            background-color: #eee;
+            margin: 0 5px;
+        }
+
+        .panel1_conten {
+            width: 100%;
+        }
+
+        .panel1_item {
+            margin-top: 15px;
+            height: 50px;
+            background: rgba(5, 143, 253, .1);
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 5px;
+        }
+
+        .panel1_item div {
+            flex: 1;
+            font-size: 12px;
+        }
+
+        .panel1_item div:last-child {
+            flex: 2;
+        }
+
+        .rt {
+            display: flex;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+            flex: 2;
+
+        }
+
+        .rt p {
+            color: #00A856;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .tab_active {
+            background-color: #fff;
+        }
+
+        .aui-popup-top,
+        .aui-popup-top-left,
+        .aui-popup-top-right {
+            top: 5px
+        }
+
+        .aui-popup .aui-list {
+            background-color: #eee
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .company {
+            font-size: 12px;
+        }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .position-absolute {
+            width: 3rem;
+            height: 3rem;
+            position: absolute;
+            top: 30%;
+            left: 27%;
+        }
+
+        .displayFlex {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="nav_box line_after_1">
+            <p :class="{'nav_active':nav_cur_i == i}" v-for="(item,i) in nav_txt" v-text="item.name" tapmode
+                @click="toggleNav(item,i)">业主单位</p>
+        </div>
+        <div class="tab_box">
+            <div class="tab_item " :class="{'tab_active':tab_cur_i == i}" v-for="(item,i) in tab_txt" v-text="item.name"
+                tapmode @click="toggleTab(item,i)"></div>
+        </div>
+        <div class="panel" v-show="loadShow && isShow_content">
+            <div class="timeBox" tapmode @click="openTimeFn()">
+                <span v-text="queryDate">2020-05-25</span>
+                <i class="aui-iconfont aui-icon-down"></i>
+            </div>
+            <div class="position-relative">
+                <canvas id="canvas" width="126" height="126"></canvas>
+                <div class="position-absolute displayFlex">
+                    <div>
+                        打卡
+                    </div>
+                    <div>
+                        <span v-text="recordLogClockInfo.actuals">0</span>/<span
+                            v-text="recordLogClockInfo.totals">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="top_box">
+                    <p>所属单位</p>
+                    <p>单位数量 <span>（人）</span></p>
+                </div>
+                <div v-if="recordLogClockInfo.units">
+                    <ul class="content_show">
+                        <li tapmode @click="openItemPanel(item)" v-for="item in recordLogClockInfo.units">
+                            <div class="show_item">
+                                <div><span v-text="item.actual">3</span>/<span v-text="item.total">5</span></div>
+                                <p class="aui-ellipsis-1" v-text="item.unitName">木工</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- <ul class="content_show" v-else>
+                        <li tapmode @click="openItemPanel(item)" v-for="item in recordLogClockInfo.stations">
+                            <div class="show_item">
+                                <div><span v-text="item.actual">3</span>/<span v-text="item.total">5</span></div>
+                                <p class="aui-ellipsis-1" v-text="item.name">木工</p>
+                            </div>
+                        </li>
+                    </ul> -->
+                </div>
+                <div class="noData" v-else>
+                    <img src="../../../image/noData.png" alt="">
+                    <p>没有相关数据~</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel2 " v-show="loadShow && !isShow_content">
+            <div class="time_box">
+                <div class="timeBox" tapmode @click="starMonthFn()">
+                    <span v-text="startMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+                <div class="split_line"></div>
+                <div class="timeBox" tapmode @click="endMonthFn()">
+                    <span v-text="endMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+
+            </div>
+            <ul class="panel1_conten" v-if="stationIfo.length">
+                <li class="panel1_item" tapmode @click="openattendanceList(item)" v-for="item in stationIfo">
+                    <div v-text="item.unitName || item.groupName">木工板</div>
+                    <div class="rt">
+                        <p v-if="item.attendanceDays">出勤&nbsp;<span v-text="item.attendanceDays"></span> <span
+                                class="company">天</span></p>
+                        <p v-if="item.totalworkHours">总工数&nbsp;<span v-text="item.totalworkHours"></span> <span
+                                class="company">天</span></p>
+                        <p v-if="item.overtimeHours">加班&nbsp;<span v-text="item.overtimeHours"></span> <span
+                                class="company">小时</span></p>
+                    </div>
+                </li>
+                <!-- <li class="panel1_item">
+                    <div>木工板</div>
+                    <div class="rt">
+                        <p>出勤30天</p>
+                        <p>出勤30天</p>
+                    </div>
+                </li>
+                </li> -->
+            </ul>
+            <div class="noData" v-else>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+
+
+    <script>
+        apiready = function () {
+            var NVNavigationBar = api.require('NVNavigationBar');
+            //监听点击弹出菜单事件
+            api.addEventListener({
+                name: 'realnameattendance_meau_toggle_event'
+            }, function (ret, err) {
+                if (ret) {
+                    vm.isMeauShow = !vm.isMeauShow;
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    nav_txt: '', //导航文本
+                    nav_cur_i: 0, //记录导航当前高亮下标
+                    tab_txt: '', //tab栏
+                    tab_cur_i: 0, //记录tab当前高亮下标
+                    isShow_content: true, //控制显示日考勤（0）内容还是出勤统计（1）
+                    isMeauShow: false, //控制弹出菜单显示隐藏
+                    NVNavigationBar_txt: '',//导航文本
+                    category: '',//人员类别
+                    queryDate: '',//查询时间
+                    recordLogClockInfo: '',//日考勤班组统计
+                    startMonth: '',//出勤开始日期
+                    endMonth: '',//出勤筛选结束日期
+                    stationIfo: '',//出勤统计-班组/岗位统计信息
+                    loadShow: false,//优化显示
+                },
+                created: function () {
+                    this.queryDate = $app.formDate(false, '-');
+                    var curStarDate = new Date().getFullYear() + '-' + $app.fillDate(new Date().getMonth() + 1) + '-' + '01';
+                    this.startMonth = curStarDate;
+                    this.endMonth = $app.formDate(false, '-');
+                    this.tab_txt = [{
+                        name: '日考勤',
+                        type: '0'
+                    }, {
+                        name: '出勤统计',
+                        type: '1'
+                    }]
+                    this.getPersonType();
+
+                },
+                mounted: function () {
+                },
+                watch: {
+                    //解决菜单被导航遮挡
+                    isMeauShow: function (newVal) {
+                        if (newVal) {
+                            NVNavigationBar.hide({
+                                id: 'first'
+                            });
+                        } else {
+                            NVNavigationBar.show({
+                                id: 'first'
+                            });
+                        }
+                    }
+                },
+                computed: {
+
+
+                },
+                methods: {
+                    //月份开始
+                    starMonthFn: function () {
+                        var _this = this;
+                        $app.timeFn(
+                            function (ret) {
+                                _this.startMonth = ret;
+                                _this.getGroupAndStationCountFn()
+                            },
+                            false,
+                            this.startMonth
+                        )
+                    },
+                    //月份结束
+                    endMonthFn: function () {
+                        var _this = this;
+                        $app.timeFn(
+                            function (ret) {
+                                _this.endMonth = ret;
+                                _this.getGroupAndStationCountFn()
+                            },
+                            false,
+                            this.endMonth
+                        )
+                    },
+                    //获取出勤统计
+                    getGroupAndStationCountFn: function () {
+                        var _this = this;
+                        var params = {
+                            projectId: $api.getStorage('enterpriseId'),//项目ID
+                            category: this.category,//人员类别
+                            startMonth: _this.startMonth,//开始日期
+                            endMonth: _this.endMonth,//
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            // getGroupAndStationCount,
+                            getUnitDetailInfo,
+                            params,
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.stationIfo = ret.obj;
+                            }
+                        )
+                    },
+                    ////查询出勤打卡和班组统计
+                    recordLogClockFn: function () {
+                        var _this = this;
+                        var params = {
+                            projectId: $api.getStorage('enterpriseId'),
+                            category: _this.category,
+                            queryDate: _this.queryDate
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            false,
+                            // recordLogClock,
+                            getUnitAttendanceDetail,
+                            params,
+                            function (ret) {
+                                _this.loadShow = true;
+                                console.log($api.jsonToStr(ret));
+                                _this.recordLogClockInfo = ret.obj;
+                                _this.initCanvas(ret.obj);
+                            }
+                        )
+                    },
+                    //获取人员类型
+                    getPersonType: function () {
+                        var _this = this;
+                        $app.post(
+                            false,
+                            realNamedicListByType,
+                            {
+                                type: 'category',
+                                description: ''
+                            },
+                            function (ret) {
+                                _this.nav_txt = ret.obj;
+                                var nav_item = [];
+                                _this.category = ret.obj[0].value;
+                                ret.obj.forEach(function (item) {
+                                    nav_item.push(
+                                        {
+                                            title: item.label,
+                                            bg: '#058FFD',
+                                            bgSelected: '#058FFD',
+                                            isShadow: false,
+                                        }
+                                    )
+                                })
+                                _this.NVNavigationBar_txt = nav_item;
+                                _this.NVNavigationBarInit(nav_item)
+                                _this.recordLogClockFn()
+                            }
+                        )
+                    },
+                    // 顶部导航初始化
+                    NVNavigationBarInit: function (data) {
+                        var _this = this;
+                        NVNavigationBar.open({
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: api.frameWidth,
+                                h: 42
+                            },
+                            styles: {
+                                orientation: 'horizontal',
+                                bg: '#058FFD',
+                                bgAlpha: 1,
+                                font: {
+                                    size: 10,
+                                    sizeSelected: 14,
+                                    color: '#FFFFFF',
+                                    colorSelected: '#fff',
+                                    alpha: 1
+                                },
+                                itemSize: {
+                                    w: 90,
+                                    h: 44
+                                }
+                            },
+                            items: data,
+
+                            selectedIndex: 0,
+                            fixedOn: api.frameName,
+                            id: 'first'
+                        }, function (ret, err) {
+                            console.log($api.jsonToStr(ret));
+                            if (ret.eventType === 'show') return false;
+                            _this.nav_txt.forEach(function (item) {
+                                if (item.label === _this.NVNavigationBar_txt[ret.index].title) {
+                                    _this.category = item.value
+                                }
+                            })
+                            if (_this.tab_cur_i == 0) {
+                                _this.recordLogClockFn()
+                            } else {
+                                _this.getGroupAndStationCountFn()
+                            }
+                            //
+
+                            console.log(_this.category);
+
+
+                        });
+                    },
+                    //打开日考勤
+                    // openItemPanel: function (data) {
+                    //     console.log(this.category);
+                    //     data.queryDate = this.queryDate;
+                    //     var _this = this;
+                    //     api.openWin({
+                    //         name: 'personalclockinrecord',
+                    //         url: './personalclockinrecord.html',
+                    //         pageParam: {
+                    //             personalclockinrecord: data,
+                    //             category: _this.category
+                    //         }
+                    //     });
+                    // },
+                    openItemPanel: function (data) {
+                        data.queryDate = this.queryDate;
+                        var _this = this;
+                        api.openWin({
+                            name: 'day-checkingIn',
+                            url: 'new-realname/day-checkingIn.html',
+                            pageParam: {
+                                unitInfo: data,
+                                category: _this.category
+                            }
+                        });
+                    },
+                    //打开出勤统计
+                    // openattendanceList: function (data) {
+                    //     var _this = this;
+                    //     data.startMonth = _this.startMonth;
+                    //     data.endMonth = _this.endMonth;
+                    //     api.openWin({
+                    //         name: 'attendance_list',
+                    //         url: './attendance_list.html',
+                    //         pageParam: {
+                    //             personalclockinrecord: data,
+                    //             category: _this.category
+                    //         }
+                    //     });
+                    // },
+                    openattendanceList: function (data) {
+                        var _this = this;
+                        data.startMonth = _this.startMonth;
+                        data.endMonth = _this.endMonth;
+                        api.openWin({
+                            name: 'day-checkingStatistics',
+                            url: 'new-realname/day-checkingStatistics.html',
+                            pageParam: {
+                                unitInfo: data,
+                                category: _this.category
+                            }
+                        });
+                    },
+                    //切换tab栏
+                    toggleTab: function (data, i) {
+                        this.tab_cur_i = i
+                        switch (data.type) {
+                            case '0':
+                                this.isShow_content = true;
+                                break;
+                            case '1':
+                                this.isShow_content = false;
+                                this.getGroupAndStationCountFn()
+                                break;
+                        }
+                    },
+                    //切换nav改变下标索引
+                    toggleNav: function (data, i) {
+                        this.nav_cur_i = i;
+                    },
+                    //时间查询选择
+                    openTimeFn: function () { //自定义查询时间
+                        var _this = this;
+                        $app.timeFn(
+                            function (ret) {
+                                console.log(ret);
+                                _this.queryDate = ret;
+                                _this.recordLogClockFn()
+                            }, false, _this.queryDate)
+                    },
+                    //环形进度条
+                    initCanvas: function (data) {
+                        var that = this;
+                        var canvas = document.getElementById('canvas'), //获取canvas元素
+                            context = canvas.getContext('2d'), //获取画图环境，指明为2d
+                            centerX = canvas.width / 2, //Canvas中心点x轴坐标
+                            centerY = canvas.height / 2, //Canvas中心点y轴坐标
+                            rad = Math.PI * 2 / 100, //将360度分成100份，那么每一份就是rad度
+                            speed = 0.2; //加载的快慢就靠它了
+                        //绘制10像素宽的运动外圈
+                        function f5_Circle() {
+                            context.save();
+                            context.strokeStyle = "#f5f5f5"; //设置描边样式
+                            context.lineWidth = 10; //设置线宽
+                            context.beginPath(); //路径开始
+                            context.arc(centerX, centerY, 50, -Math.PI / 2, 100 * rad, false); //用于绘制圆弧context.arc(x坐标，y坐标，半径，起始角度，终止角度，顺时针/逆时针)
+                            context.stroke(); //绘制
+                            context.closePath(); //路径结束
+                            context.restore();
+                        }
+                        //绘制10像素宽的运动外圈
+                        function blueCircle(n) {
+                            context.save();
+                            context.strokeStyle = "#058FFD"; //设置描边样式
+                            context.lineWidth = 10; //设置线宽
+                            context.beginPath(); //路径开始
+                            context.arc(centerX, centerY, 50, -Math.PI / 2, -Math.PI / 2 + n * rad, false); //用于绘制圆弧context.arc(x坐标，y坐标，半径，起始角度，终止角度，顺时针/逆时针)
+                            context.stroke(); //绘制
+                            context.closePath(); //路径结束
+                            context.restore();
+                        }
+                        //绘制白色外圈
+                        function whiteCircle() {
+                            context.save();
+                            context.beginPath();
+                            context.lineWidth = 2; //设置线宽
+                            context.fillStyle = "#f0f0f0";
+                            context.arc(centerX, centerY, 100, 0, Math.PI * 2, false);
+                            context.stroke();
+                            context.closePath();
+                            context.restore();
+                        }
+                        //百分比文字绘制
+                        function text(n) {
+                            context.save(); //save和restore可以保证样式属性只运用于该段canvas元素
+                            context.strokeStyle = "#000"; //设置描边样式
+
+                            context.textAlign = 'center';
+                            context.font = "normal normal normal 16px sans-serif";
+
+                            context.textAlign = 'center';
+                            // 绘制字体，并且指定位置
+                            // context.strokeText('打卡', centerX, centerY - 10);
+                            // context.stroke(); //执行绘制
+                            // context.restore();
+
+                            // context.strokeStyle = "#f00"; //设置描边样式16px sans-serif
+                            // context.font = "normal normal normal 10px sans-serif";
+
+                            // context.textAlign = 'center';
+                            // //绘制字体，并且指定位置
+                            // context.strokeText((data.actuals) + '/' + (data.totals), centerX, centerY + 10);
+                            // context.stroke(); //执行绘制
+                        }
+                        //动画循环
+                        (function drawFrame() {
+                            var rafId = window.requestAnimationFrame(drawFrame);
+                            context.clearRect(0, 0, canvas.width, canvas.height);
+                            f5_Circle();
+                            whiteCircle();
+                            text(speed);
+                            blueCircle(speed);
+                            var num = parseInt(data.actuals / data.totals * 100);
+                            if (data.totals === 0 || speed >= num) {
+                                data.totalstotals === 0 ? num = 0 : num;
+                                speed = num;
+                                cancelAnimationFrame(rafId)
+                            }
+                            speed += 1;
+                        }());
+                    }
+                }
+            })
+        }
+    </script>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .list_item {
+            padding: 15px;
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            background-color: #fff;
+            margin-top: 1px;
+            line-height: 30px;
+        }
+
+        .date {
+            font-size: 12px;
+            color: rgba(141, 140, 140, 1);
+        }
+
+        .type {
+            font-size: 15px;
+            color: rgba(51, 51, 51, 1);
+
+        }
+
+        .title {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #ff8d1a;
+            text-align: right;
+        }
+
+        .bttom .last {
+            font-size: 12px;
+            color: rgba(74, 74, 74, 1);
+        }
+
+        .succe {
+            color: #058FFD
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aui-content aui-margin-b-15" id="app" v-if="earlywarningList.length !== 0 || earlywarningList !==null ">
+        <ul class="list">
+            <li class="list_item" v-for="(item,index) in earlywarningList">
+                <div class="top">
+                    <p class="date" v-text="item.occurtime"></p>
+                    <h2 class="type" v-text="item.label"></h2>
+                </div>
+                <div class="bttom">
+                    <!-- <p class="title succe">已处理</p> -->
+                    <p class="last">
+                        <span class="title" v-text="item.over"></span>&nbsp; &gt;&nbsp; 预警值：<span
+                            v-text="item.crisis">2.5</span>
+                    </p>
+                </div>
+            </li>
+        </ul>
+        <div class="noData" v-else>
+            <img src="../../../../image/noData.png" alt="">
+            <p>没有相关数据~</p>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/layimg.js"></script>
+    <script>
+        Vue.use(VueLazyload, {
+            error: '../../../../image/err.jpg',
+            loading: '../../../../image/lay_img.gif'
+        });
+
+        apiready = function () {
+            // 下拉刷新
+            $app.downrefresh(function () {
+                vm.getCallHistoryInfo();
+            })
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    liftInfo: api.pageParam.liftInfo,  //预警塔机id
+                    earlywarningList: [],  //获取单个预警历史信息
+                    startDate: $app.addDate($app.formDate(false, '-', true), -1),
+                    endDate: $app.formDate(false, '-', true),
+                },
+                mounted: function () {
+                },
+                created: function () {
+                    //获取单个预警历史信息
+                    this.getCallHistoryInfo();
+                },
+                methods: {
+                    //获取单个预警历史信息
+                    getCallHistoryInfo: function () {
+                        var that = this;
+                        var prame = {
+                            id: that.liftInfo.id,
+                            // id: "ade17e5087094e1ab9c13fd9ad96b7b5",
+                            startDate: this.startDate,
+                            endDate: this.endDate
+                        }
+                        console.log("获取单个预警历史信息参数:" + JSON.stringify(prame));
+                        $app.post(
+                            true,
+                            getEarlyHistoryInfoURL,
+                            prame,
+                            function (ret) {
+                                console.log("获取单个预警历史信息:" + JSON.stringify(ret));
+                                that.earlywarningList = ret.obj;
+                            }
+                        )
+                    },
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background-color: #fff
+            /*background: linear-gradient(0deg, rgba(255, 255, 255, 1), rgba(5, 143, 253, 1));*/
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%);
+        }
+        .top{
+            padding: 15px 0;
+            background-color: #fff;
+        }
+        .show_txt{
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(85,85,85,1);
+            line-height:24px;
+            padding: 0 25px;
+            text-indent:2em;
+
+        }
+        .addprice{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #fff
+        }
+        .imgUpdate{
+            display: flex;
+            height:100%;
+            padding:18px 15px;
+            background-color: #fff;
+            position: relative;
+        }
+        .imgUpdate img{
+            width: 100px;
+            height:100px;
+
+        }
+        .imgUpdate div:last-child{
+            width: 100px;
+            height:100px;
+            background-color: #F0F0F2;
+            font-size: 60px;
+            color:#C7C7CC;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .imgItem{
+            position: relative;
+            margin-right: 15px;
+        }
+        .imgItem .del_close{
+            position: absolute;
+            width: 15px;
+            height:15px;
+            border-radius: 50%;
+            top:-7px;
+            right:-7px;
+            line-height: 15px;
+            text-align: center;
+            color:#fff;
+            background:#FF1414;
+            font-size: 12px;
+        }
+        .txt{
+            text-align: center;
+            font-size:15px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(85,85,85,1);
+            line-height:24px;
+        }
+        .btn_bx{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            padding: 25px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0
+        }
+        .btn_item{
+            height:46px;
+            border:1px solid rgba(0,142,255,1);
+            border-radius:5px;
+            font-size:18px;
+            font-family:PingFang SC;
+            font-weight:500;
+            color:rgba(5,143,253,1);
+            flex: 1;
+            text-align: center;
+            line-height: 46px;
+        }
+        .btn_active{
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="top">
+            <p class="show_txt">
+                <span v-text="pageParam.name">张三丰</span>(身份证号:<span  v-text="pageParam.idcardNo">510322196745346668</span>)于<span  v-text="pageParam.entranceDay">2020年02月03日</span>进场，到<span  v-text="currenProject">龙湖紫都城</span>项目工地从事<span  v-text="pageParam.teamName">泥工班组</span><span v-text="pageParam.worktypeName">外墙抹灰</span>工种。
+            </p>
+            <p class="show_txt">
+                现于<span v-text="currDate">2020年04月03日</span>离场，并与公司解除劳动关系。在该项目工作期间的全部工资已由其本人领取并结清，并无拖欠、克扣。
+            </p>
+        </div>
+        <div class="addprice">
+            <div class="add_item">
+                <div class="imgUpdate" style="padding:10px 15px;">
+                    <div class="imgItem" tapmode="hover" v-for="(item,i) in exitSettlement">
+                        <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click="delexit" tapmode="hover"></i>
+                        <img :src="item.url" alt="" tapmode @click="imgSee(item)">
+                    </div>
+                    <div @click="exitSettlementFn()" tapmode v-show="!exitSettlement.length">+</div>
+                </div>
+                <p class="txt">退场结算书</p>
+            </div>
+            <div class="add_item">
+                <div class="imgUpdate" style="padding:10px 15px;">
+                    <div class="imgItem" tapmode="hover" v-for="(item,i) in salarySettlement">
+                        <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click="delsalary()" tapmode="hover"></i>
+                        <img :src="item.url" alt="" tapmode @click="imgSee(item)">
+                    </div>
+                    <div @click="salarySettlementFn()" tapmode v-show="!salarySettlement.length">+</div>
+                </div>
+                <p class="txt">工资结算证明</p>
+            </div>
+
+        </div>
+        <div class="btn_bx" v-if="isCloseBtn">
+            <div class="btn_item" tapmode @click="cancelFn()">取消</div>
+            <div class="btn_item btn_active" tapmode @click="submitFn()">确定离场</div>
+        </div>
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script src="../../../script/vue.js"></script>
+
+
+
+    <script>
+        apiready = function() {
+            var imageFilter = api.require('imageFilter');
+            var photoBrowser = api.require('photoBrowser');
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    'currenProject':'',//当前项目名称
+                    'isCloseBtn':true,//控制删除附件按钮状态
+                    'currDate':'',//离场时间
+                    'pageParam':'',//接收跨页面值
+                    'exitSettlement':[],//退场结算书
+                    'salarySettlement':[],//工资结算证明
+                    'quitBtn':true,//离场按钮是否显示
+                },
+                created: function() {
+                    this.currenProject = $api.getStorage('currentProject');
+                    this.currDate = $app.formDate(false,'-');
+                    // 编辑
+                    if(api.pageParam.fromInfo){
+                        console.log('离场');
+                        this.isCloseBtn = true;
+                        this.pageParam = api.pageParam.fromInfo;
+                    }
+                    //查看
+                    if(api.pageParam.quitInfo){
+                        console.log('已退场');
+                        this.isCloseBtn = false;
+                        this.pageParam = api.pageParam.quitInfo;
+                        this.exitSettlement.push({'url':this.pageParam.urlPrefix + this.pageParam.exitLetter,'fileName':this.pageParam.exitLetter});
+                        this.salarySettlement.push({'url':this.pageParam.urlPrefix + this.pageParam.salaryAccount,'fileName':this.pageParam.salaryAccount})
+
+                    }
+
+                },
+
+                methods: {
+                    //取消并关闭页面
+                    cancelFn:function(){
+                        api.closeWin()
+                    },
+                    //提交表单
+                    submitFn:function(){
+                        if(!this.exitSettlement.length){
+                            api.alert({
+                                title: '提示',
+                                msg: '请上传工资结算证明',
+                            }, function(ret, err){
+                                if( ret ){
+                                }else{
+                                }
+                            });
+                            return false
+
+                        }
+                        if(!this.salarySettlement.length){
+                            api.alert({
+                                title: '提示',
+                                msg: '请上传退场结算书',
+                            }, function(ret, err){
+                                if( ret ){
+                                }else{
+                                }
+                            });
+                            return false
+                        }
+                        var _this =this;
+                        var filter_exit = this.exitSettlement.map(function(item){
+                            return item.fileName
+                        }).join(',')
+                        var filter_salary = this.salarySettlement.map(function(item){
+                            return item.fileName
+                        }).join(',')
+                        var params = {
+                            'id':this.pageParam.id,
+                            'exitLetter':filter_exit,
+                            'salaryAccount':filter_salary,
+                        }
+                        $app.post(
+                            true,
+                            updatePersonStatus,
+                            params,
+                            function(ret){
+                                api.sendEvent({
+                                    name: 'upodate_quit_event',
+                                    extra: {
+                                    }
+                                });
+
+                                api.toast({
+                                    msg: ret.msg,
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                                setTimeout(function(){
+                                    api.closeWin();
+                                },500)
+
+                            }
+                        )
+                    },
+                    //删除图片退场结算书
+                    delexit:function(){
+                        this.exitSettlement = [];
+                    },
+                    //工资结算证明
+                    delsalary:function(){
+                        this.salarySettlement = [];
+                    },
+                    //退场结算书
+                    exitSettlementFn:function(){
+                        var _this = this;
+                        var callback = function(ret){
+                            console.log($api.jsonToStr());
+                            _this.exitSettlement = ret.obj;
+                        }
+                        this.openlibraryFn(callback)
+                    },
+                    //工资结算正面
+                    salarySettlementFn:function(){
+                        var _this = this;
+                        var callback = function(ret){
+                            console.log($api.jsonToStr(ret));
+                            _this.salarySettlement = ret.obj
+                        }
+
+                        this.openlibraryFn(callback)
+                    },
+                    //打开图库
+                    openlibraryFn:function(callback){
+                        var _this = this;
+                        confirmPer('camera,photos', function() {})
+                        // this.openCrameFn();
+                        api.actionSheet({
+                            cancelTitle: '取消',
+                            buttons: ['相机','图库']
+                        }, function(ret, err){
+                            if( ret ){
+                                switch (ret.buttonIndex) {
+                                    case 1:
+
+                                        _this.openCrameFn('camera',callback)
+                                        break;
+                                    case 2:
+                                        _this.openCrameFn('library',callback)
+                                        break;
+                                    default:
+
+                                }
+                            }else{
+                                 alert( JSON.stringify( err ) );
+                            }
+                        });
+
+                    },
+                    // 打开图库
+                    // type 打开类型（camera相机） （library图库）
+                    // callback
+                    openCrameFn:function(type,callback){
+                        api.getPicture({
+                            sourceType: type,
+                            encodingType: 'jpg',
+                            mediaValue: 'pic',
+                            destinationType: 'url',
+                            allowEdit: true,
+                            quality: 50,
+                            targetWidth: 100,
+                            targetHeight: 100,
+                            saveToPhotoAlbum: false
+                        }, function(ret, err) {
+                            if (ret) {
+                                ajaxFile(
+                                    true,
+                                    '图片上传中...',
+                                    realNameUplode,
+                                    {},
+                                    {files:ret.data},
+                                    function(ret){
+                                        callback(ret)
+                                    }
+                                )
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+                    },
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        console.log($api.jsonToStr(url));
+                        photoBrowser.open({
+                            images: [url.url],
+                            activeIndex: 0,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+
+
+
+
+                }
+
+
+
+            })
+        }
+    </script>
+
+</html>

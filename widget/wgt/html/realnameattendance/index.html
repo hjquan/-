@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        #header header {
+            background: rgba(5, 143, 253, 1);
+            height: 60px;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+
+        }
+
+        .aui-bar-nav .aui-btn {
+            height: 60px;
+        }
+
+        .aui-bar-nav.aui-bar-light .aui-iconfont {
+            color: #fff;
+        }
+
+        .titlbarBox {
+            width: 100%;
+            height: 60px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*border-radius: 5px;
+            overflow: hidden;*/
+        }
+
+        .item_bar {
+            height: 35px;
+            line-height: 35px;
+            flex: 1;
+            background: rgba(5, 143, 253, 1);
+            border: 1px solid rgba(255, 255, 255, 1);
+
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        .item_bar:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .item_bar:last-child {
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 5px;
+
+        }
+
+        .title_active {
+            background-color: #fff;
+            color: rgba(5, 143, 253, 1)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">
+                    <div class="titlbarBox">
+                        <div class="item_bar" :class="{'title_active': i == title_cur_i }" v-for="(item,i) in title_box"
+                            v-text="item.name" tapmode @click="toggleNav(item,i) "></div>
+                        <!-- <div class="item_bar " >考勤台账</div>
+                        <div class="item_bar " >考勤台账</div> -->
+                    </div>
+                </div>
+                <a class="aui-pull-right aui-btn" tapmode @click="toggleFn()">
+                    <i class="aui-iconfont aui-icon-plus"></i>
+                </a>
+            </header>
+
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+
+            //监听关闭菜单自定义事件
+            api.addEventListener({
+                name: 'close_meau_event'
+            }, function (ret, err) {
+                if (ret) {
+                    api.closeFrame({
+                        name: 'meau'
+                    });
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    title_box: '',//
+                    title_cur_i: 0,
+                    isMeauShow: false//控制菜单隐藏显示
+
+                },
+                created: function () {
+                    this.title_box = [
+                        { 'name': '考勤台账', 'type': '0', 'frameName': 'realnameattendace_index_frame', 'url': './index_frame.html' },
+                        { 'name': '实名制台账', 'type': '1', 'frameName': 'realaccount_frame', 'url': './realaccount_frame.html' }
+                    ]
+                    this.openFrameFn(this.title_box[0].frameName, this.title_box[0].url)
+                },
+                methods: {
+                    //弹出菜单
+                    toggleFn: function () {
+                        if (!this.isMeauShow) {
+                            api.openFrame({
+                                name: 'meau',
+                                url: './meau.html',
+                                rect: {
+                                    x: 0,
+                                    y: offset.h,
+                                    w: 'auto',
+                                    h: 'auto'
+                                },
+                                pageParam: {
+                                },
+                                bounces: false,
+                                bgColor: 'rgba(0,0,0,0.2)',
+                                vScrollBarEnabled: true,
+                                hScrollBarEnabled: true
+                                // transparent
+                            });
+                        } else {
+                            api.closeFrame({
+                                name: 'meau'
+                            });
+                        }
+                        this.isMeauShow = !this.isMeauShow;
+
+
+                    },
+                    //切换title导航
+                    toggleNav: function (data, i) {
+                        this.isMeauShow = false;
+                        this.title_cur_i = i;
+                        switch (data.type) {
+                            case '0':
+                                this.openFrameFn(data.frameName, data.url)
+                                break;
+                            case '1':
+                                this.openFrameFn(data.frameName, data.url)
+                                break;
+                        }
+                    },
+                    //打开frame
+                    openFrameFn: function (name, url) {
+                        api.openFrame({
+                            name: name,
+                            url: url,
+                            rect: {
+                                x: offset.l,
+                                y: offset.h,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    }
+                }
+            })
+        }
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>

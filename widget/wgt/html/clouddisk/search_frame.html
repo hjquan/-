@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .aui-list div.aui-list-item-media {
+            width: auto;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+        .bottom li {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+            padding: 10px;
+        }
+
+        .bottom img {
+            width: 35px;
+            height: 40px;
+        }
+
+        .noImage {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .aui-list .aui-list-item-media{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .border_size{
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="main_box">
+            <div class="aui-card-list">
+                <div class="aui-card-list-content">
+                    <ul class="aui-list aui-media-list">
+
+                        <li class="aui-list-item aui-list-item-middle border_size  "  v-for="(item,index) in info" :key="index" >
+
+                            <div class="aui-media-list-item-inner" style="width:95%">
+                                <div class="aui-list-item-media" tapmode  @click="openitem(item,index)" >
+                                    <img :src="typeFile(item.name)" style="width:40px;height:35px;" class=" aui-list-img-sm">
+                                </div>
+                                <div class="aui-list-item-inner aui-list-item-arrow"  tapmode @click="openitem(item,index)">
+                                    <div class="aui-list-item-text">
+                                        <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.name">AUI</div>
+                                        <!-- <div class="aui-list-item-right aui-ellipsis-1 size_rt" v-if="item.isDir != true" v-text="item.size" >08:00</div> -->
+                                    </div>
+                                    <div class="aui-list-item-text aui-ellipsis-1" >
+                                        <div class="aui-list-item-title aui-font-size-14 aui-ellipsis-1" v-text="item.lastModified">AUI</div>
+                                        <div class="aui-list-item-right aui-ellipsis-1 size_rt" v-if="item.isDir != true" v-text="item.size" >08:00</div>
+                                    </div>
+                                </div>
+                                <label tapmode><input class="aui-radio" ref="check_parent" :checked="item.checked"     type="checkbox" name="checkbox"  ></label>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
+                <!-- <div class="noImage" > -->
+                    <!-- <img src="../../../image/data/data_no.png" alt=""> -->
+                <!-- </div> -->
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+
+
+    <script>
+        var office,aliOSS;
+        apiready = function() {
+                office = api.require('officePreview');
+                aliOSS = api.require("aliOSS");
+                $api.fixStatusBar($api.dom('.fixd'));
+                //监听检索事件
+                api.addEventListener({
+                    name: 'clouddisk_search_event'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.inputValue = ret.value.inputValue;
+                        vm.filterInput();
+                    }else{
+                    }
+                });
+
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        authInfo:'',//授权信息
+                        inputValue:'',//数据过滤
+                        info: '', //列表数据
+                        copyInfo:'',//数据copy
+                        returnPrefix: '', //判断是否到达顶层（用于返回）
+                        topimg: [
+                            '../../../image/data/xslx.png',//0
+                            '../../../image/data/img.png',//1
+                            '../../../image/data/pdf.png',//2
+                            '../../../image/data/ppt.png',//3
+                            '../../../image/data/word.png',//4
+                            '../../../image/data/txt.png',//5
+                            '../../../image/data/video.png',//6
+                            '../../../image/data/zip.png',//7
+                            '../../../image/data/wz.png',//8
+                            '../../../image/data/Group.png',//9
+                        ]
+                    },
+                    created: function() {
+                        this.getOssAuthInfo();
+                    },
+                    methods: {
+
+                        //获取授权信息
+                        getOssAuthInfo:function(){
+                            var _this = this;
+                            //获取oss授权信息
+                            $app.post(
+                                true,
+                                getAliyunOssAuthInfo,
+                                {roleSessionName:$api.getStorage('userId')},
+                                function(ret){
+                                    // console.log($api.jsonToStr(ret));
+                                    _this.authInfo = ret.obj;
+                                    _this.aliOssInit()
+                                }
+                            )
+                        },
+                        //阿里云初始化
+                        aliOssInit:function(){
+                            var _this = this,
+                            data = this.authInfo,
+                            params = {
+                              endpoint:'http://oss-cn-shenzhen.aliyuncs.com',
+                              accessKeyId:'LTAI9OW54jvxLrQj',
+                              accessKeySecret:'wllzYdP18Y4dD3PZJGKMWEgse1H4jd' ,
+                              bucketName: data.bucketName
+                            }
+                            aliOSS.init(
+                              params,
+                              function(ret, err) {
+                                _this.getAllList();
+                              }
+                            );
+                        },
+                        //获取列表
+                        getAllList:function(url){
+                            var _this = this,
+                            prefix_url = url || ($api.getStorage('enterpriseId') + '/' + this.authInfo.uploadPath +'/');
+                             _this.prefix_url = prefix_url;
+                            console.log(prefix_url);
+                            aliOSS.listObjects(
+                                  {
+                                    prefix: _this.prefix_url,
+                                    // maxKeys:3,
+                                    // marker:_this.marker,
+                                    // current:true,
+
+                                  },
+                                  function(ret, err) {
+                                      console.log($api.jsonToStr(ret));
+                                      _this.copyInfo  = ret.objects.map(function(item){
+                                          var array_key = item.key.split('/');
+                                          item.name = array_key[array_key.length-1] ||array_key[array_key.length-2] ;
+                                          item.size = $app.fromCatcheSize(item.size,2);
+                                          item.checked = false;
+                                          return item;
+                                      });
+
+
+                                  }
+                                );
+                        },
+                        filterInput:function(){
+                            var _this = this;
+                            var reg = new RegExp(this.inputValue.split('').join('.*'))
+                            var data = $api.strToJson($api.jsonToStr(_this.copyInfo));
+                            if(data){
+                                if (!_this.inputValue) {
+                                    _this.info = _this.copyInfo;
+                                    return false;
+                                }
+                                _this.info =data.filter(function(item) {
+                                    var itemName = item.name;
+                                    if (reg.test(itemName)) {
+                                        console.log($api.jsonToStr(item));
+                                        return item
+                                    }
+                                })
+                                console.log($api.jsonToStr(_this.info));
+
+                            }
+                        },
+
+                        //打开文件夹或预览文件
+                        openitem: function(item) {
+                            var _this = this;
+                            if (item.isDir) {
+                                this.getAllList(item.key)
+                                _this.backName = item.key;
+                                api.sendEvent({
+                                    name: 'clouddisk_backname_event',
+                                    extra: {
+                                        backname:_this.backName
+                                    }
+                                });
+
+                            } else {
+                                this.getgrounpUrl(item.key,1)
+                            }
+                        },
+                        // isCopy 是否复制（1是 0不  默认为0）
+                        getgrounpUrl:function(url,isCopy){
+                            var _this = this;
+                            aliOSS.previewDoc(
+                              {
+                                objectKey: url,
+                                copy: isCopy || 0
+                              },
+                              function(ret2, err2) {
+                                if (ret2) {
+                                  console.log(ret2.url);
+                                  var filterType = url.split('.')[1];
+                                  _this.getUrl(ret2.url,filterType)
+                                }
+                                if (err2) {
+                                  api.toast({
+                                      msg: err2.msg,
+                                      duration: 2000,
+                                      location: 'bottom'
+                                  });
+
+                                }
+                              }
+                            );
+                        },
+
+                        getUrl: function(urlSee,fileType) {
+                            console.log(fileType);
+
+                            office.open({
+                               rect:{x:0, y:0,w:'auto', h:'auto'},
+                               fixedOn:api.frameName,
+                               fixed:true,
+                               url:urlSee,
+                               fileType:fileType
+
+                               });
+                        },
+                        typeFile: function(type) {
+                            var data = type.split('.')[1];
+                            if(data){
+                                data = data.toLowerCase()
+                            }else{
+                                data = 'group'
+                            }
+                            switch (data) {
+                                case 'zip':
+                                    return  this.topimg[7]
+                                    break;
+                                case 'mp4':
+                                    return  this.topimg[6]
+                                    break;
+                                case 'txt':
+                                    return  this.topimg[5]
+                                    break;
+                                case 'doc':
+                                case 'docx':
+                                    return this.topimg[4]
+                                    break;
+                                case 'ppt':
+                                case 'pptx':
+                                    return  this.topimg[3]
+                                    break;
+                                case 'pdf':
+                                    return  this.topimg[2]
+                                case 'jpg':
+                                case 'png':
+                                    return  this.topimg[1]
+                                    break;
+                                case 'xls':
+                                case 'xlsx':
+                                    return  this.topimg[0]
+                                    break;
+                                case 'group':
+                                    return  this.topimg[9]
+                                    break;
+
+                                default:
+                                    return this.topimg[8]
+
+                            }
+                        }
+
+
+                    }
+
+                })
+
+
+
+            }
+    </script>
+
+</html>

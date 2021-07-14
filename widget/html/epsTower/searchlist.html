@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../../css/style.css" /> -->
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            width: 100vw;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 1)
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 30px;
+            font-size: 15px;
+            font-family: PingFangSC-Regular, PingFangSC;
+            font-weight: 400;
+            color: rgba(50, 50, 51, 1);
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 30px;
+        }
+
+        .flex i {
+            flex: 1;
+            text-align: center;
+        }
+
+        .flex p {
+            flex: 4;
+            font-size: 13px;
+            font-family: PingFangSC-Regular, PingFangSC;
+            font-weight: 400;
+            color: rgba(183, 183, 188, 1);
+            line-height: 13px;
+        }
+
+        .list {
+            width: 100%;
+            margin: 0 auto;
+            border-bottom: 1px solid #f5f5f5;
+            margin-top: 15px;
+            background-color: #fff;
+            padding-bottom: 10px;
+        }
+
+        .bg {
+            /*width: 90%;*/
+            background-color: #fff;
+            margin: 0 auto;
+        }
+
+        .btnBox {
+            /*width: 90%;*/
+            margin: 8px auto 0;
+        }
+
+        .btn {
+            width: 100px;
+            height: 31px;
+            line-height: 31px;
+            border-radius: 4px;
+            border: 1px solid rgba(5, 143, 253, 1);
+            color: rgba(5, 143, 253, 1);
+            text-align: center;
+        }
+
+        .active {
+            color: #fff;
+            background: rgba(5, 143, 253, 1)
+        }
+
+        .imgto {
+            width: 24px;
+            height: 24px;
+            margin: 0 auto;
+        }
+
+        .h2 {
+            margin-left: 25px;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            font-weight: bold;
+        }
+
+        #search {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100000;
+        }
+
+        .mt65 {
+            margin-top: 85px;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="search">
+            <header class="aui-searchbar ">
+                <div class="aui-searchbar-input aui-border-radius">
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <input type="search" placeholder="请输入搜索内容" v-model="searchInput" id="search-input"
+                        @input="changeInput()">
+                    <div class="aui-searchbar-clear-btn">
+                        <i class="aui-iconfont aui-icon-close"></i>
+                    </div>
+                </div>
+                <div class="aui-searchbar-btn" tapmode="" style="margin-right: 0px;" @click="closeFrame()">取消</div>
+            </header>
+        </div>
+
+        <div class="list mt65 footer" v-cloak>
+            <div v-if="filterData && filterData.length">
+                <ul class="list" v-for="(items,index) in filterData" :key="index" tabmode
+                    @click="openPrijectTowercrane(filterData[index])">
+                    <li class="flex">
+                        <h2 class="h2" v-text="items.projectName"></h2>
+                    </li>
+                    <li class="flex">
+                        <i><img class="imgto" src="../../image/towercrane/iconTower.png" alt=""></i>
+                        <p v-cloak>共{{items.devices.length}}台设备，{{onlineDeviceItem[index]}}台在线</p>
+                    </li>
+                    <li class="flex"><i class="aui-iconfont aui-icon-location"></i>
+                        <p v-text="items.address"></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="noData" v-else>
+                <img src="../../image/noData.png" alt="">
+                <p>还没有相关数据哦~</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        //侵入式导航栏
+        // $api.fixStatusBar($api.dom('header'));
+        var header = $api.byId('search');
+        $api.fixTabBar($api.dom('.footer'));
+
+        $api.fixStatusBar(header);
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                'buttonInfo': '',
+                'onlineDevices': 0, //设备在线数
+                'onlineDeviceItem': [], //某一个项目数
+                'filterData': '', //筛选后的数据展示
+                'searchInput': '' //筛选条件
+            },
+            created: function () {
+                this.buttonInfo = $api.getStorage('getTowerDeviceListsInfoURL')
+            },
+            methods: {
+                init: function () {
+                    this.filterData = $api.getStorage('getTowerDeviceListsInfoURL');
+                    var onlineArr = [];
+                    if (!this.buttonInfo) return false;
+                    var b = this.buttonInfo && this.buttonInfo.map(function (items) {
+                        var numItem = 0;
+                        var b = items.devices.map(function (item) {
+
+                            if (item.onlineStatus == 1) {
+                                numItem++;
+                                vm.onlineDevices += 1;
+                            }
+                        })
+                        vm.onlineDeviceItem.push(numItem)
+                    })
+                },
+                closeFrame: function () {
+                    api.closeWin();
+
+                },
+                changeInput: function () {
+                    this.filterData = this.buttonInfo.filter(function (item) {
+                        var itemName = item.projectName;
+                        if (itemName.indexOf(vm.searchInput) != -1) {
+                            return item
+                        }
+                    })
+                    if (!this.filterData.length) {
+                        this.filterData = this.buttonInfo
+                    }
+                },
+                openPrijectTowercrane: function (towercraneId) {
+                    $api.setStorage('towercraneId', towercraneId.projectId);
+                    $api.setStorage('towercraneName', towercraneId.projectName);
+                    api.openWin({
+                        name: 'enterpriserTowercrane',
+                        url: '../../wgt/html/towercrane/index.html',
+                        pageParam: {
+                            // 'towercraneId': towercraneId
+                        }
+                    });
+
+                },
+
+            }
+        })
+        vm.init()
+        // console.log($api.jsonToStr(api.pageParam.buttonInfo));
+
+    }
+</script>
+
+</html>

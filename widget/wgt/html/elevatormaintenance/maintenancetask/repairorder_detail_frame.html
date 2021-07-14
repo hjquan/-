@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../../commonUi/timeAxis/libs/index.css" />
+    <style>
+        html,
+        body {
+            font-family: PingFang SC;
+            font-weight: 500;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .propress,
+        .center {
+            width: 95%;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 10px;
+            padding: 20px 20px;
+            margin-top: 10px;
+        }
+
+        .order_code {
+            font-size: 10px;
+            padding-left: 10px;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .statu {
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(136, 136, 136, 1);
+        }
+
+        .time_active {
+            color: #058FFD;
+        }
+
+        .list .item-inner .time_active_bg i {
+            border: 3px solid #008EFF
+        }
+
+        .center_item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 40px;
+            position: relative;
+        }
+
+        .center_item h1 {
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            /*color:rgba(5,143,253,1);*/
+        }
+
+        .type {
+            font-size: 14px;
+            color: rgba(153, 153, 153, 1);
+            flex: 0 0 80px;
+        }
+
+        .val {
+            font-size: 14px;
+            color: rgba(102, 102, 102, 1)
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #f5f5f5;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .img_box {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .img_item {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+        }
+
+        .info_type {
+            flex: 1
+        }
+
+        .info_val {
+            flex: 1
+        }
+
+        .btn {
+            width: 80%;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            background: rgba(5, 143, 253, 1);
+            border-radius: 5px;
+            margin: 20px auto;
+            color: #fff
+        }
+
+        .pj {
+            min-height: 80px;
+            background: rgba(255, 255, 255, 1);
+            border: 0px solid rgba(170, 170, 170, 1);
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #AAAAAA;
+            padding: 15px 0;
+            text-indent: 25px;
+            line-height: 18px;
+        }
+
+        .carem_add {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+            border: 0px solid rgba(0, 141, 255, 1);
+            border-radius: 4px;
+        }
+
+        .carem_add i {
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="propress">
+            <p class="order_code">订单编号: <span>EFGHHJH1564646456</span></p>
+            <div class="list">
+                <div class="item-inner flex-box-x">
+
+
+                    <div class="dot time_active_bg"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type time_active">订单取消</div>
+                        <!-- <div class="item-type" ></div> -->
+                        <div class="item-content">取消原因 信息取消错误</div>
+
+                    </div>
+                    <span class="statu">2020-07-16 02:05</span>
+                </div>
+                <div class="item-inner flex-box-x">
+
+
+                    <div class="dot"><i></i></div>
+                    <div class="item-main col-xs-x">
+                        <div class="item-type">订单取消</div>
+                        <!-- <div class="item-type" ></div> -->
+                        <div class="item-content">取消原因 信息取消错误</div>
+
+                    </div>
+                    <span class="statu">2020-07-16 02:05</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">报修信息</h1>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障类型</span>
+                <span class="val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class="type">故障问题</span>
+                <span class="val">保护装置</span>
+            </li>
+            <li class="center_item img_box">
+                <img class="img_item" src="../../../../image/logo.png" alt="">
+                <img class="img_item" src="../../../../image/logo.png" alt="">
+            </li>
+        </ul>
+        <ul class="center">
+            <!-- <li class="center_item line_after_1">
+                <h1 class="">设备信息</h1>
+            </li> -->
+            <li class="center_item ">
+                <span class="type info_type">品牌型号</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">备案号</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">自编号</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">项目名称</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">项目地址</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class=" type info_type">联系人</span>
+                <span class="val info_val">保护装置</span>
+            </li>
+            <li class="center_item ">
+                <span class="type info_type">联系电话</span>
+                <span class="val info_val">保护装置&nbsp;&nbsp;&nbsp;<i class="aui-iconfont aui-icon-phone " style="color:#008EFF"></i></span>
+            </li>
+
+        </ul>
+        <!-- <ul class="center">
+            <li class="center_item line_after_1">
+                <h1 class="">维修反馈</h1>
+            </li>
+            <li class="center_item ">
+                <textarea class="pj" name="name" placeholder="输入内容 (50字以内)" rows="8" cols="80"></textarea>
+            </li>
+            <li class="center_item img_box">
+                <img class="img_item" src="../../../../image/logo.png" alt="">
+                <div class="carem_add">
+                    <i class="aui-iconfont aui-icon-camera"></i>
+                </div>
+            </li>
+        </ul> -->
+        <div class="btn" @click="comfirFn()">确认接单</div>
+
+
+
+    </div>
+
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+
+
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+
+                },
+                methods: {
+
+                    //提交
+                    comfirFn: function() {
+                        api.confirm({
+                            title: '确定接单',
+                            // msg: 'testmsg',
+                            buttons: ['确定', '取消']
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == 1) {
+                                    api.openWin({
+                                        name: 'confirmorder',
+                                        url: './confirmorder.html',
+                                        pageParam: {}
+                                    });
+
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+
+                    }
+
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

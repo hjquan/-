@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+      .main_box{
+        padding: 10px 15px;
+        background-color: #F9F9FB;
+      }
+      .box{
+        width: 100%;
+
+        padding: 10px 15px;
+      }
+      .list_item{
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+      }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 100%;
+          height: 1px;
+          background-color: #F5F5F5;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .flex_r{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          /*height: 40px;
+          line-height: 40px;*/
+        }
+        .top{margin-bottom: 10px}
+        .top p{
+          font-size:18px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:500;
+          color:rgba(0,1,14,1);
+        }
+        .top span{
+          font-size:13px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(0,1,14,1);
+
+        }
+        .bottom p{
+          font-size:14px;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(150,150,155,1);
+        }
+        .title_ellipsis{
+          display: flex;
+          justify-content: flex-start;
+        }
+        .flx_s{
+          justify-content: flex-start;
+        }
+        .rt{margin-left: 15px;flex: 1;}
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box">
+<!-- <input type="radio" class="aui-radio" checked> -->
+            <ul class="box">
+              <li class="list_item bottom_before_line flex_r flx_s">
+                <input type="radio" class="aui-radio" checked>
+                <div class="rt">
+                  <div class="top flex_r">
+
+                    <div class="aui-ellipsis-1 title_ellipsis">
+                      <p >脚手架<span>(@23)</span></p>
+
+                    </div>
+                    <!-- <p>租赁中</p> -->
+                  </div>
+                  <div class="bottom flex_r">
+                    <p>脚手架</p>
+                    <p>租赁中</p
+                  </div>
+                </div>
+              </li>
+
+
+            </ul>
+
+
+        </div>
+
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script src="../../../../script/lunarcalendar.js"></script>
+    <script src="../../../../script/permission.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script type="text/javascript" src="../../../../commonUi/H5TimeSelector/timeselector.js"></script>
+    <script src="../../../../script/commonJS/voiceinput.js"></script>
+    <script>
+        // var vm;
+        apiready = function() {
+
+
+
+        };
+
+    </script>
+</body>
+
+</html>

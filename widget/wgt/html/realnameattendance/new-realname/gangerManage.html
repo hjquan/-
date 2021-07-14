@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #F7F4F8;
+        }
+
+        .search {
+            height: 2rem;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search {
+            height: 1.5rem;
+            width: 90%;
+            background: #ffffff;
+            margin-top: 0.5rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-left: 5%;
+        }
+
+        .list-ojc {
+            width: 100%;
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+        }
+
+        .list-ojc-div {
+            width: 100%;
+            height: 1.5rem;
+            margin-top: 0.5rem;
+            border-bottom: 1px #F5F5F5 solid;
+        }
+
+        .img-right {
+            width: 1rem;
+            float: right;
+        }
+
+        .text-left {
+            color: black;
+            float: left;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="content">
+            <header class="aui-bar aui-bar-nav aui-bar-light header" id="header">
+                <a class="aui-pull-left aui-btn" @click="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left" style="color: #058FFD; font-weight: bold;"></span>
+                </a>
+                <div class="aui-title header_title" style="color: #000000;" id="header_title">单位和班组管理</div>
+            </header>
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script>
+        apiready = function () {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            var offset = $api.offset($api.byId('header'));
+            api.openFrame({
+                name: 'gangerManage_frame',
+                url: 'gangerManage_frame.html',
+                rect: {
+                    x: offset.l,
+                    y: offset.h,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                bounces: true,
+            });
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    categoryInfo: [],  //人员类型
+                },
+                created: function () {
+                    this.getPersonType();
+                },
+                methods: {
+                    //获取人员类型
+                    getPersonType: function () {
+                        var that = this;
+                        $app.post(
+                            false,
+                            realNamedicListByType,
+                            {
+                                type: 'category',
+                                description: ''
+                            },
+                            function (ret) {
+                                that.categoryInfo = ret.obj;
+                            }
+                        )
+                    },
+                    //返回函数
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //
+                    openGanger: function (item) {
+                        api.openWin({
+                            name: 'companyManage',
+                            url: 'companyManage.html',
+                            pageParam: {
+                                gangerInfo: item
+                            }
+                        });
+                    },
+                },
+            })
+        } 
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <!-- <link rel="stylesheet" href="../../../css/calendar.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css"> -->
+    <link rel="stylesheet" type="text/css" href="../../../css/addlog.css" />
+    <!-- <link rel="stylesheet" href="../../../css/voice.css"> -->
+    <style>
+        html,
+        body {
+            height: 100%
+        }
+
+        .container {
+            background-color: rgba(245, 245, 245, 1);
+        }
+
+        .imgIcon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('../../../image/bsise.png');
+            background-size: cover;
+        }
+
+        .requid {
+            color: #EC4031;
+        }
+
+        .textarea {
+            height: 145px;
+            line-height: 25px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 400;
+            color: rgba(199, 199, 204, 1);
+        }
+
+        .textarea textarea {
+            height: 95px;
+            overflow-y: auto;
+        }
+
+        .list_title {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(51, 51, 51, 1);
+            height: 30px;
+            line-height: 30px;
+            background-color: #fff;
+        }
+
+        .aui-list-item {
+            background-color: #fff;
+            position: relative;
+        }
+
+        .clickShow {
+            font-size: 13px;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: rgba(5, 143, 253, 1);
+            line-height: 13px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mian_item .inputCls {
+            margin-left: 35px;
+            height: 35px;
+        }
+
+        .mt_10 {
+            margin-top: 10px;
+        }
+
+        .mb_25 {
+            padding-bottom: 25px;
+        }
+
+        .color_f5 {
+            background-color: #f5f5f5;
+        }
+
+        .i_wd {
+            color: #8F929A;
+        }
+
+        .active {
+            background-color: rgba(5, 143, 253, 1) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="main_box mb_25">
+
+            <ul>
+
+                <li class="mian_item border_bottom_after" tapmode @click="openNewPage('imgType')">
+                    <p>图纸类型<span class="requid">*</span></p>
+                    <p class="aui-ellipsis-1" tapmode><span class="aui-ellipsis-1" v-text="img_name"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode @click="openNewPage('location')">
+                    <p>部位<span class="requid">*</span></p>
+                    <p class="aui-ellipsis-1" tapmode><span class="aui-ellipsis-1" v-text="img_location_name"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item border_bottom_after" tapmode>
+                    <p>图纸名称<span class="requid">*</span></p>
+                    <div>
+                        <input type="text" v-model="newImg_name" placeholder="请输入" class="inputPosition" tapmode>
+                    </div>
+                </li>
+
+            </ul>
+            <div class="imgUpdate border_bottom_after">
+                <div class="imgItem" v-for="(item,index) in imgSrc" tapmode="hover">
+                    <i class="aui-iconfont aui-icon-close del_close" v-if="isCloseBtn" @click=removeImage(index) tapmode="hover"></i>
+                    <img :src="item" alt="" tapmode @click="imgSee(imgSrc,index)">
+                </div>
+                <div @click="uploadHeadPic()" tapmode v-if="imgSrc.length < 1">+</div>
+            </div>
+
+
+            <div class="" style="background-color:#f5f5f5;">
+                <div class="cancelBtn" :class="{'active':isSubmitActive}" tapmode="hover" @click="submit()">确定</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../script/permission.js"></script>
+    <script>
+        // var vm;
+        apiready = function() {
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+
+            //监听图纸类型
+            api.addEventListener({
+                name: 'measured_imgType_event'
+            }, function(ret, err) {
+                if (ret) {
+
+                    var data = $api.strToJson(ret.value.measured_imgType),
+                        imgType_name = [], //图片类型名称
+                        imgType_Id = [];
+                    vm.submitImgType = data;
+                    var filterData = data.filter(function(items) {
+                        var flag = items.subdict.some(function(item) {
+                            return item.checked
+                        })
+                        console.log(flag);
+                        if (flag) {
+                            return items;
+                        }
+                    })
+                    filterData.forEach(function(items) {
+                            vm.componentId = items.dictionaries_id;
+                            vm.componentName = items.name;
+                            imgType_name.push(items.name);
+                            items.subdict.forEach(function(item) {
+                                if (item.checked) {
+                                    imgType_Id.push(item.dictionaries_id);
+                                    imgType_name.push(item.name);
+                                }
+
+                            })
+                        })
+                        // console.log( JSON.stringify( imgType_name ) );
+                        // console.log( JSON.stringify( imgType_Id ) );
+                    vm.img_name = imgType_name.join(',');
+                    vm.img_id = imgType_Id.join(',')
+                    console.log( vm.img_name  )
+                    console.log( vm.img_id  );
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+            //监听图纸类型部位
+            api.addEventListener({
+                name: 'measuredimgType_location_event'
+            }, function(ret, err) {
+                if (ret) {
+                    console.log(ret.value.measuredimgType_location);
+                    var data = $api.strToJson(ret.value.measuredimgType_location);
+                    vm.imgTypeLocation = data;
+                    var filterData = data.filter(function(items) {
+                        var flag = items.subArea.some(function(item) {
+                            return item.checked
+                        })
+                        console.log(flag);
+                        if (flag) {
+                            return items;
+                        }
+                    })
+                    var areaId = [],
+                        areaName = []; //区域id  区域名称
+                    filterData.forEach(function(items) {
+                        areaId.push(items.area_id);
+                        areaName.push(items.area_name);
+                        items.subArea.forEach(function(item) {
+                            if (item.checked) {
+                                areaId.push(item.area_id);
+                                areaName.push(item.area_name);
+                            }
+                        })
+                    })
+                    vm.img_location_id = areaId.join(',');
+                    vm.img_location_name = areaName.join(',');
+                    console.log(vm.img_location_id);
+                    console.log(vm.img_location_name);
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+
+
+
+
+            vm = new Vue({
+                el: '#app',
+                data: {
+                    editIfo: '', //编辑信息
+                    submitImgType: [], // 图纸类型提交记录
+                    img_name: '', //图纸名称
+                    img_id: '', //图纸id
+
+                    imgTypeLocation: [], //图纸部位提交记录
+                    img_location_name: '', //图纸部名称
+                    img_location_id: '', //图纸部id
+
+                    newImg_name: '', //新图纸名称
+                    componentId: '', //构建id
+                    componentName: '', //构建名称
+                    drawingId: '', //图纸主键id
+
+
+                    imgSrc: [], //本地图片地址
+                    srcImgUrl: [], //服务器返回图片未压缩地址
+                    compressImgUrl: [], //服务器返回图片压缩地址
+                    isCloseBtn: true //图片删除按钮状态控制
+
+                },
+                watch: {
+
+                },
+                computed: {
+                    // 控制提交按钮状态
+                    isSubmitActive: function() {
+                        if (!this.img_name || !this.img_location_name || !this.newImg_name || !this.imgSrc.length) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+
+                },
+                mounted: function() {
+
+                },
+                created: function() {
+                    var _this = this
+                    var data = api.pageParam.img_detail;
+                    console.log($api.jsonToStr(api.pageParam.img_detail));
+
+                    if (data) {
+                        api.download({
+                            url: data.drawing,
+                            // savePath: 'fs://test.rar',
+                            report: true,
+                            cache: true,
+                            allowResume: true
+                        }, function(ret, err) {
+                            if (ret.state == 1) {
+                                //下载成功
+                                console.log(ret.savePath);
+                                _this.imgSrc = [ret.savePath];
+                            } else {
+                                console.log($api.jsonToStr(err));
+                            }
+                        });
+
+                        this.img_name = data.gaugeitemName;
+                        this.img_id = data.gaugeitemId;
+
+                        this.img_location_name = data.areaName;
+                        this.img_location_id = data.areaId;
+
+                        this.newImg_name = data.drawingName;
+                        this.componentId = data.componentId;
+                        this.componentName = data.componentName;
+                        // this.srcImgUrl = data.drawingPath;
+
+                        this.drawingId = data.drawingId;
+                    }
+                },
+                methods: {
+                    //打开新页面
+                    openNewPage: function(data) {
+                        switch (data) {
+                            case 'imgType':
+                                api.openWin({
+                                    name: 'actualmeasurement_img_type',
+                                    url: './img_type.html',
+                                    pageParam: {
+                                        'imgType_box': this.submitImgType
+                                    }
+                                });
+
+                                break;
+                            case 'location':
+                                api.openWin({
+                                    name: 'actualmeasurement_imgTypeLocation',
+                                    url: './imgTypeLocation.html',
+                                    pageParam: {
+                                        'imgTypeLocation': this.imgTypeLocation
+                                    }
+                                });
+
+                                break;
+
+                        }
+                    },
+                    submit: function() {
+                        if (!this.img_name || !this.img_location_name || !this.newImg_name || !this.imgSrc.length) {
+                            api.toast({
+                                msg: '带 "*" 为必填',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+                            return false;
+
+                        }
+                        var _this = this;
+
+                        function fnc() {
+                            var parmas = {
+                                "projectId": $api.getStorage('enterpriseId'),
+                                "componentId": _this.componentId,
+                                "componentName": _this.componentName,
+                                "areaId": _this.img_location_id,
+                                "areaName": _this.img_location_name,
+                                "drawingPath": _this.srcImgUrl[0],
+                                "userId": $api.getStorage('userId'),
+                                "userName": $api.getStorage('enterLoginInfo').name,
+                                "drawingName": _this.newImg_name,
+                                "gaugeitemId": _this.img_id,
+                                "gaugeitemName": _this.img_name,
+                                "drawingId": _this.drawingId || ""
+                            }
+                            console.log($api.jsonToStr(parmas));
+                            $app.post(
+                                true,
+                                addDrawing,
+                                parmas,
+                                function(ret) {
+                                    _this.isCloseBtn = false;
+                                    api.sendEvent({
+                                        name: 'actualmeasurement_del_img_event',
+                                        extra: {}
+                                    });
+                                    setTimeout(function() {
+                                        api.closeWin();
+
+                                    }, 500)
+
+                                }
+                            )
+                        }
+                        this.saveImg(fnc)
+                    },
+
+
+
+                    // //图片查看
+                    imgSee: function(url, index) {
+                        var photoBrowser = api.require('photoBrowser');
+                        photoBrowser.open({
+                            images: url,
+                            activeIndex: index,
+                            // placeholderImg: 'widget://res/img/apicloud.png',
+                            bgColor: '#000'
+                        }, function(ret, err) {
+                            if (ret) {
+                                if (ret.eventType === 'click') {
+                                    photoBrowser.close();
+                                }
+                            } else {}
+                        });
+                    },
+
+
+                    //删除图片
+                    removeImage: function(index) {
+                        this.imgSrc.splice(index, 1)
+                    },
+                    //图片处理
+                    imgFilter: function(fncFN) {
+                        if (vm.serverImg) {
+                            vm.srcImgUrl = this.serverImg.map(function(item) {
+                                return item.srcPath
+                            })
+                            vm.compressImgUrl = this.serverImg.map(function(item) {
+                                return item.compressPath
+                            })
+                            fncFN()
+                        }
+                    },
+                    //图片上传服务器保存
+                    saveImg: function(fncFN) {
+                        var compressImg = [];
+                        if (vm.imgSrc.length) {
+                            var imageFilter = api.require('imageFilter');
+                            for (var i = 0; i < vm.imgSrc.length; i++) {
+                                (function(index) {
+                                    var imageName = randomWord(false, 9, 12);
+                                    var imageCachePath = api.cacheDir;
+                                    imageFilter.compress({
+                                        img: vm.imgSrc[index],
+                                        quality: 0.3,
+                                        save: {
+                                            // album: true, //(可选项)布尔值，是否保存到系统相册，默认false
+                                            imgPath: imageCachePath,
+                                            imgName: imageName + '.jpg'
+                                        }
+                                    }, function(ret, err) {
+                                        if (ret) {
+                                            var txt = imageCachePath + '/' + imageName + '.jpg';
+                                            compressImg.push(txt)
+                                        } else {
+
+                                        }
+                                    });
+                                })(i);
+                            }
+                            var timer = setInterval(function() {
+                                if (compressImg.length == vm.imgSrc.length) {
+                                    clearInterval(timer)
+                                    ajaxFile(
+                                        true,
+                                        '图片上传中...',
+                                        uplodeEnterpriseFileURL, {
+                                            enterpriseId: $api.getStorage('enterpriseId')
+                                        }, {
+                                            imgFile: compressImg
+                                        },
+                                        function(ret) {
+                                            vm.serverImg = ret.obj;
+                                            vm.imgFilter(fncFN)
+                                        }
+                                    )
+                                }
+                            }, 1000)
+
+                        } else {
+                            fncFN()
+                        }
+                    },
+
+                    //图片选择
+                    uploadHeadPic: function() {
+                        confirmPer('camera,photos', function() {})
+                        var i = 0;
+                        var imgarr = [];
+                        UIAlbumBrowser_imagePicker();
+                        //打开图片选择器
+                        function UIAlbumBrowser_imagePicker() {
+                            UIAlbumBrowser.imagePicker({
+                                max: 1,
+                                styles: {
+                                    bg: '#000000',
+                                    //cameraImg: 'widget://res/cameraImg.png',
+                                    mark: {
+                                        position: 'top_right',
+                                        size: 20
+                                    },
+                                    nav: {
+                                        bg: '#000000',
+                                        cancelColor: '#fff',
+                                        cancelSize: 16,
+                                        nextStepColor: '#7fff00',
+                                        nextStepSize: 16
+                                    },
+                                    thumbnail: { //（可选项）返回的缩略图配置，**建议本图片不要设置过大** 若已有缩略图，则使用已有的缩略图。若要重新生成缩略图，可先调用清除缓存接口api.clearCache()。
+                                        w: 52, //（可选项）数字类型；返回的缩略图的宽；默认：原图的宽度
+                                        h: 52 //（可选项）数字类型；返回的缩略图的宽；默认：原图的高度
+                                    }
+                                },
+                                animation: true,
+                            }, function(ret) {
+                                if (ret.eventType == 'nextStep') {
+                                    if (ret.list && ret.list.length > 0) {
+                                        imgarr = ret.list;
+                                        UIAlbumBrowser_transPath();
+                                    }
+                                    UIAlbumBrowser.closePicker();
+                                }
+                                if (ret.originalPath && ret.originalPath.length > 0) {
+                                    vm.imgSrc.push(ret.originalPath)
+                                }
+                            });
+                        }
+
+                        function UIAlbumBrowser_transPath() {
+                            UIAlbumBrowser.transPath({
+                                path: imgarr[i].path
+                            }, function(ret, err) {
+                                if (ret) {
+                                    i++;
+                                    if (i < imgarr.length) {
+                                        UIAlbumBrowser_transPath();
+                                    } else {
+                                        i = 0;
+                                    }
+                                    vm.imgSrc.push(ret.path)
+                                } else {}
+                            });
+                        }
+                    }
+
+                }
+            })
+
+
+        };
+    </script>
+</body>
+
+</html>

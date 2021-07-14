@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的</title>
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../css/frame2.css">
+    <style>
+        .mian_item:first-child {
+            margin-bottom: 0;
+        }
+        .line_after:after{
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 100%;
+            transform: translateX(-50%) ;
+            background-color: #eee;
+            height: 1px;
+        }
+        .top,.left,.rt{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rt *{color: #fff}
+        .smbs{
+            display: inline-block;
+            width:44px;
+            height:17px;
+            line-height: 17px;
+            background:rgba(255,255,255,1);
+            border-radius:2px;
+            font-size: 12px;
+            color: #058FFD;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .flx_c{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="top" >
+            <div class="left" onclick="openForgetPwd()" tapmode>
+                <div class="imgName" v-text="personName.substr(-2)"></div>
+                <div>
+                    <p v-cloak class="flx_c"><span v-text="personName"></span> <span class="" :class="{'smbs':isAuthentication == '1'}" v-if="isAuthentication == '1'" v-text="'已实名'" >已实名</span></p>
+                    <p v-text="enterpriseSelectCurren.roleName"></p>
+                </div>
+            </div>
+            <div class="rt" tapmode  tapmode @click="suthencationFn()" v-if="isAuthentication == '0'">
+                <span>未实名</span><i class="aui-iconfont aui-icon-right"></i>
+            </div>
+        </div>
+        <div class="main_box">
+            <ul>
+                <li class="mian_item line_after" tapmode @click="sign()" tapmode>
+                    <p>电子签名</p>
+                    <p><span v-text="signInfo.srcPath ? '已签名' : '未签名'"></span> <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item line_after" onclick="openChangePwd()" tapmode>
+                    <p>修改密码</p>
+                    <p>修改密码 <i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+                <li class="mian_item" onclick="openaBout()" tapmode>
+                    <p>关于筑迹云</p>
+                    <p><i class="aui-iconfont aui-icon-right"></i></p>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <script src="../../script/api.js"></script>
+    <script src="../../script/sha1.js"></script>
+    <script src="../../script/common.js"></script>
+    <script src="../../script/vue.js"></script>
+    <script type="text/javascript">
+
+
+        apiready = function() {
+
+
+
+            //监听新增签名事件
+            api.addEventListener({
+                name: 'refsh_sign_event'
+            }, function(ret, err){
+                if( ret ){
+                    vm.getSign()
+                }else{
+                     alert( JSON.stringify( err ));
+                }
+            });
+
+            //刷新获取实名认证状态
+            api.addEventListener({
+                name: 'authentication_succ_enevt'
+            }, function(ret, err){
+                if( ret ){
+                    vm.getUserAuthentication()
+                }else{
+                     alert( JSON.stringify( err ) );
+                }
+            });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    mInfo: '',
+                    personName:'',
+                    enterpriseSelectCurren: '',
+                    signInfo:'',//获取签名信息
+                    isAuthentication:''//实名状态
+                },
+                created:function(){
+                    this.getSign();
+                    this.getUserAuthentication()
+                },
+                methods: {
+                    //实名跳转
+                    suthencationFn:function(){
+                        api.openWin({
+                            name: 'authenticationId',
+                            url: '../../html/person/authenticationId.html',
+                            pageParam: {
+                            }
+                        });
+
+                    },
+                    //获取实名认证状态
+                    getUserAuthentication:function(){
+                        var _this = this;
+                        $app.post(
+                            false,
+                            getUserAuthentication,
+                            {userId:$api.getStorage('userId')},
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.isAuthentication = ret.obj;
+
+                            }
+                        )
+                    },
+                    //请求签名
+                    getSign:function(){
+                        var _this = this;
+                        $app.post(
+                            false,
+                            selectElectronicSignature,
+                            {'userId':$api.getStorage('userId')},
+                            function(ret){
+                                console.log($api.jsonToStr(ret));
+                                _this.signInfo = ret.obj;
+                            }
+                        )
+                    },
+
+                    //跳转
+                    sign:function(){
+                        var _this =this;
+                        var url= _this.signInfo.srcPath ? '../../html/person/electronicsignature_show.html' : '../../html/person/electronicsignWrite.html';
+                        console.log(url);
+                        api.openWin({
+                            name: url,
+                            url: url,
+                            slidBackEnabled:false,
+                            pageParam: {
+                                signIfo:_this.signInfo
+                            }
+                        });
+
+                    }
+
+                }
+            })
+            var enterLoginInfo = $api.getStorage('enterLoginInfo');
+            vm.enterpriseSelectCurren = $api.getStorage('enterpriseSelectCurren').role;
+            vm.mInfo = enterLoginInfo;
+            vm.personName = enterLoginInfo.name;
+            api.addEventListener({
+                name: 'roleName'
+            }, function(ret, err){
+                    vm.enterpriseSelectCurren = $api.getStorage('enterpriseSelectCurren').role;
+            });
+
+        }
+        function openForgetPwd() {
+            api.openWin({
+                name: 'personalInfo',
+                url: '../../html/person/personalInfo.html'
+            });
+
+        }
+        function openaBout() {
+            api.openWin({
+                name: 'about',
+                url: '../../html/person/about.html',
+                pageParam: {
+                    name: 'about'
+                }
+            });
+
+        }
+
+        function openChangePwd() {
+            api.openWin({
+                name: 'ChangePwd',
+                url: '../../html/person/changePwd.html',
+                pageParam: {}
+            });
+
+        }
+    </script>
+</body>
+
+</html>

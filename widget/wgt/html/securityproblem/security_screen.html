@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            font-size: 15px;
+            font-family: PingFangSC-Medium, PingFangSC;
+            background-color: transparent;
+        }
+
+        .content {
+            min-height: 100%;
+            background-color: transparent;
+        }
+
+        .rt {
+            width: 270px;
+            min-height: 100vh;
+            background-color: #fff;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(245, 245, 245, 1);
+            padding: 10px 10px 10px 0px;
+            background: #fff;
+            position: relative;
+            z-index: 50;
+
+        }
+
+        h2 {
+            font-weight: 500;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+            padding: 10px
+        }
+
+        .time {
+            width: 229px;
+            height: 33px;
+            background: rgba(245, 245, 245, 1);
+            border-radius: 2px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 33px;
+            padding: 0 3px;
+        }
+
+        .btnBox {
+            width: 270px;
+            height: 40px;
+            line-height: 40px;
+            background: #F5F5F5;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+        }
+
+        .btn {
+            width: 50%;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #8F929A;
+            background-color: #F5F5F5;
+        }
+
+        .active {
+            background: #0590FF;
+            color: #fff
+        }
+
+        .status {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .w_110 {
+            width: 110px;
+        }
+        .show_txt{
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            /*color:rgba(199,199,204,1);*/
+
+        }
+        .lay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            background-color: rgba(245,245,245,.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" id="app">
+        <div class="lay" @click="closeFn()"></div>
+        <div class=" rt" >
+            <div style="width:100%">
+                <h2>状态</h2>
+                <div class="status">
+                    <div class="time w_110" v-for="(item,i) in state_text" :class="{'active':cur_state_i == i}" v-text="item" @click="toggleActiveFn(i)"></div>
+                </div>
+            </div>
+            <div>
+                <h2>责任人</h2>
+                <div>
+                    <div class="time startTime  aui-ellipsis-1 show_txt" tapmode  @click="laborforceteamfn('2')" v-text="personliable_name_box"></div>
+                </div>
+            </div>
+            <div>
+                <h2>劳务队</h2>
+                <div >
+                    <div class="time startTime aui-ellipsis-1 show_txt"  tapmode @click="laborforceteamfn('1')" v-text="Laborforceteam_name_box">
+                        <!-- <span v-for="item in Laborforceteam" v-cloak >{{item.name}}&nbsp;</span> -->
+                        <!-- <sapn>你看书</sapn> -->
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2>更新时间</h2>
+                <div>
+                    <div class="time startTime" tapmode v-text="startTime ? startTime : '开始日期'" @click="beginTimeFn()" tapmode></div>
+                    <div class="time entime" tapmode @click="endTimeFn()" v-text="endTime ? endTime : '结束日期'"></div>
+                </div>
+            </div>
+            <div class="btnBox">
+                <div class="btn " tapmode @click="rotate()">重置</div>
+                <div class="btn active " tapmode @click="submit()">确定</div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../script/api.js"></script>
+<script type="text/javascript" src="../../../script/vue.js"></script>
+
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+<script type="text/javascript" src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+<!-- <script type="text/javascript" src="../../../script/common.js"></script> -->
+<script>
+    apiready = function() {
+        $api.fixStatusBar($api.dom('.rt'));
+        // var offset = $api.offset($api.byId('header'));
+        api.addEventListener({
+            name: 'personlabor_event'
+        }, function(ret, err){
+            if( ret ){
+                vm.Laborforceteam = $api.strToJson(ret.value.personlaborinfo);
+                vm.Laborforceteam_name_box = '';
+                var name_join = '';
+                vm.Laborforceteam.forEach(function(item){
+
+                    name_join += (item.laborName+',')
+                })
+                vm.Laborforceteam_name_box = name_join.substr(0,name_join.length-1);
+            }else{
+                 alert( JSON.stringify( err ) );
+            }
+        });
+        api.addEventListener({
+            name: 'personliable_event'
+        }, function(ret, err){
+            if( ret ){
+                vm.personliable = $api.strToJson(ret.value.personliableinfo);
+                vm.personliable_name_box = '';
+                var name_join = '';
+                vm.personliable.forEach(function(item){
+
+                    name_join += (item.name+',')
+                })
+                vm.personliable_name_box = name_join.substr(0,name_join.length-1);
+            }else{
+                 alert( JSON.stringify( err ) );
+            }
+        });
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                state_text:['处理中','已结束','草稿','不限'],//状态显示文本
+                cur_state_i:3,//当前高亮下标
+                state: '', //选择状态
+                personliable: '', //责任人
+                Laborforceteam: '', //劳务队
+                startTime: '', //开始时间
+                endTime: '', //结束时间
+
+                selectDate: new Date().getFullYear() + '/' + (new Date().getMonth() + 1) + '/' + new Date().getDate(), //时间插件初始化时间格式
+                Laborforceteam_name_box:'',//劳务处理显示
+                personliable_name_box:''//责任人处理后展示文本
+            },
+            created: function() {
+                // this.starttimeFn()
+            },
+            methods: {
+                closeFn:function(){
+                    api.closeFrame()
+                },
+                //状态高亮切换
+                toggleActiveFn:function(i){
+                    switch (i) {
+                        case 0:
+                            this.cur_state_i = 0;
+                            this.state = '2';//处理中
+                            break;
+                        case 1:
+                            this.cur_state_i = 1;
+                            this.state = '3';//已结束
+                            break;
+                        case 2:
+                            this.cur_state_i = 2;//草稿
+                            this.state = '0';
+                            break;
+                        case 3:
+                            this.cur_state_i = 3;//不限
+                            break;
+                        default:
+
+                    }
+                },
+                //重置按钮
+                rotate: function() {
+                    this.state = '';
+                    this.personliable=[];
+                    this.Laborforceteam = [];
+                    this.startTime = '';
+                    this.endTime = '';
+                    this.cur_state_i = 3;
+                    this.Laborforceteam_name_box = '';//劳务处理显示
+                    this.personliable_name_box = '';//责任人处理后展示文本
+                },
+                //提交
+                submit: function() {
+                    var params={
+                        state: this.state, //选择状态
+                        personliable:this.personliable_name_box, //责任人
+                        Laborforceteam: this.Laborforceteam_name_box, //劳务队
+                        startTime: this.startTime, //开始时间
+                        endTime: this.endTime //结束时间
+                    }
+                    api.sendEvent({
+                        name: 'security_screen_event',
+                        extra: {
+                            'security_screen_info':$api.jsonToStr(params)
+                        }
+                    });
+                    setTimeout(function(){
+                        api.closeFrame()();
+
+                    },200)
+
+                },
+                //初始化更新开始时间
+                starttimeFn: function() {
+
+                    var d = new Date();
+
+                    var m = (d.getMonth() + 1)+'',day = d.getDate()+'';
+                    var time = d.getFullYear() + '-' + (m.length >1 ? m : ('0'+m)) + '-' + (day.length>1 ? day :('0'+day) );
+                    this.startTime = time;
+
+
+                },
+                //更新开始时间
+                beginTimeFn: function() {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function(ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            // var selectTime = d.getTime(); //选择毫秒数
+                            // var seconds = d.getSeconds() + '';
+                            var m = (d.getMonth() + 1)+'',day = d.getDate()+'';
+                            var time = d.getFullYear() + '-' + (m.length >1 ? m : ('0'+m)) + '-' + (day.length>1 ? day :('0'+day) );
+                            vm.startTime = time;
+                        }
+
+                    })
+
+                },
+                //更新结束时间
+                endTimeFn: function() {
+                    timeSelector.fnOpenSelector({
+                        title: '时间选择',
+                        sureText: '完成',
+                        isShowUnit: true,
+                        itemShowCount: 5,
+                        itemHeight: 55,
+                        date: vm.selectDate
+                    }, function(ret) {
+                        //ret.date
+                        if (ret) {
+                            var d = new Date(ret.date);
+                            var selectTime = d.getTime(); //选择毫秒数
+                            var currenD = new Date(vm.startTime)
+                            var currenTime = new Date(currenD.getFullYear(), currenD.getMonth(), currenD.getDate()).getTime(); //当前毫秒数
+
+                            if (currenTime > selectTime) {
+                                api.toast({
+                                    msg: '选择不能小于当前日期',
+                                    duration: 3000,
+                                    location: 'bottom'
+                                });
+                                vm.endTime = ''
+                            } else {
+                                var m = (d.getMonth() + 1)+'',day = d.getDate()+'';
+                                var time = d.getFullYear() + '-' + (m.length >1 ? m : ('0'+m)) + '-' + (day.length>1 ? day :('0'+day) );
+                                vm.endTime = time;
+                            }
+
+                        }
+
+                    })
+                },
+                laborforceteamfn:function(data) {
+                    var baseUrl = data==1 ? './securitypersonlabor.html' : './securitypersonliable.html'
+                    api.openWin({
+                        name: baseUrl,
+                        url: baseUrl,
+                        pageParam: {
+                            defalutcheck:data==1?$api.jsonToStr(vm.Laborforceteam):$api.jsonToStr(vm.personliable)
+                        }
+                    });
+
+
+
+                }
+
+
+            }
+        })
+    }
+</script>
+
+</html>

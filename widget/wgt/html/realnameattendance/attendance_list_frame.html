@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <link rel="stylesheet" href="../../../commonUi/H5TimeSelector/libs/iosselect.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .line_after_1:after {
+            width: 100%;
+            height: 1px;
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: #eee;
+            transform: translate(-50%, -50%) scaleY(.5);
+        }
+
+        .timeBox {
+            width: 115px;
+            height: 25px;
+            line-height: 25px;
+            background: rgba(238, 238, 238, 1);
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: rgba(0, 0, 0, 1);
+        }
+
+        .panel,
+        .panel2 {
+            /*width: 95%;*/
+            margin: 0 auto;
+            /*background: rgba(255, 255, 255, 1);*/
+            border-radius: 10px 10px 0px 0px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /*padding: 10px;*/
+            padding-bottom: 15px;
+        }
+
+        .content {
+            width: 100%;
+            padding: 0 15px;
+        }
+
+        .top_box {
+            width: 100%;
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 1);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content_show {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            ;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .content_show li {
+            width: 33.3%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .show_item {
+            height: 60px;
+            background: rgba(5, 143, 253, .1);
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            ;
+            align-items: center;
+        }
+
+        .show_item span {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: rgba(34, 172, 56, 1);
+            line-height: 15px;
+        }
+
+        .show_item p {
+            font-size: 15px;
+            font-family: Adobe Heiti Std;
+            font-weight: normal;
+            color: rgba(50, 50, 51, 1);
+            line-height: 15px;
+        }
+
+        .time_box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 50px;
+            background-color: #fff;
+            margin-top: 10px;
+        }
+
+        .split_line {
+            height: 3px;
+            width: 15px;
+            background-color: #eee;
+            margin: 0 5px;
+        }
+
+        .panel1_conten {
+            width: 100%;
+        }
+
+        .panel1_item {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 12px;
+            position: relative;
+            background-color: #fff
+        }
+
+        .panel1_item div {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .panel1_item .rt {
+            display: flex;
+            flex: 2;
+            justify-content: flex-end;
+            ;
+            align-items: center;
+            padding-right: 12px;
+        }
+
+        .rt p {
+            color: #00A856;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .active {
+            background-color: #fff;
+        }
+
+        .bgc_t {
+            background-color: rgba(255, 255, 255, .1)
+        }
+
+        .fs_18 {
+            font-size: 18px;
+            color: #058FFD
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+
+        <div class="panel2  ">
+            <div class="time_box">
+                <div class="timeBox" tapmode @click="startTime()">
+                    <span v-text="startMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+                <div class="split_line"></div>
+                <div class="timeBox" tapmode @click="endTime()">
+                    <span v-text="endMonth">2020-05-25</span>
+                    <i class="aui-iconfont aui-icon-down"></i>
+                </div>
+
+            </div>
+            <ul class="panel1_conten">
+                <li class="panel1_item line_after_1 bgc_t">
+                    <div>总计&nbsp;(<span v-text="totalInfo.personNum"></span>人)</div>
+                    <div class="rt">
+                        <p v-if="totalInfo.attendanceDay">出勤&nbsp;<span v-text="totalInfo.attendanceDay"></span></p>
+                        <p v-if="totalInfo.totalworkHours">总工数&nbsp;<span v-text="totalInfo.totalworkHours"></span></p>
+                        <p v-if="totalInfo.overtimeHours">加班&nbsp;<span v-text="totalInfo.overtimeHours"></span></p>
+                        <i></i>
+                    </div>
+
+                </li>
+                <li class="panel1_item line_after_1" v-for="item in statisticsInfo" @click="openWorkattendanceFn(item)"
+                    v-if="statisticsInfo.length">
+                    <div v-text="item.name">木工板</div>
+                    <div class="rt">
+                        <p v-if="item.attendanceDay">出勤 &nbsp;<span v-text="item.attendanceDay"></span>天</p>
+                        <p v-if="item.totalworkHours">总工数 &nbsp;<span v-text="item.totalworkHours"></span>天</p>
+                        <p v-if="item.overtimeHours">加班 &nbsp;<span v-text="item.overtimeHours"></span></p>
+                        <i class="aui-iconfont aui-icon-calendar fs_18"></i>
+                    </div>
+                </li>
+
+            </ul>
+            <div class="noData" v-if="!statisticsInfo.length">
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+
+
+
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/libs/iosselect.js"></script>
+    <script src="../../../commonUi/H5TimeSelector/timeselector.js"></script>
+
+
+    <script>
+        apiready = function () {
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    params_info: '', //接收跨頁面參數
+                    startMonth: '', //開始月份
+                    endMonth: '', //結束月分
+                    statisticsInfo: '',//出勤列表信息
+                    totalInfo: '',//总计数
+
+                },
+                created: function () {
+                    this.params_info = api.pageParam.personalclockinrecord;
+                    console.log($api.jsonToStr(this.params_info));
+                    // var curStarDate = new Date().getFullYear() + '-' + $app.fillDate(new Date().getMonth() + 1) + '-' + '01';
+                    this.startMonth = this.params_info.startMonth;
+                    this.endMonth = $app.formDate(this.params_info.endMonth, '-');
+                    this.totalInfo = {
+                        personNum: 0,
+                        attendanceDay: 0,
+                        totalworkHours: 0,
+                        overtimeHours: 0,
+                    }
+
+                    this.getStationPersonCountFn()
+
+
+                },
+                mounted: function () {
+
+
+                },
+                watch: {
+
+
+                },
+                computed: {
+
+
+                },
+                methods: {
+                    //开始时间
+                    startTime: function () {
+                        var _this = this;
+                        $app.timeFn(
+                            function (ret) {
+                                _this.startMonth = ret;
+                                _this.getStationPersonCountFn()
+                            },
+                            false,
+                            _this.startMonth
+                        )
+                    },
+                    //结束时间
+                    endTime: function () {
+                        var _this = this;
+                        $app.timeFn(
+                            function (ret) {
+                                _this.endMonth = ret;
+                                _this.getStationPersonCountFn()
+                            },
+                            false,
+                            _this.endMonth
+                        )
+                    },
+
+                    //打开个人打卡记录详情
+                    openWorkattendanceFn: function (data) {
+                        data.category = api.pageParam.category;
+                        console.log($api.jsonToStr(data));
+                        api.openWin({
+                            name: 'workattendance',
+                            url: './workattendance.html',
+                            pageParam: {
+                                workattendanceinfo: data
+                            }
+                        });
+
+                    },
+                    //获取项目岗位下人员出勤统计
+                    getStationPersonCountFn: function () {
+                        var url, params, _this = this;
+                        if (api.pageParam.category === '2') {
+                            params = {
+                                groupId: this.params_info.groupId, //班组ID
+                                startMonth: this.startMonth, //开始日期
+                                endMonth: this.endMonth,
+                            }
+                            url = getGroupPersonCount;
+                        } else {
+                            params = {
+                                projectId: $api.getStorage('enterpriseId'), // 项目ID
+                                category: api.pageParam.category, //人员类别
+                                station: _this.params_info.station, //项目岗位
+                                startMonth: this.startMonth, //开始日期
+                                endMonth: this.endMonth,
+                            }
+                            url = getStationPersonCount;
+                        }
+                        console.log($api.jsonToStr(params));
+                        $app.post(
+                            true,
+                            url,
+                            params,
+                            function (ret) {
+                                console.log($api.jsonToStr(ret));
+                                _this.statisticsInfo = ret.obj;
+                                var attendanceDay = 0, totalworkHours = 0, overtimeHours = 0;
+                                ret.obj.forEach(function (item) {
+                                    attendanceDay += item.attendanceDay;
+                                    totalworkHours += item.totalworkHours;
+                                    overtimeHours += item.overtimeHours;
+                                })
+                                _this.totalInfo.personNum = ret.obj.length
+                                _this.totalInfo.attendanceDay = attendanceDay;
+                                _this.totalInfo.totalworkHours = totalworkHours;
+                                _this.totalInfo.overtimeHours = overtimeHours;
+
+                                console.log($api.jsonToStr(_this.totalInfo));
+
+                            }
+                        )
+                    },
+                }
+
+
+
+            })
+        }
+    </script>
+
+</html>

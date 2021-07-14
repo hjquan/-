@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+            background-color: #fff;
+            padding-bottom: 5px;
+        }
+        .aui-bar-light{border: none}
+
+        .progress{
+            width:275px;
+            height:6px;
+            background:rgba(199,199,204,1);
+            border-radius:3px;
+            opacity:0.36;
+            position: relative;
+            margin: 10px auto;
+        }
+        .progress_child{
+            position: absolute;
+            width:0%;
+            height:6px;
+            background:rgba(5,143,253,1);
+            border-radius:3px 0px 0px 3px;
+            transition: width 1s;
+        }
+        .subtitle{
+            text-align: center;
+            height:13px;
+            font-size:13px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(50,50,51,1);
+            line-height:13px;
+
+        }
+        .backBox{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            line-height: 20px;
+            color: #03a9f4;
+            font-size: 14px;
+            padding-left:15px;
+            background-color: #fff;
+            box-shadow: 1px 1px 2px #f5f5f5;
+
+        }
+        .backBox i{
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .backBox span{
+            color:#000;
+        }
+        .nav_bar{
+            height: 35px;
+            font-size:15px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(120,120,120,1);
+            display: flex;
+            line-height: 35px;
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            box-sizing: border-box;
+        }
+        .nav_item{
+            box-sizing: border-box;
+            flex:1;
+            text-align: center;
+        }
+        .nav_item.active{
+            color: #058FFD;
+            border-bottom: 1px solid #058FFD;
+        }
+        .tabbarbox{
+            height: 50px;
+            display: flex;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #323233;
+            z-index: 200;
+        }
+        .tabbarbox img{
+            width: 25px;
+            height: 25px;
+            margin:0 auto;
+        }
+        .tabbarbox p{
+            font-size:12px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(255,255,255,1);
+            text-align: center;
+        }
+        .delBtn{
+            width: 90%;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 5px;
+            height:45px;
+            line-height: 45px;
+            background:rgba(236,64,49,1);
+            border-radius:4px;
+            color: #fff;
+            font-size:18px;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" tapmode @click="goBack">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title" v-text=" headewToggleIndex == 0 ? '云盘':'传输列表' "></div>
+                <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfont aui-icon-search" v-if="headewToggleIndex === 0" tapmdoe @click="openSearch()"></span>
+                    <span class="aui-iconfont" style="font-size:12px;" tapmdoe v-else @click="toggleBtn(index2_header_text)" v-text="index2_header_text"></span>
+                </a>
+            </header>
+            <div class="" v-if="headewToggleIndex == 0">
+                <div class="progress">
+                    <div class="progress_child" :style="{'width':percentage}"></div>
+                </div>
+                <p v-text="clouddiskBox.cloudSizeStr + '/'+clouddiskBox.projectSizeStr" class="subtitle"></p>
+                <div class="backBox" v-if="urlLen > 3" tapmode @click="returnFn()">
+                    <i class="aui-iconfont aui-icon-back"></i>&nbsp;&nbsp;
+                    <span v-text="backName?backName:'返回'"></span>
+                </div>
+            </div>
+            <div class="nav_bar" v-else>
+                <div class="nav_item active">下载列表</div>
+                <div class="nav_item">上传列表</div>
+            </div>
+
+
+        </div>
+        <ul class="tabbarbox" v-if="headewToggleIndex != 2 ">
+            <li v-for="item in barBar" @click="tabBarFn(item)">
+                <img :src="item.src" alt="">
+                <p v-text="item.name"></p>
+            </li>
+        </ul>
+        <div class="delBtn"  v-if="headewToggleIndex == 2 " @click="clouddisk_dowmList_delFn()">
+            删除
+        </div>
+
+    </div>
+    <script type="text/javascript" src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../script/vue.js"></script>
+    <script>
+        apiready = function() {
+                var dialogBox = api.require('dialogBox');
+                var NVTabBar = api.require('NVTabBar');
+                $api.fixStatusBar($api.dom('.fixd'));
+                var offset = $api.offset($api.dom('.fixd'));
+                //监听进入文件夹事件
+                api.addEventListener({
+                    name: 'clouddisk_watch_h_event'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.$nextTick(function(){
+                            vm.frame_y = $api.offset($api.dom('.fixd')).h;
+                            console.log(vm.frame_y);
+                        })
+
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //监听进入文件自定义事件接收参数
+                api.addEventListener({
+                    name: 'clouddisk_backname_event'
+                }, function(ret, err){
+                    if( ret ){
+                        vm.currURL = ret.value.backname;
+                        var data = ret.value.backname.split('/');
+                        vm.urlLen = data.length;
+                        vm.backName  = (data.slice(2,data.length-1)).join('/');
+                        vm.frame_y = $api.offset($api.dom('.fixd')).h;
+                        console.log(vm.frame_y);
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+                //监听首页是否选中
+                api.addEventListener({
+                    name: 'cloud_index_check_event'
+                }, function(ret, err){
+                    if( ret ){
+                        var data = ret.value.clouddisk_check_flag;
+                        var len = ret.value.clouddisk_checkedlist.length;
+                        if(data){
+                            vm.hideNavbar();
+                            if(len > 1){
+                                vm.fileTabBarInitMuls()
+                            }else{
+                                vm.fileTabBarInit()
+                            }
+                        }else{
+
+                            vm.showNavbar();
+                        }
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //监听传输列表是否选中
+                api.addEventListener({
+                    name: 'cloud_index2_dowmload_event'
+                }, function(ret, err){
+                    if( ret ){
+                        var data = ret.value.clouddisk_dowmload_flag;
+                        data ? vm.hideNavbar() :  vm.showNavbar()
+                    }else{
+                    }
+                });
+                //监听下载开始事件设置bage
+                api.addEventListener({
+                    name: 'clouddisk_starsetbage_event'
+                }, function(ret, err){
+                    if( ret ){
+                        NVTabBar.setBadge({
+                            index: 2,
+                            badge: ret.value.bagenumber
+                        });
+
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+                //监听下载完成事件设置bage
+                api.addEventListener({
+                    name: 'clouddisk_endsetbage_event'
+                }, function(ret, err){
+                    if( ret ){
+                        var data = ret.value.bagenumber;
+                        console.log(data);
+                        if(data != 0){
+                            bage = {
+                                index: 2,
+                                badge: data
+                            }
+                        }else{
+                            bage = {
+                                index: 2
+                            }
+                        }
+                        NVTabBar.setBadge(bage);
+                    }else{
+                         alert( JSON.stringify( err ) );
+                    }
+                });
+
+
+
+                var vm = new Vue({
+                    el: '#app',
+                    data: {
+                        index2_header_text:'选择',
+                        frame_y:offset.h,//frame位置y
+                        headewToggleIndex:0,//切换首页header
+                        // currentIndex:0,//当前tabbar下标
+                        urlLen:0,//地址长度
+                        currURL:'',//当前返回路径
+                        backName:'',
+                        clouddiskBox:'',//获取云盘大小
+                        barBar:[],//文件操作底部导航
+                        percentage:0//百分比
+                    },
+                    mounted:function() {
+                        this.initopenFrame('clouddisk_index0');
+                    },
+                    created:function(){
+                        this.fileTabBarInit();
+                        this.getclouddisSize();
+                        this.navBarInit()
+                    },
+                    methods: {
+                        //触发删除传输列表
+                        clouddisk_dowmList_delFn:function(){
+                            var _this = this;
+                            api.sendEvent({
+                                name: 'clouddisk_dowmList_del_event',
+                                extra: {
+
+                                }
+                            });
+                            this.index2_header_text = '选择';
+
+                        },
+                        //下载列表控制复选按钮是否显示
+                        toggleBtn:function(data){
+                            api.sendEvent({
+                                name: 'clouddisk_checkboxList_event_',
+                                extra: {
+                                    checkbox_txt:data
+                                }
+                            });
+                            data === '选择' ? this.index2_header_text = '取消' : this.index2_header_text = '选择'
+
+                        },
+                        //文件操作菜单(多个文件显示)
+                        fileTabBarInitMuls:function(){
+                            var _this = this;
+                            _this.barBar = [
+                                {name:'下载',src:'../../../image/clouddisk/icon_down.png'},
+                                {name:'删除',src:'../../../image/clouddisk/del_disabled.png'}
+                            ]
+                        },
+                        //文件操作菜单(单个文件显示)
+                        fileTabBarInit:function(){
+                            var _this = this;
+                            _this.barBar = [
+                                {name:'分享',src:'../../../image/clouddisk/share_disabled.png'},
+                                {name:'下载',src:'../../../image/clouddisk/icon_down.png'},
+                                {name:'删除',src:'../../../image/clouddisk/del_disabled.png'},
+                                {name:'移动',src:'../../../image/clouddisk/move_disabled.png'},
+                                {name:'重命名',src:'../../../image/clouddisk/rename_disabled.png'}
+                            ]
+
+                        },
+                        //点击
+                        tabBarFn:function(data){
+                            switch (data.name) {
+                                case '分享':
+                                    console.log('分享');
+
+                                    break;
+                                case '下载':
+                                    console.log('下载');
+                                    api.sendEvent({
+                                        name: 'clouddisk_download_event',
+                                        extra: {
+                                        }
+                                    });
+                                    setTimeout(
+                                        function(){
+                                            vm.showNavbar()
+                                        },
+                                        500
+                                    )
+
+
+                                    break;
+                                case '删除':
+                                    console.log('删除');
+                                    api.sendEvent({
+                                        name: 'clouddisk_del_event',
+                                        extra: {
+                                        }
+                                    });
+                                    // setTimeout(
+                                    //     function(){
+                                    //         vm.showNavbar()
+                                    //     },
+                                    //     500
+                                    // )
+                                    break;
+                                case '移动':
+                                    console.log('移动');
+
+                                    break;
+                                case '重命名':
+                                    console.log('重命名');
+                                    var  params = {
+                                        title:'输入新名称',
+                                        callback:function(ret){
+                                            console.log($api.jsonToStr(ret));
+                                            api.sendEvent({
+                                                name: 'clouddisk_rename_event',
+                                                extra: {
+                                                    rename_inputValue:ret.text
+                                                }
+                                            });
+
+                                        }
+                                    }
+                                    this.inputComfig(params)
+                                    break;
+                            default:
+
+                            }
+                        },
+                        //带输入框弹窗
+                        inputComfig:function(params){
+                            dialogBox.input({
+                                keyboardType: 'default',
+                                tapClose:true,
+                                texts: {
+                                    title: params.title,
+                                    placeholder: '请输入',
+                                    leftBtnTitle: '取消',
+                                    rightBtnTitle: '确定'
+                                },
+                                styles: {
+                                    bg: '#fff',
+                                    corner: 2,
+                                    w: 270,
+                                    h: 155,
+                                    title: {
+                                        h: 40,
+                                        alignment: 'center',
+                                        size: 14,
+                                        color: '#000',
+                                    },
+                                    input: {
+                                        h: 30,
+                                        // y:30,
+                                        alignment:'left',
+                                        marginLeft: 15,
+                                        marginRight:15,
+                                        textSize: 14,
+                                        textColor: '#000',
+                                        corner:12, //（可选项）数字类型；对输入框圆角大小；默认：0
+
+                                    },
+                                    dividingLine: {
+                                        width: 0.5,
+                                        color: '#f5f5f5'
+                                    },
+                                    left:{                      //（可选项）JSON 对象；左边按钮样式配置，不传则不显示左边按钮
+                                        bg: 'rgba(0,0,0,0)',    //（可选项）字符串类型；左边按钮的背景，支持rgb、rgba、#、img；默认：'rgba(0,0,0,0)'
+                                        color: '#007FFF',       //（可选项）字符串类型；左边按钮标题字体颜色，支持rgb，rgba、#；默认：'#007FFF'
+                                        size: 12 ,               //（可选项）数字类型；左边按钮标题字体大小；默认：12
+                                        h: 40 ,               //(可选项) 数字类型；左边按钮的高度；默认：40
+
+                                        w:60,                   //(可选项) 数字类型；左边按钮的宽度；默认：提示框的宽度的一半
+                                        // marginB:10,            //(可选项) 数字类型；左边按离底部的边距；默认：0
+                                        corner:12,              //(可选项) 数字类型；左边按钮的圆角；默认：0
+                                        widhtBorder:1,         //(可选项) 数字类型；左边按钮的边宽；默认：0
+                                        normalBorderColor:'#778899', //(可选项) 数字类型；左边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeBorderColor:'#0000CD', //(可选项) 数字类型；左边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeColor:'#006400', //(可选项) 数字类型；左边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                        activeBg:'#6B8E23'   //(可选项) 数字类型；左边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+
+                                    },
+                                    right: {                    //（可选项）JSON 对象；右边按钮样式配置，不传则不显示右边按钮
+                                        bg: 'rgba(0,0,0,0)',    //（可选项）字符串类型；右边按钮的背景，支持rgb、rgba、#、img；默认：'rgba(0,0,0,0)'
+                                        color: '#007FFF',       //（可选项）字符串类型；右边按钮标题字体颜色，支持rgb、rgba、#；默认：'#007FFF'
+                                        size: 12,             //（可选项）数字类型；右边按钮标题字体大小；默认：12
+                                        h: 40,                //(可选项) 数字类型；右边按钮的高度；默认：40
+                                        w:60,                   //(可选项) 数字类型；右边按钮的宽度；默认：提示框的宽度的一半
+                                        // marginB:10,            //(可选项) 数字类型；右边按离底部的边距；默认：0
+                                        corner:12,              //(可选项) 数字类型；右边按钮的圆角；默认：0
+                                        widhtBorder:1,         //(可选项) 数字类型；右边按钮的边宽；默认：0
+                                        normalBorderColor:'#778899', //(可选项) 数字类型；右边按钮的边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeBorderColor:'#0000CD', //(可选项) 数字类型；右边按钮的高亮状态下边宽颜色；默认：'rgba(0,0,0,0)'
+                                        activeColor:'#006400', //(可选项) 数字类型；右边按钮的高亮状态下标题颜色；默认：'rgba(0,0,0,0)'
+                                        activeBg:'#6B8E23'   //(可选项) 数字类型；右边按钮的高亮状态下背景颜色；默认：'rgba(0,0,0,0)'
+
+                                    },
+
+                                    horizontalLine:{
+                                    color:'#ccc', //（可选项）字符串类型；左右按钮上边横线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                    height:1                //（可选项）数字类型；左右边按钮横线的高度；默认：0
+                                    },
+                                    verticalLine:{
+                                        color:'#ccc', //（可选项）字符串类型；左右按钮中间竖线的颜色，支持rgb、rgba、#；默认：'rgba(245,245,245,0)'
+                                        width:1               //（可选项）数字类型；左右边按钮竖线的高度；默认：0
+
+                                    },
+                                }
+                            }, function(ret) {
+                                console.log( JSON.stringify(ret));
+                                if (ret.eventType == 'left') {
+                                    dialogBox.close({
+                                        dialogName: 'input'
+                                    });
+                                }else{
+                                    params.callback(ret)
+                                    setTimeout(function(){
+                                        dialogBox.close({
+                                            dialogName: 'input'
+                                        });
+                                    },500)
+                                }
+                            });
+                        },
+                        //打开
+                        showNavbar:function(){
+                            this.navBarInit()
+                        },
+                        //关闭
+                        hideNavbar:function(){
+                            NVTabBar.close();
+                        },
+                        //初始化云盘
+                        initopenFrame:function(name){
+                            var _this = this;
+                            _this.frame_y = $api.offset($api.dom('.fixd')).h;
+                            console.log(_this.frame_y);
+                            var usrBox = {
+                                'clouddisk_index0':'./index_frame0.html',
+                                'clouddisk_index1':'./index_frame1.html',
+                                'clouddisk_index2':'./index_frame2.html',
+                            }
+                            if(name != 'clouddisk_index1'){
+                                if(name === 'clouddisk_index2'){
+                                    _this.frame_y = _this.frame_y-30;
+                                }
+                                api.openFrame({
+                                    name: name,
+                                    url: usrBox[name],//'./index_frame.html',
+                                    rect: {
+                                        x: offset.l,
+                                        y: _this.frame_y + 20,
+                                        w: 'auto',
+                                        h: api.winHeight- (_this.frame_y + 20) -50
+                                    },
+                                    pageParam: {
+                                    },
+                                    bounces: false,
+                                    bgColor: 'rgba(0,0,0,0)',
+                                    vScrollBarEnabled: true,
+                                    hScrollBarEnabled: true
+                                });
+                            }else{
+                                api.openWin({
+                                    name: name,
+                                    url: usrBox[name],
+                                    animation:{
+                                        type:"none",
+                                        subType:"from_bottom",
+                                    },
+                                    pageParam: {
+
+                                    }
+                                });
+
+                            }
+                        },
+
+                        //使用navbar导航模块
+                        navBarInit:function(){
+                            var _this = this;
+                            NVTabBar.open({
+                                styles: {
+                                    bg: '#fff',
+                                    h: 50,
+                                    dividingLine: {
+                                        width: 0,
+                                        color: '#000'
+                                    },
+                                    badge: {
+                                        bgColor: '#EC4031',
+                                        numColor: '#fff',
+                                        size: 6.0,
+                                        // centerX: 40,
+                                        // centerY: 6
+                                    }
+                                },
+                                items: [ {
+                                    w: api.winWidth / 3.0,
+                                    bg: {
+                                        marginB: 0,
+                                        image: 'rgba(255,255,255,1)'
+                                    },
+                                    iconRect: {
+                                        w: 20.0,
+                                        h: 20.0,
+                                    },
+                                    icon: {
+                                        normal: 'widget://image/clouddisk/yunpan_tab_icon_icloud.png',
+                                        highlight: 'widget://image/clouddisk/yunpan_tab_icon_icloud_pre.png',
+                                        selected: 'widget://image/clouddisk/yunpan_tab_icon_icloud_pre.png'
+                                    },
+                                    title: {
+                                        text: '云盘',
+                                        size: 12.0,
+                                        normal: '#464647',
+                                        selected: '#058FFD',
+                                        marginB: 3.0
+                                    }
+                                }, {
+                                    w: api.winWidth / 3.0,
+                                    bg: {
+                                        // marginB: 5.0,
+                                        // image: 'widget://image/clouddisk/yunpan_icon_16_uncheck.png' //中间背景图
+                                    },
+                                    iconRect: {
+                                        w: 32,
+                                        h: 32,
+                                    },
+                                    icon: {
+                                        normal: 'widget://image/clouddisk/yunpan_tab_icon_add.png',
+                                        highlight: 'widget://image/clouddisk/yunpan_tab_icon_add.png',
+                                        selected: 'widget://image/clouddisk/yunpan_tab_icon_add.png'
+                                    },
+                                    title: {
+                                        //text : '333',
+                                        size: 0.0,
+                                        normal: '#464647',
+                                        selected: '#058FFD',
+                                        marginB: 0
+                                    }
+                                }, {
+                                    w: api.winWidth / 3.0,
+                                    bg: {
+                                        marginB: 0,
+                                        image: 'rgba(255,255,255,1)'
+                                    },
+                                    iconRect: {
+                                        w: 20.0,
+                                        h: 20.0,
+                                    },
+                                    icon: {
+                                        normal: 'widget://image/clouddisk/yunpan_tab_cslb.png',
+                                        highlight: 'widget://image/clouddisk/yunpan_tab_cslb.png',
+                                        selected: 'widget://image/clouddisk/yunpan_tab_cslb_pre.png'
+                                    },
+                                    title: {
+                                        text: '传输列表',
+                                        size: 12.0,
+                                        normal: '#464647',
+                                        selected: '#058FFD',
+                                        marginB: 3.0
+                                    }
+                                }],
+                                selectedIndex: _this.headewToggleIndex
+                            }, function(ret, err) {
+                                console.log($api.jsonToStr(ret));
+
+                                switch (ret.index) {
+                                    case 0:
+                                        api.closeFrame({
+                                            name: 'clouddisk_index2'
+                                        });
+
+                                        _this.initopenFrame('clouddisk_index0');
+                                        _this.headewToggleIndex = 0
+                                        break;
+                                    case 1:
+                                        _this.initopenFrame('clouddisk_index1')
+                                        console.log('2');
+                                        break;
+                                    case 2:
+                                        _this.initopenFrame('clouddisk_index2')
+                                        _this.headewToggleIndex = 2;
+                                        break;
+                                    default:
+
+
+                                }
+                            });
+                        },
+                        //打开详情
+                        openSearch:function(){
+                            api.openWin({
+                                name: 'cloud_search',
+                                url: './search.html',
+                                pageParam: {
+                                }
+                            });
+
+                        },
+                        //关闭当前页面
+                        goBack:function(){
+                            api.closeWin();
+
+                        },
+                        //返回上一级
+                        returnFn:function(){
+                            var _this = this;
+                            api.sendEvent({
+                                name: 'clouddisk_return_event',
+                                extra: {
+                                    currURL:_this.currURL
+                                }
+                            });
+                            vm.frame_y
+
+
+                        },
+                        //获取云盘容量大小
+                        getclouddisSize:function(){
+                            var _this = this;
+                            $app.post(
+                                true,
+                                getCloudDiskInfo,
+                                {projectId:$api.getStorage('enterpriseId')},
+                                function(ret){
+                                    _this.clouddiskBox = ret.obj;
+                                    _this.percentage = ((ret.obj.cloudSize)/(ret.obj.projectSize)).toFixed(2) + '%';
+
+                                }
+                            )
+                        },
+
+                    }
+
+                })
+
+
+
+            }
+    </script>
+
+</html>

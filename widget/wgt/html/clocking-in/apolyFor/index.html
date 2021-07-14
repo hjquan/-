@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #F6F5F8;
+        }
+
+        .aui-bar-nav .aui-btn .aui-iconfont {
+            color: #0590FF
+        }
+
+        .color_3 {
+            color: #323233 !important;
+        }
+
+        .aui-bar .aui-bar-btn-item {
+            color: #0590FF
+        }
+
+        .aui-bar-btn .aui-active {
+            color: #fff
+        }
+
+        .pb_10 {
+            padding-bottom: 10px;
+        }
+
+        .bg_f {
+            background: #ffffff;
+            height: 2.4rem;
+        }
+
+        .content {
+            margin-top: 0.5rem;
+            background: #ffffff;
+            padding-top: 0.7rem;
+            padding-bottom: 1rem;
+        }
+
+        .content ul {
+            display: flex;
+            justify-content: center;
+        }
+
+        .content ul li {
+            width: 33.3%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .apoly-record {
+            padding: 0.5rem;
+            background: #ffffff;
+            margin-top: 0.5rem;
+            height: 2.2rem;
+        }
+
+        .apoly-record-left {
+            display: flex;
+            float: left;
+        }
+
+        .apoly-record-left div {
+            margin-left: 0.3rem;
+        }
+
+        .apoly-record-right {
+            display: flex;
+            float: right;
+        }
+
+        .wz-hint {
+            width: 0.9rem;
+            height: 0.9rem;
+            background: #FF4030;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 0.9rem;
+            font-size: 0.2rem;
+            color: #fff;
+            font-weight: bold;
+            margin-top: 0.2rem;
+        }
+
+        footer {
+            width: 100%;
+            height: 2.8rem;
+            position: absolute;
+            bottom: 0.1rem;
+            border-top: 1px #e3e4e5 solid;
+            background: #ffffff;
+            border: 0;
+        }
+
+        .footer-ul {
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-ul li {
+            width: 33.3%;
+            height: 2.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-ul li img {
+            width: 22%;
+        }
+
+        .footer-img {
+            width: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header class="aui-bar aui-bar-nav bg_f header " id="header">
+            <a class="aui-pull-left aui-btn aui-btn-left" @click="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title color_3">考勤</div>
+        </header>
+        <div class="content">
+            <ul>
+                <li @click="openAskForLeave()">
+                    <img src="../../../../image/clocking-in/kq_sq_icon_leave.png" alt="">
+                    <span>请假</span>
+                </li>
+                <li @click="openBusinessTravel()">
+                    <img src="../../../../image/clocking-in/kq_sq_icon_traveling.png" alt="">
+                    <span>出差</span>
+                </li>
+                <li @click="openReissueCard()">
+                    <img src="../../../../image/clocking-in/kq_sq_icon_buka.png" alt="">
+                    <span>补卡</span>
+                </li>
+            </ul>
+        </div>
+        <div class="apoly-record" @click="openLackCardRecord()">
+            <div class="apoly-record-left">
+                <img src="../../../../image/clocking-in/kq_sq_icon_recording.png" alt="">
+                <div>申请记录</div>
+            </div>
+            <div class="apoly-record-right">
+                <div class="wz-hint">1</div>
+                <img src="../../../../image/clocking-in/kq_sq_icon_next.png" alt="">
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/vue.js"></script>
+
+    <script>
+        apiready = function () {
+            //入侵导航栏
+            $api.fixStatusBar($api.dom('.header'));
+            var offset = $api.offset($api.byId('app'));
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    userInfo: {}, //用户个人信息
+                    timer: "",//定义一个定时器的变量
+                    currentTime: new Date(), // 获取当前时间
+                },
+                created: function () {
+
+                },
+                methods: {
+                    closeWin: function () {
+                        api.closeWin();
+                    },
+                    //跳转申请记录页面
+                    openLackCardRecord: function () {
+                        api.openWin({
+                            name: 'apolyForRecord',
+                            url: './apolyForRecord/index.html',
+                        });
+                    },
+                    //跳转请假页面
+                    openAskForLeave: function () {
+                        api.openWin({
+                            name: 'askForLeave',
+                            url: 'askForLeave.html',
+                        });
+                    },
+                    //跳转出差页面
+                    openBusinessTravel: function () {
+                        api.openWin({
+                            name: 'businessTravel',
+                            url: 'businessTravel.html',
+                        });
+                    },
+                    //跳转补卡页面
+                    openReissueCard: function () {
+                        api.openWin({
+                            name: 'reissueCard',
+                            url: 'reissueCard.html',
+                        });
+                    }
+                },
+            })
+        }
+    </script>
+</body>
+
+</html>

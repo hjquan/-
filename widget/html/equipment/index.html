@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../commonUi/aui/css/aui.css">
+    <style>
+        .main_box{
+            height:50%;
+        }
+        .noData{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height:100vh;
+        }
+        .noData img{
+            width: 100px;
+            height:100px;
+        }
+        .header{
+            position: fixed;
+            top:0px;
+            left: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="aui-bar aui-bar-nav aui-bar-light header">
+            <a class="aui-pull-left aui-btn" onclick="openWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title">设备报警</div>
+
+        </header>
+
+        <div class="main_box clearfix noData" id="app">
+
+            <img src="../../image/noPage.png" alt="">
+            <p>开发中~</p>
+        </div>
+        <script src="../../script/sha1.js"></script>
+        <script src="../../script/api.js"></script>
+        <script src="../../script/common.js"></script>
+        <script src="../../script/vue.js"></script>
+
+        <script>
+            apiready = function(){
+                $api.fixStatusBar( $api.dom('header') );
+            }
+        </script>
+</body>

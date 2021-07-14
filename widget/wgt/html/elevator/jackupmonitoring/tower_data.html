@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        #header,
+        .aui-bar-light {
+            background: rgba(5, 143, 253, 1) !important;
+        }
+
+        .aui-bar-nav.aui-bar-light .aui-iconfont {
+            color: #fff;
+        }
+
+        .aui-bar-light {
+            color: #fff;
+        }
+
+        .nav {
+            height: 40px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background: rgba(5, 143, 253, 1);
+        }
+
+        .nav_item {
+            flex: 0 0 90px;
+            font-size: 14px;
+            color: rgba(254, 254, 254, 1);
+            text-align: center;
+            position: relative;
+        }
+
+        .nav_item.active_b_b:after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            width: 60px;
+            height: 1px;
+            background-color: #fff;
+            transform: translateX(-50%);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="header" id="header">
+        <header class="aui-bar aui-bar-nav aui-bar-light">
+            <a class="aui-pull-left aui-btn" onclick="closeWin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title header_title" id="header_title">升降机顶升监控</div>
+            <!-- <a class="aui-pull-right aui-btn"  onclick="openwirning()" tapmode>
+                <span class="aui-iconfont aui-icon-plus"></span>
+
+            </a> -->
+        </header>
+        <!-- <ul class="nav">
+            <li class="nav_item" v-for="(item,i) in nav_txt" tapmode @click="curtoggleFn(item,i)" :class="{'active_b_b':i === cur_nav_i}" v-text="item.txt">实时数据</li>
+            <li class="nav_item active_b_b">实时数据</li>
+            <li class="nav_item ">实时数据</li>
+            <li class="nav_item active_b_b">实时数据</li>
+
+        </ul> -->
+    </div>
+    <script type="text/javascript" src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script type="text/javascript" src="../../../../script/vue.js"></script>
+
+    <script type="text/javascript">
+        function closeWin() {
+            api.closeWin()
+        }
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('.header'));
+
+            var offset = $api.offset($api.byId('header'));
+            var app = new Vue({
+                el: '#header',
+                data: {
+                    nav_txt: '', //nav文本
+                    cur_nav_i: 0,
+                },
+                created: function() {
+                    this.openFrameFn({
+                        url: './tower_data_frame.html',
+                        txt: '实时数据',
+                        type: 0,
+                    })
+                },
+                methods: {
+                    //点击切换当前nav
+                    // curtoggleFn: function(data, i) {
+                    //     this.cur_nav_i = i;
+                    //     this.openFrameFn(data)
+                    //     // switch (data.type) {
+                    //     //     case 0:
+                    //     //         this.openFrameFn(data)
+                    //     //
+                    //     //         break;
+                    //     //     case 1:
+                    //     //         this.openFrameFn(data)
+                    //     //         break;
+                    //     //     case 2:
+                    //     //         this.openFrameFn(data)
+                    //     //         break;
+                    //     //     default:
+                    //     //
+                    //     // }
+                    // },
+                    openFrameFn: function(data) {
+                        api.openFrame({
+                            name: data.url,
+                            url: data.url,
+                            rect: {
+                                x: 0,
+                                y: offset.h,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {},
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: true
+                        });
+                    },
+
+                },
+            })
+
+
+
+
+        }
+    </script>
+
+</body>
+
+</html>

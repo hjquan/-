@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <link rel="stylesheet" href="../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .flex_start {
+            justify-content: flex-start !important;
+        }
+
+        .triange_bg:before {
+            content: '';
+            height: 26px;
+            width: 26px;
+            background: url('../../../image/triangle.png') 0 0 no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .left_logo {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 50%;
+            background-color: #058FFD;
+            color: #fff;
+        }
+
+        .noData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /*height: 100vh;*/
+            padding:200px 0;
+        }
+
+        .noData img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fixd {
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+        }
+
+        .main_box {
+            margin-top: 110px;
+            padding: 10px 15px;
+            background-color: #fff;
+        }
+        .list_item{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 50px;
+          position: relative;
+        }
+        .list_left{
+          display: flex;
+        }
+        .list_left p{
+          padding: 5px;
+          color: #323233;
+          font-size: 15px;
+          margin-left: 15px;
+        }
+        .logo{
+          width: 36px;
+          height: 36px;
+          border-radius: 18px;
+          background-color: #7187E5;
+          color: #fff;
+          line-height: 36px;
+          font-size: 12px;
+          font-weight: 500;
+          text-align: center;
+          margin-left: 30px;
+
+        }
+        .bottom_before_line::before{
+          content: "";
+          display: block;
+          width: 90%;
+          height: 1px;
+          background-color: #F5F5F5;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .mt-5{margin-top:5px;}
+        .txt_p{
+          color: #B7B7BC
+        }
+        .w_5{
+            flex: 1;
+            /*text-align: right;*/
+        }
+        .btn{
+            font-size:16px;
+            font-family:PingFangSC-Medium,PingFang SC;
+            font-weight:500;
+            color:rgba(199,199,204,1);
+        }
+        .active{
+            color:#058FFD
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="fixd">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="openWin()">
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">选择劳务队</div>
+                <a class="aui-pull-right aui-btn">
+                    <span class="aui-iconfonts btn" :class="{'active':checkedBox.length}" @click="submit()">确定</span>
+                </a>
+            </header>
+            <div class="aui-searchbar" id="search">
+                <div class="aui-searchbar-input aui-border-radius">
+                    <i class="aui-iconfont aui-icon-search"></i>
+                    <form action="">
+                        <input type="search" placeholder="请输入搜索内容" id="search-input" v-model.trim="listIf"   @input="changeInput()">
+                    </form>
+                </div>
+                <!-- <div class="aui-searchbar-cancel" tapmod>取消</div> -->
+            </div>
+        </div>
+        <div class="main_box">
+            <ul class="list_box" v-if="selctList.length" v-cloak>
+              <li class="list_item" v-for="(item,i) in selctList">
+                <div class="list_left bottom_before_line w_5" >
+                    <label  @change="checkfn(item)" ><input class="aui-radio mt-5" :checked="defaultcheck(item)==1"  ref="check" type="checkbox"  ></label>
+                    <p class="aui-ellipsis-1 "  v-text="item.laborName">张建</p>
+                </div>
+              </li>
+            </ul>
+            <div class="noData" v-else v-cloak>
+                <img src="../../../image/noData.png" alt="">
+                <p>没有相关数据~</p>
+            </div>
+        </div>
+    </div>
+    <script src="../../../script/api.js"></script>
+    <script src="../../../script/sha1.js"></script>
+    <script src="../../../script/common.js"></script>
+    <script src="../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function() {
+            //侵入式导航栏
+            $api.fixStatusBar($api.dom('header'));
+            $api.fixTabBar($api.dom('.main_box'));
+            // 请求企业列表
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    copySelctList: [],
+                    selctList: [], //拉取的列表数据
+                    listIf: '' ,//过滤条件
+                    checkedBox:[]//已选中的数据集合
+                },
+                created:function(){
+                    this.checkedBox =  (api.pageParam.defalutcheck && $api.strToJson(api.pageParam.defalutcheck)) || [];
+                    this.init();
+                },
+                methods: {
+                    init:function(){
+                        var params = {
+                            "projectId": $api.getStorage('enterpriseId')
+                        }
+                        function callback(ret){
+                            vm.selctList = ret.obj;
+                            vm.copySelctList = ret.obj;
+                        }
+                        $app.post(
+                            true,
+                            getLaborList,
+                            params,
+                            callback
+                        )
+                    },
+                    //标识已选择的数据选中状态
+                    defaultcheck:function(data){
+                        var isState = null;
+                        this.checkedBox.forEach(function(item){
+                            if(item.laborId == data.laborId){
+                                return isState = 1;
+                            }
+                        })
+                        return isState
+                    },
+                    //选中的数据加入checkBox如果有择删除
+                    checkfn:function(data){
+                        // var flag = this.checkedBox.indexOf(data)
+                        // if(flag == -1){
+                        //     this.checkedBox.push(data)
+                        // }else{
+                        //     this.checkedBox.splice(flag,1)
+                        // }
+                        var copy = this.checkedBox.map(function(item){
+                            return $api.jsonToStr(item);
+
+                        })
+                        var indexItem = copy.indexOf(JSON.stringify(data));
+                        if(indexItem != -1){
+                            this.checkedBox.splice(indexItem,1);
+                        }else{
+                            this.checkedBox.push(data)
+                        }
+                    },
+                    //提交选中数据集合
+                    submit:function(){
+                        if(vm.checkedBox.length){
+                            api.sendEvent({
+                                name: 'personlabor_event',
+                                extra: {
+                                    'personlaborinfo':$api.jsonToStr(vm.checkedBox)
+                                }
+                            });
+                            setTimeout(function(){
+                                api.closeWin();
+
+                            },100)
+                        }else{
+                            api.toast({
+                                msg: '请选择劳务队',
+                                duration: 2000,
+                                location: 'bottom'
+                            });
+
+                        }
+
+
+
+                    },
+                    //筛选
+                    changeInput:function(){
+                        var copyList = $api.strToJson($api.jsonToStr(this.selctList));
+                        this.selctList = $api.strToJson($api.jsonToStr(this.copySelctList));
+                        var filterList = this.copySelctList.filter(function(item){
+                            var itemName = item.laborName;
+                            if(itemName.indexOf(vm.listIf) != -1){
+                                return item
+                            }else{
+                                return false
+                            }
+                        })
+                        if(this.listIf == ''){
+                            this.selctList = this.copySelctList
+                        }else{
+                            this.selctList = filterList
+                        }
+                    },
+                }
+
+            })
+
+        }
+    </script>
+</body>
+
+</html>

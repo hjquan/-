@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../css/style.css"/> -->
+    <link rel="stylesheet" href="../../../../commonUi/aui/css/aui.css">
+    <style>
+        .hover {
+            opacity: 0.6;
+        }
+
+        .header_title {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .btn {
+            color: #c7c7c7;
+            font-size: 14px;
+        }
+
+        .color_d5 {
+            color: #058FFD
+        }
+
+        .carme_box {
+            padding-top: 20px;
+        }
+
+        h2,
+        h3 {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #000;
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        h3 {
+            font-size: 12px;
+        }
+
+        .img_box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .img_box img {
+            width: 250px;
+            height: 161px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 80%;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            color: #fff;
+            background: rgba(157, 211, 253, 1);
+            border-radius: 5px;
+            /*margin: 0 auto;*/
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            right: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100
+        }
+
+        .btn_active {
+            background: rgba(5, 143, 253, 1);
+        }
+
+        .item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*font-weight: bold;*/
+            color: #058FFD;
+        }
+
+        .aui-iconfont {
+            font-size: 22px;
+        }
+
+        .denger-txt {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: rgba(255, 0, 0, 1);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div id="header">
+            <header class="aui-bar aui-bar-nav aui-bar-light">
+                <a class="aui-pull-left aui-btn" onclick="closeWin()" tapmode>
+                    <span class="aui-iconfont aui-icon-left"></span>
+                </a>
+                <div class="aui-title header_title">实名认证</div>
+                <!-- <a class="aui-pull-right aui-btn">
+                    <span class="btn color_d5" tapmode>提交</span>
+                </a> -->
+            </header>
+
+        </div>
+        <div class="carme_box">
+            <h2>拍摄二代身份证照片</h2>
+            <h3>拍照后系统会自动帮助识别身份信息</h3>
+            <div class="img_box">
+                <div class="item">
+                    <i class="aui-iconfont aui-icon-trash" tapmode @click="deleteImg('1')" v-show="idCardFrontInfo"></i>
+                    <img :src=" idCardFrontInfo.imagePath ? idCardFrontInfo.imagePath : '../../../../image/sfz_img.png'"
+                        alt="" tapmode @click="identifyIDFace()">
+                </div>
+                <p class="denger-txt" v-if="idCardFrontInfo.imageStatus == 'non_idcard'">请上传有效的身份证正面照片</p>
+                <p class="denger-txt" v-if="idCardFrontInfo.imageStatus == 'blurred'">身份证正面照片模糊</p>
+                <div class="item">
+                    <i class="aui-iconfont aui-icon-trash" tapmode @click="deleteImg('0')"
+                        v-show="identifyIDBackInfo"></i>
+                    <img :src="identifyIDBackInfo.imagePath ? identifyIDBackInfo.imagePath : '../../../../image/sfz_img1.png'"
+                        alt="" tapmode @click="identifyIDBack()">
+                </div>
+                <p class="denger-txt" v-if="identifyIDBackInfo.imageStatus == 'non_idcard'">请上传有效的身份证反面照片</p>
+                <p class="denger-txt" v-if="identifyIDBackInfo.imageStatus == 'blurred'">身份证反面照片模糊</p>
+
+            </div>
+        </div>
+
+        <div class="btn " :class="{'btn_active': idCardFrontInfo && identifyIDBackInfo}" @click="openaddrealname()">下一步
+        </div>
+    </div>
+    <script src="../../../../script/api.js"></script>
+    <script src="../../../../script/sha1.js"></script>
+    <script src="../../../../script/common.js"></script>
+    <script src="../../../../script/vue.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+            //侵入式导航栏
+            var twoBaiDuOcr = api.require('twoBaiDuOcr');
+            $api.fixStatusBar($api.dom('header'));
+            var idCardScan = api.require('idCardScan');
+
+            var offset = $api.offset($api.byId('header'));
+
+            //监听返回按钮关闭页面
+            // api.addEventListener({
+            //     name: 'keyback'
+            // }, function(ret, err) {
+            //     console.log('按了返回键');
+            // });
+
+
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    isShow: false, //判断删除按钮是否显示
+                    isClassSave: false, //是否高亮
+                    isTitle: false, //判断草稿或新增
+                    idCardFrontInfo: '', //身份证正面信息
+                    identifyIDBackInfo: '', //身份证反面信息
+
+
+                },
+                created: function () {
+                    this.init()
+                },
+                methods: {
+                    deleteImg: function (type) {
+                        var _this = this;
+                        api.confirm({
+                            title: '提示',
+                            msg: '是否删除证件照',
+                            buttons: ['删除', '取消']
+                        }, function (ret, err) {
+                            if (ret) {
+                                if (ret.buttonIndex == 1) {
+                                    switch (type) {
+                                        case '1': //删除正面
+                                            _this.idCardFrontInfo = ''
+                                            break;
+                                        case '0': //删除反面
+                                            _this.identifyIDBackInfo = ''
+                                            break;
+                                        // default:
+
+                                    }
+                                }
+                            } else {
+                                alert(JSON.stringify(err));
+                            }
+                        });
+
+
+
+                    },
+                    init: function () {
+                        twoBaiDuOcr.initAccessToken({}, function (ret, err) {
+                            if (api.systemType != 'ios') {
+                                // 初始化身份证本地质量控制，只用android版本需要，如果不识别身份证，可以删除此方法
+                                twoBaiDuOcr.initCameraNative({}, function (ret, err) { });
+                            }
+                        })
+                    },
+                    //识别身份证正面
+                    identifyIDFace: function () {
+                        var that = this;
+                        twoBaiDuOcr.idCardFront({}, function (ret, err) {
+                            if (ret.status) {
+                                console.log(JSON.stringify(ret));
+                                that.idCardFrontInfo = ret;
+                            } else {
+                                alert(err);
+                            }
+
+                        })
+                    },
+                    //识别身份证反面
+                    identifyIDBack: function () {
+                        var that = this;
+                        twoBaiDuOcr.idCardBack({}, function (ret, err) {
+                            if (ret.status) {
+                                console.log(JSON.stringify(ret));
+                                that.identifyIDBackInfo = ret;
+                            } else {
+                                alert(err);
+                            }
+                        })
+                    },
+                    //弹窗
+                    alertFn: function (msg) {
+                        api.alert({
+                            title: '提示',
+                            msg: msg,
+                        }, function (ret, err) {
+                            if (ret) {
+                            } else {
+                            }
+                        });
+                    },
+                    // 图片上传
+                    // file 类型array
+                    //callback回调
+                    uploadImg: function (file, callback) {
+                        console.log(file);
+                        ajaxFile(
+                            true,
+                            '图片上传',
+                            realNameUplode,
+                            {},
+                            {
+                                'files': file
+                            },
+                            function (ret) {
+                                // console.log($api.jsonToStr(ret));
+                                callback(ret)
+                            }
+                        )
+                    },
+
+                    //跳转实名制登记
+                    openaddrealname: function () {
+                        var _this = this;
+                        if (!this.idCardFrontInfo || !this.identifyIDBackInfo) {
+                            return false
+                        }
+                        if (!this.idCardFrontInfo) {
+                            this.alertFn('请上传证件正面照')
+                            return false
+                        }
+                        if (!this.identifyIDBackInfo) {
+                            this.alertFn('请上传证件反面照')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.address) {
+                            this.alertFn('证件地址信息未识别')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.birthday) {
+                            this.alertFn('证件生日信息未识别')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.idNumber) {
+                            this.alertFn('证件号信息未识别')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.ethnic) {
+                            this.alertFn('证件民族信息未识别')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.gender) {
+                            this.alertFn('证件性别信息未识别')
+                            return false
+                        }
+                        if (!this.idCardFrontInfo.name) {
+                            this.alertFn('证件名字信息未识别')
+                            return false
+                        }
+                        if (!this.identifyIDBackInfo.expiryDate) {
+                            this.alertFn('证件过期时间信息未识别')
+                            return false
+                        }
+                        if (!this.identifyIDBackInfo.issueAuthority) {
+                            this.alertFn('身份证签发机关信息未识别')
+                            return false
+                        }
+                        if (!this.identifyIDBackInfo.signDate) {
+                            this.alertFn('发证日期信息未识别')
+                            return false
+                        }
+                        var params = {
+                            idCardFrontInfo: _this.idCardFrontInfo,
+                            identifyIDBackInfo: _this.identifyIDBackInfo
+                        }
+
+                        var file = [this.idCardFrontInfo.imagePath, this.identifyIDBackInfo.imagePath]
+                        _this.idCardFrontInfo.birthday = _this.idCardFrontInfo.birthday.slice(0, 4) + "-" + _this.idCardFrontInfo.birthday.slice(4, 6) + "-" + _this.idCardFrontInfo.birthday.slice(6, 8)
+
+                        console.log($api.jsonToStr(_this.idCardFrontInfo));
+                        api.openFrame({
+                            name: 'adduser',
+                            url: './adduser.html',
+                            pageParam: {
+                                idInfo: _this.idCardFrontInfo
+                            }
+                        });
+                    }
+                }
+            })
+        }
+
+        function openLeft() {
+            api.openWin({
+                name: 'addlog_frame',
+                url: './left.html',
+                pageParam: {
+                    name: 'test'
+                }
+            });
+        }
+
+        function closeWin() {
+            api.closeWin();
+        }
+    </script>
+</body>
+
+</html>
